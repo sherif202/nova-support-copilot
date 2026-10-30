@@ -25,13 +25,16 @@
 
   <section class="panel">
     <h2>Where the project stands</h2>
+    <p><b>Stopped on 30 Oct 2026, before the internal beta.</b> Everything left needs people: the beta, the pilot and the case study. Full status, decisions and open items: <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
     <div class="kpis">
-      <div class="kpi ok"><span class="l">Release decision</span><span class="v">SHIP</span><span class="l">main eval, version 1.0.9</span></div>
+      <div class="kpi ok"><span class="l">Release decision</span><span class="v">SHIP</span><span class="l">main eval, version 1.0.11 (locked)</span></div>
       <div class="kpi ok"><span class="l">Fraud recall</span><span class="v">13/13</span><span class="l">must be 100%</span></div>
       <div class="kpi ok"><span class="l">Red team</span><span class="v">18/18</span><span class="l">attacks blocked</span></div>
-      <div class="kpi ok"><span class="l">Grounded answers</span><span class="v">93.1%</span><span class="l">27 of 29, target 90%</span></div>
+      <div class="kpi ok"><span class="l">Grounded answers</span><span class="v">96.6%</span><span class="l">28 of 29, target 90%</span></div>
       <div class="kpi warn"><span class="l">Hold-out (once)</span><span class="v">6/7</span><span class="l">grounded; one safe handoff</span></div>
-      <div class="kpi ok"><span class="l">Cost per answer</span><span class="v">EGP 0.02</span><span class="l">US$0.00035, target EGP 0.035</span></div>
+      <div class="kpi ok"><span class="l">Cost per answer</span><span class="v">EGP 0.024</span><span class="l">shadow run, target EGP 0.035</span></div>
+      <div class="kpi ok"><span class="l">Shadow run</span><span class="v">63%</span><span class="l">of 200 synthetic tickets resolved, 0 fraud missed</span></div>
+      <div class="kpi warn"><span class="l">Speed p95</span><span class="v">6.0–6.4 s</span><span class="l">gate 6 s: watch</span></div>
     </div>
   </section>
 
@@ -41,12 +44,12 @@
       <div class="card"><div class="row"><span class="num">1</span><b>Problem Framing</b></div><span class="note">Planning pages: problem framing, PRD, strategy. The scope, North Star and fraud gate used everywhere below.</span><span class="st done">Delivered</span></div>
       <div class="card"><div class="row"><span class="num">2</span><b>Data Collection &amp; Prep</b></div><span class="note">Synthetic customers, transactions, disputes, 200 labelled tickets, policies by rule ID, golden record of 60 + 15 hold-out.</span><span class="st done">Delivered</span></div>
       <div class="card"><div class="row"><span class="num">3</span><b>Model Selection</b></div><span class="note">Bake-off A to D, T, U. Claude Haiku 5.5 for both steps; vendor-neutral adapter; OpenAI and Gemini runs waiting for keys.</span><span class="st done">Delivered</span></div>
-      <div class="card"><div class="row"><span class="num">4</span><b>Prompt &amp; System Design</b></div><span class="note">8-section prompts, fixed replies, retry note, versioned changelog 1.0.0 to 1.0.9.</span><span class="st done">Delivered</span></div>
-      <a class="card" href="stage-5-evaluation.html"><div class="row"><span class="num c">5</span><b>Evaluation</b></div><span class="note">88 cases, 7 hard gates, SHIP on 1.0.9, hold-out opened once.</span><span class="st done">Report ›</span></a>
+      <div class="card"><div class="row"><span class="num">4</span><b>Prompt &amp; System Design</b></div><span class="note">8-section prompts, fixed replies, retry note, versioned changelog 1.0.0 to 1.0.11.</span><span class="st done">Delivered</span></div>
+      <a class="card" href="stage-5-evaluation.html"><div class="row"><span class="num c">5</span><b>Evaluation</b></div><span class="note">88 cases, 7 hard gates, SHIP on 1.0.11, hold-out opened once.</span><span class="st done">Report ›</span></a>
       <a class="card" href="stage-6-integration-ux.html"><div class="row"><span class="num">6</span><b>Integration &amp; UX</b></div><span class="note">Chat, agent inbox, PM control panel, 3 UX pillars, Telos critique applied.</span><span class="st done">Report ›</span></a>
-      <a class="card" href="stage-7-staged-launch.html"><div class="row"><span class="num">7</span><b>Staged Launch</b></div><span class="note">Shadow, beta and pilot plan; the switches to run it are built.</span><span class="st part">Ready to run ›</span></a>
+      <a class="card" href="stage-7-staged-launch.html"><div class="row"><span class="num">7</span><b>Staged Launch</b></div><span class="note">Shadow run done: 63% would resolve, 0 fraud missed. Stopped before the internal beta.</span><span class="st part">Shadow done, beta not started ›</span></a>
       <a class="card" href="stage-8-monitoring.html"><div class="row"><span class="num c">8</span><b>Monitoring &amp; Feedback</b></div><span class="note">The PM control panel is the dashboard; alerts become auto recommendations.</span><span class="st part">Built, waits for real chats ›</span></a>
-      <a class="card" href="stage-9-iteration.html"><div class="row"><span class="num c">9</span><b>Iteration &amp; Retraining</b></div><span class="note">10 versions with scores, the weekly fix cycle, phase-2 case.</span><span class="st part">Running ›</span></a>
+      <a class="card" href="stage-9-iteration.html"><div class="row"><span class="num c">9</span><b>Iteration &amp; Retraining</b></div><span class="note">12 versions with scores (1.0.10 rejected), the weekly fix cycle, phase-2 case.</span><span class="st part">Running ›</span></a>
     </div>
     <p class="note">Violet: linear stages (finish, pass the gate, move on). Teal: continuous stages. Once the pilot starts, stages 8 → 9 → 5 run every week.</p>
   </section>
@@ -66,7 +69,7 @@
     </table></div>
   </section>
 
-  <footer>Nova Bank is fictional; all data is synthetic. Reports generated from commit history up to 30 Oct 2026. Telos method by ProductVoyagers (Apache-2.0), applied by hand to Nova's screens and Key Results.</footer>
+  <footer>Nova Bank is fictional; all data is synthetic. Reports generated from commit history up to 30 Oct 2026 (stop point: 1.0.11). Telos method by ProductVoyagers (Apache-2.0), applied by hand to Nova's screens and Key Results.</footer>
 </div>
 </body>
 </html>

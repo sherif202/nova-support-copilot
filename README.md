@@ -42,6 +42,10 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 | `tools/model-check.mjs` | Stage 3: runs the 60 eval cases through Claude, GPT or Gemini and reports accuracy, speed and cost per language. |
 | `.env.example` | Copy to `.env` and add your Anthropic API key in step 5. OpenAI, Google and OpenRouter keys are optional, for the model check. |
 
+## Project status
+
+Stopped on 30 Oct 2026, before the internal beta. Version 1.0.11 is the locked baseline (eval SHIP, grounded 28/29); the stage 7 shadow run says the copilot would have resolved 63% of 200 synthetic tickets with 0 fraud missed. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
+
 ## Built on top of the starter
 
 | Path | What it is |
@@ -49,7 +53,8 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 | `lib/` | The copilot: prompt loader, lookup, guard (masking, junk, injection flags), fraud word list, output checks, model adapter (vendor-neutral), explanations, PM metrics, prices. |
 | `public/` | Three screens: customer chat, agent inbox, and the **PM control panel** (Key Results, cost per model ID, bottlenecks, iterations, auto-updated recommendations). Nova Bank logo in `public/logo.svg`. |
 | `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
-| `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` | Step 14 eval with SHIP/DO NOT SHIP, red team, the one-time hold-out run, and the stage 7 shadow run on 200 labelled tickets. |
+| `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` · `tools/build_linked_tickets.mjs` | Step 14 eval with SHIP/DO NOT SHIP (asked at a fixed date), red team, the one-time hold-out run, the stage 7 shadow run on 200 labelled tickets, and the script that links those tickets to the customer records. |
+| `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |
 | `docs/stages/` | Visual stage reports 5 to 9 (open `docs/stages/index.html`). |
 | `docs/telos/critique-card.html` | The screens critiqued against Nova's Key Results with the Telos method. |
 | `docs/MODEL-STRATEGY.md` · `docs/UX-PRINCIPLES.md` · `docs/DEMO-SCRIPT.md` · `docs/baseline.json` | Vendor-neutral model strategy, the 3 UX pillars, the live demo script, and the locked SHIP baseline. |

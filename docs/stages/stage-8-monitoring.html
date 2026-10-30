@@ -19,8 +19,9 @@
 
   <header class="stage">
     <div class="stage-head"><span class="num c">8</span><div><p class="eyebrow">Phase 4 · Run &amp; Improve · continuous</p><h1>Monitoring &amp; Feedback</h1></div></div>
-    <div class="tags"><span class="tag cont">The real world is the true test set</span><span class="tag">Owner: PM writes the report · builder keeps the dashboard</span></div>
+    <div class="tags"><span class="tag cont">The real world is the true test set</span><span class="tag">Owner: PM writes the report · builder keeps the dashboard</span><span class="tag">Built · no real chats yet</span></div>
     <p class="lede"><strong>Goal:</strong> see within a day when the copilot starts getting things wrong, and turn real chats into the next round of tests. The dashboard is built into the app: the <b>PM control panel</b> tab.</p>
+    <p class="note"><b>Project status:</b> stopped on 30 Oct 2026 before the internal beta; version 1.0.11 is the locked baseline. See <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
   </header>
 
   <section class="panel">
@@ -67,18 +68,18 @@
     <h2>Weekly quality report · week of 26 Oct 2026 (build week)</h2>
     <p class="note">The one-page format the plan asks for: 5 numbers, the top 3 failure types, and what we're doing about each. This first edition uses the eval runs, because the pilot hasn't started.</p>
     <div class="kpis">
-      <div class="kpi ok"><span class="l">1 · Release decision</span><span class="v">SHIP</span><span class="l">1.0.9</span></div>
-      <div class="kpi ok"><span class="l">2 · Fraud recall</span><span class="v">100%</span><span class="l">21 of 21 runs</span></div>
-      <div class="kpi ok"><span class="l">3 · Grounded answers</span><span class="v">93.1%</span><span class="l">from 75.9% on Monday</span></div>
-      <div class="kpi ok"><span class="l">4 · Cost per answer</span><span class="v">EGP 0.02</span><span class="l">target 0.035</span></div>
-      <div class="kpi ok"><span class="l">5 · Speed p95</span><span class="v">3.9 s</span><span class="l">gate 6 s</span></div>
+      <div class="kpi ok"><span class="l">1 · Release decision</span><span class="v">SHIP</span><span class="l">1.0.11</span></div>
+      <div class="kpi ok"><span class="l">2 · Fraud recall</span><span class="v">100%</span><span class="l">every eval and shadow run</span></div>
+      <div class="kpi ok"><span class="l">3 · Grounded answers</span><span class="v">96.6%</span><span class="l">from 75.9% on Monday</span></div>
+      <div class="kpi ok"><span class="l">4 · Cost per answer</span><span class="v">EGP 0.024</span><span class="l">shadow run · target 0.035</span></div>
+      <div class="kpi warn"><span class="l">5 · Speed p95</span><span class="v">6.0–6.4 s</span><span class="l">shadow / eval · gate 6 s: watch</span></div>
     </div>
     <div class="scroll"><table>
       <thead><tr><th>Top failure types this week</th><th>Count</th><th>What we're doing</th></tr></thead>
       <tbody>
         <tr><td>1. Correct label, low confidence, handed off</td><td>3 eval + 1 hold-out</td><td>Learning loop added 3 reworded examples (1.0.9): cases 7 and 37 now pass. Threshold stays at 0.7</td></tr>
-        <tr><td>2. Card declined abroad read as a damaged card</td><td>1 (S4)</td><td>Next: one reworded approved example</td></tr>
-        <tr><td>3. English weaker than Arabic</td><td>3 of 21 English cases</td><td>Next: trap row for account takeover; accept the cautious handoff on injection</td></tr>
+        <tr><td>2. Card declined abroad read as a damaged card</td><td>1 (S4, still failing on 1.0.11)</td><td>Next: one reworded approved example</td></tr>
+        <tr><td>3. English weaker than Arabic</td><td>3 of 21 English cases (20, 45, S4 on 1.0.11)</td><td>Next: trap row for account takeover; accept the cautious handoff on injection</td></tr>
       </tbody>
     </table></div>
   </section>

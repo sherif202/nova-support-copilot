@@ -18,4 +18,6 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | Telos critique card | https://claude.ai/artifact/UdDFfWZ76qyuptWnLmkEEh |
 | MVP architecture | https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R |
 
+**Status (30 Oct 2026):** the project stopped before the internal beta, with 1.0.11 as the locked baseline and a shadow resolution rate of 63%; see [PROJECT-STATUS.md](PROJECT-STATUS.md). The published pages above were written before the last round (they show 1.0.9 and the first shadow run at 23%); the GitHub copies in `docs/stages/` are the current version.
+
 Cost target used everywhere: EGP 0.035 per answered message (Stage 3), with a pilot alert at EGP 0.20 per conversation (Stage 8).
