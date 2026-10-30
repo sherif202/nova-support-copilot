@@ -235,6 +235,8 @@ async function answer(customerId, message, label, testNow) {
       if (json.action === "handoff") return { ...meta, status: "handoff", json, attempts: attempt, checks_passed: [] };
       // A maintenance answer always rests on DIG-8, the rule for sharing notices (build step 8b).
       if (json.sources.some((id) => id.startsWith("ANN-")) && !json.sources.includes("DIG-8")) json.sources.push("DIG-8");
+      // A dispute status answer always names the stage, which is defined by DSP-2.
+      if (label.intent === "dispute.status" && json.sources.some((id) => id.startsWith("D-")) && !json.sources.includes("DSP-2")) json.sources.push("DSP-2");
       const checked = runChecks(json, ctx);
       console.log(`[answer] sources=${json.sources.join(",") || "none"} checks passed=${checked.passed.join(",")}${checked.failed ? ` FAILED=${checked.failed.check}` : ""}`);
       if (!checked.failed) return { ...meta, status: "ok", json, attempts: attempt, checks_passed: checked.passed };
