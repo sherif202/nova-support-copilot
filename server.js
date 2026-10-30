@@ -575,7 +575,18 @@ const server = http.createServer(async (req, res) => {
       // Step 9: junk, length and masking checks in code, before anything is sent anywhere or saved.
       const checked = guard(message);
       let result;
-      if (rateLimited(customerId)) {
+      const limited = rateLimited(customerId);
+      const fraudWhileLimited = limited && !checked.stop ? fraudSignal(checked.masked) : null;
+      if (fraudWhileLimited) {
+        // Fraud goes first, even over the rate limit: the fraud word list is plain code, so no model is called.
+        console.log(`[rate limit] ${customerId} over the limit, but the fraud word list matched: Fraud queue`);
+        result = fraudHandOff(customerId, checked.masked, {
+          input_language: scriptLanguage(checked.masked),
+          category: "Fraud and security",
+          intent: fraudWhileLimited.intent,
+          confidence: 1,
+        });
+      } else if (limited) {
         // Step 15: over 20 messages a minute from one customer gets R-WAIT, with no model call (red-team R9).
         console.log(`[rate limit] ${customerId} over ${RATE_LIMIT} messages a minute, no model call`);
         const language = scriptLanguage(checked.masked) === "english" ? "english" : "arabic";

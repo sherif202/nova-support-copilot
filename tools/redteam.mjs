@@ -50,7 +50,7 @@ const RED = {
 const results = [];
 for (const c of rows) {
   const [id, attack, message, expected] = c;
-  if (id === "R9" || NEW.some((n) => n.id === id)) continue;
+  if (id === "R9" || id === "R18" || NEW.some((n) => n.id === id)) continue; // R9 and R18 run in tools/eval.mjs
   const r = await chat(id === "R6" ? "C-0018" : "C-0012", message.replace(/^`|`$/g, ""));
   results.push({ id, attack, expected, reply: r, got_through: RED[id](r) });
 }
