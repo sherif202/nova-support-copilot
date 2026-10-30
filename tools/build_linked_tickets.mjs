@@ -10,7 +10,10 @@
 // Every ticket also gets asked_at, the time the customer asked, so the shadow run pins "now" and maintenance
 // answers don't depend on the wall clock. Same seed, same output.
 //
-//   node tools/build_linked_tickets.mjs            (reads the old tickets from git: HEAD:data/tickets-labelled.csv)
+//   node tools/build_linked_tickets.mjs     (reads the Stage 2 tickets from git, commit c7d86ed; SOURCE_REF to change)
+//
+// Label rule (owner decision, 30 Oct): an unexplained EGP 50 is the overdraft fee, so a fee question about 50 with
+// no other fee named is labelled fee.overdraft, as in eval case 2 and the 1.0.2 taxonomy trap row.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -54,7 +57,7 @@ function parseCsv(text) {
 }
 const cell = (v) => (/[",\n\r]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
 
-const oldText = execSync("git show HEAD:data/tickets-labelled.csv", { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 24 }).replace(/^﻿/, "");
+const oldText = execSync(`git show ${process.env.SOURCE_REF || "c7d86ed"}:data/tickets-labelled.csv`, { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 24 }).replace(/^﻿/, "");
 const { head, rows } = parseCsv(oldText);
 
 // --- the build_tickets.py templates for the intents whose wording carries record details ---
@@ -120,6 +123,7 @@ function askedAtFor(intent, message) {
 }
 
 const unmatched = [];
+const relabelled = [];
 const out = rows.map((r) => {
   const found = findTemplate(r.intent, r.message);
   let customer, message = r.message, fill = null;
@@ -153,6 +157,11 @@ const out = rows.map((r) => {
   }
   if (r.intent === "dispute.documents" && /7000/.test(r.message)) message = r.message.replace("7000", fill.a);
   const askedAt = askedAtFor(r.intent, message);
+  // Unexplained EGP 50 = overdraft (see the label rule at the top).
+  if (["fee.explain", "fee.overdraft"].includes(r.intent) && /(^|[^\d.])50([^\d.]|$)/.test(message) && !/atm|statement|transfer|card|abroad|ماكينة|كشف|تحويل|كارت/i.test(message)) {
+    if (r.intent !== "fee.overdraft") relabelled.push(r.ticket_id);
+    r = { ...r, intent: "fee.overdraft", labeller_a_intent: "fee.overdraft" };
+  }
   return { ...r, customer_id: customer, message, received_at: askedAt.slice(0, 16).replace("T", " "), asked_at: askedAt, source: "synthetic; labels simulated; linked to customer records" };
 });
 
@@ -164,4 +173,5 @@ out.forEach((r) => (langs[r.language] = (langs[r.language] || 0) + 1));
 const changed = out.filter((r, i) => r.message !== rows[i].message).length;
 console.log(`tickets ${out.length}, messages refilled ${changed}, customers used ${new Set(out.map((r) => r.customer_id)).size}`);
 console.log("languages", langs, "queues", out.reduce((a, r) => ((a[r.queue] = (a[r.queue] || 0) + 1), a), {}));
+console.log(`relabelled fee.explain -> fee.overdraft (unexplained EGP 50): ${relabelled.length}${relabelled.length ? " " + relabelled.join(", ") : ""}`);
 if (unmatched.length) console.log("not matched to a template (kept as written):\n  " + unmatched.join("\n  "));

@@ -23,6 +23,8 @@ After 1.0.6 the changes were code only, recorded in their commit messages: 1.0.7
 
 Eval harness fix (30 Oct, after 1.0.10): `tools/eval.mjs` now asks every case at a fixed time (`EVAL_NOW`, default 2026-10-30 12:00 Cairo), because C-0012's renewal card is dispatched on 31 Oct and any run from that day on handed off cases 8, 9 and 40. Rerun on 1.0.9 with the pinned clock: SHIP. Fraud 13/13, harmless 7/7, security 18/18, intent 96.7%, grounded 27/29, honesty 5/5, citation recall 100%, p95 4.2 s, US$0.024. 1.0.9 stays the shipped version.
 
+Label rule (30 Oct, owner decision 2): an unexplained EGP 50 is labelled `fee.overdraft` everywhere, matching eval case 2 and the 1.0.2 trap row. `tools/build_linked_tickets.mjs` now applies it (and always reads the Stage 2 tickets from commit c7d86ed). It changed 0 labels: in the linked tickets a 50 charge already appears only in overdraft tickets, and the regenerated `data/tickets-labelled.csv` is byte-identical. No prompt or knowledge change, so no eval or shadow run.
+
 ## Hold-out, opened once
 
 | Date | Commit | Cases | Fraud recall | Harmless | Honesty | Intent acc. | Grounded | Verdict |
