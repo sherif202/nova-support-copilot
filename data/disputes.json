@@ -1,0 +1,201 @@
+[
+  {
+    "dispute_id": "D-2026-0091",
+    "customer_id": "C-0012",
+    "submitted": "2026-09-05",
+    "transaction": "TXN-2026-09-04-0019",
+    "amount_egp": 1200,
+    "stage": "Under review",
+    "receipt_confirmed": "2026-09-06",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0104",
+    "customer_id": "C-0007",
+    "submitted": "2026-09-08",
+    "transaction": "TXN-2026-09-05-0025",
+    "amount_egp": 1890,
+    "stage": "Waiting for merchant",
+    "receipt_confirmed": "2026-09-09",
+    "missing_documents": [
+      "receipt or proof of cancellation"
+    ],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0089",
+    "customer_id": "C-0041",
+    "submitted": "2026-09-20",
+    "transaction": "TXN-2026-09-18-0200",
+    "amount_egp": 6200,
+    "stage": "Under review",
+    "receipt_confirmed": "2026-09-22",
+    "missing_documents": [],
+    "card_network": "Visa",
+    "police_report_required": true
+  },
+  {
+    "dispute_id": "D-2026-0094",
+    "customer_id": "C-0011",
+    "submitted": "2026-08-27",
+    "transaction": "TXN-2026-08-25-0200",
+    "amount_egp": 1450,
+    "stage": "Closed",
+    "receipt_confirmed": "2026-08-31",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false,
+    "decision_date": "2026-10-05",
+    "closed": "2026-10-06",
+    "closed_reason": "The merchant reversed the double charge."
+  },
+  {
+    "dispute_id": "D-2026-0098",
+    "customer_id": "C-0038",
+    "submitted": "2026-09-02",
+    "transaction": "TXN-2026-08-30-0200",
+    "amount_egp": 4300,
+    "stage": "Closed",
+    "receipt_confirmed": "2026-09-03",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false,
+    "decision_date": "2026-10-19",
+    "closed": "2026-10-20",
+    "closed_reason": "Charge confirmed as valid: the hotel showed the booking was used."
+  },
+  {
+    "dispute_id": "D-2026-0101",
+    "customer_id": "C-0016",
+    "submitted": "2026-09-06",
+    "transaction": "TXN-2026-09-03-0200",
+    "amount_egp": 8900,
+    "stage": "Decision",
+    "receipt_confirmed": "2026-09-08",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": true,
+    "decision_date": "2026-10-26"
+  },
+  {
+    "dispute_id": "D-2026-0107",
+    "customer_id": "C-0019",
+    "submitted": "2026-09-12",
+    "transaction": "TXN-2026-09-10-0200",
+    "amount_egp": 640,
+    "stage": "Under review",
+    "receipt_confirmed": "2026-09-13",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0112",
+    "customer_id": "C-0026",
+    "submitted": "2026-09-23",
+    "transaction": "TXN-2026-09-21-0200",
+    "amount_egp": 2350,
+    "stage": "Waiting for merchant",
+    "receipt_confirmed": "2026-09-24",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0115",
+    "customer_id": "C-0022",
+    "submitted": "2026-09-28",
+    "transaction": "TXN-2026-09-26-0200",
+    "amount_egp": 410,
+    "stage": "Closed",
+    "receipt_confirmed": "2026-09-30",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false,
+    "decision_date": "2026-10-21",
+    "closed": "2026-10-22",
+    "closed_reason": "Duplicate charge removed by the merchant."
+  },
+  {
+    "dispute_id": "D-2026-0118",
+    "customer_id": "C-0044",
+    "submitted": "2026-10-04",
+    "transaction": "TXN-2026-10-02-0200",
+    "amount_egp": 7800,
+    "stage": "Under review",
+    "receipt_confirmed": "2026-10-06",
+    "missing_documents": [
+      "police report"
+    ],
+    "card_network": null,
+    "police_report_required": true
+  },
+  {
+    "dispute_id": "D-2026-0121",
+    "customer_id": "C-0028",
+    "submitted": "2026-10-11",
+    "transaction": "TXN-2026-10-09-0200",
+    "amount_egp": 960,
+    "stage": "Waiting for merchant",
+    "receipt_confirmed": "2026-10-13",
+    "missing_documents": [
+      "receipt or proof of cancellation"
+    ],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0124",
+    "customer_id": "C-0013",
+    "submitted": "2026-10-14",
+    "transaction": "TXN-2026-10-12-0201",
+    "amount_egp": 1730,
+    "stage": "Under review",
+    "receipt_confirmed": "2026-10-15",
+    "missing_documents": [],
+    "card_network": "Visa",
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0127",
+    "customer_id": "C-0047",
+    "submitted": "2026-10-18",
+    "transaction": "TXN-2026-10-15-0200",
+    "amount_egp": 530,
+    "stage": "Decision",
+    "receipt_confirmed": "2026-10-19",
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false,
+    "decision_date": "2026-10-28"
+  },
+  {
+    "dispute_id": "D-2026-0131",
+    "customer_id": "C-0034",
+    "submitted": "2026-10-28",
+    "transaction": "TXN-2026-10-24-0200",
+    "amount_egp": 1100,
+    "stage": "Submitted",
+    "receipt_confirmed": null,
+    "missing_documents": [
+      "signed dispute form"
+    ],
+    "card_network": null,
+    "police_report_required": false
+  },
+  {
+    "dispute_id": "D-2026-0133",
+    "customer_id": "C-0020",
+    "submitted": "2026-10-27",
+    "transaction": "TXN-2026-10-25-0200",
+    "amount_egp": 780,
+    "stage": "Submitted",
+    "receipt_confirmed": null,
+    "missing_documents": [],
+    "card_network": null,
+    "police_report_required": false
+  }
+]

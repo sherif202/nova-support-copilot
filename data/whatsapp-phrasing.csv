@@ -1,0 +1,46 @@
+﻿friend,persona,question_id,what_we_asked,reply_as_typed,language,maps_to_intent,source
+F1,"Mohamed, 24, student, Cairo",Q1,Ask why the bank took 25 pounds after you used another bank's ATM,eh el 25 geneh di ya3ny,Franco-Arabic,fee.explain,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q1,Ask why the bank took 25 pounds after you used another bank's ATM,الـ٢٥ جنيه دول اتخصموا ليه؟ سحبت من ماكينة بنك تاني,Arabic,fee.explain,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q1,Ask why the bank took 25 pounds after you used another bank's ATM,leh 25 geneh 3ashan sa7abt mn makana tanya,Franco-Arabic,fee.explain,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q1,Ask why the bank took 25 pounds after you used another bank's ATM,why 25 egp fee? used CIB atm,English,fee.explain,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q1,Ask why the bank took 25 pounds after you used another bank's ATM,يابني الـ ٢٥ جنيه دول إيه,Arabic,fee.explain,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q2,Ask where your dispute is,el e3terad fein ya gama3a,Franco-Arabic,dispute.status,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q2,Ask where your dispute is,الاعتراض بتاعي وصل لفين,Arabic,dispute.status,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q2,Ask where your dispute is,ana 3amalt e3terad mn shahr w mafish rad,Franco-Arabic,dispute.status,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q2,Ask where your dispute is,any update on my dispute?,English,dispute.status,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q2,Ask where your dispute is,الشكوى بتاعة الفلوس اللي اتخصمت غلط وصلت لفين,Arabic,dispute.status,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q3,Say your card is broken and ask what to do,el kart et2sar,Franco-Arabic,card.replace_damaged,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q3,Say your card is broken and ask what to do,الكارت اتكسر نصين,Arabic,card.replace_damaged,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q3,Say your card is broken and ask what to do,el visa bayza mesh bete2ra,Franco-Arabic,card.replace_damaged,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q3,Say your card is broken and ask what to do,card is broken lol what now,English,card.replace_damaged,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q3,Say your card is broken and ask what to do,الكارت مش راضي يشتغل في الماكينة,Arabic,card.replace_damaged,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q4,Say your card is lost,el kart da3,Franco-Arabic,fraud.card_lost_stolen,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q4,Say your card is lost,الفيزا ضاعت,Arabic,fraud.card_lost_stolen,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q4,Say your card is lost,3ayez badal fa2ed,Franco-Arabic,fraud.card_lost_stolen,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q4,Say your card is lost,lost my card,English,fraud.card_lost_stolen,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q4,Say your card is lost,الكارت وقع مني في الميكروباص,Arabic,fraud.card_lost_stolen,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q5,Say there's a payment you didn't make,msh ana elly 3amalt el 3amalia di,Franco-Arabic,fraud.unknown_txn,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q5,Say there's a payment you didn't make,في فلوس اتسحبت أنا معملتهاش,Arabic,fraud.unknown_txn,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q5,Say there's a payment you didn't make,fi 7aga et5asamet ana ma3amaltehash,Franco-Arabic,fraud.unknown_txn,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q5,Say there's a payment you didn't make,there's a payment that isn't mine,English,fraud.unknown_txn,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q5,Say there's a payment you didn't make,حد سحب من الكارت بتاعي,Arabic,fraud.unknown_txn,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q6,Ask if your card renewal costs money,"el kart hayo5las, hadfa3?",Franco-Arabic,card.replace_expired,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q6,Ask if your card renewal costs money,تجديد الكارت بفلوس؟,Arabic,card.replace_expired,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q6,Ask if your card renewal costs money,"el visa 5elset, el gedida b kam",Franco-Arabic,card.replace_expired,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q6,Ask if your card renewal costs money,do i pay to renew my card,English,card.replace_expired,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q6,Ask if your card renewal costs money,الكارت خلص تاريخه أعمل إيه,Arabic,card.replace_expired,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q7,Ask if the app is down,el app wa2e3?,Franco-Arabic,service.status,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q7,Ask if the app is down,الأبلكيشن مش بيفتح,Arabic,service.status,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q7,Ask if the app is down,el application 3amel error,Franco-Arabic,service.status,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q7,Ask if the app is down,is the app down rn,English,service.status,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q7,Ask if the app is down,التطبيق مش شغال ليه,Arabic,service.status,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q8,Ask for the fee to be removed,shilo el masareef di,Franco-Arabic,fee.waiver_request,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q8,Ask for the fee to be removed,رجعولي فلوس الرسوم,Arabic,fee.waiver_request,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q8,Ask for the fee to be removed,momken teshelo el 50 geneh,Franco-Arabic,fee.waiver_request,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q8,Ask for the fee to be removed,pls remove this fee,English,fee.waiver_request,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q8,Ask for the fee to be removed,شيلوا الخصم ده ده ظلم,Arabic,fee.waiver_request,SIMULATED: replace with the real WhatsApp reply
+F1,"Mohamed, 24, student, Cairo",Q9,Ask to talk to a person,3ayez akalem 7ad,Franco-Arabic,general.chitchat,SIMULATED: replace with the real WhatsApp reply
+F2,"Aya, 31, teacher, Alexandria",Q9,Ask to talk to a person,عايز أكلم موظف,Arabic,general.chitchat,SIMULATED: replace with the real WhatsApp reply
+F3,"Hany, 45, shop owner, Mansoura",Q9,Ask to talk to a person,kalemny ma3 7ad bany adam,Franco-Arabic,general.chitchat,SIMULATED: replace with the real WhatsApp reply
+F4,"Nada, 28, engineer, Giza",Q9,Ask to talk to a person,can i talk to a human,English,general.chitchat,SIMULATED: replace with the real WhatsApp reply
+F5,"Am Sayed, 58, retired, Asyut",Q9,Ask to talk to a person,وصلني بحد يفهم,Arabic,general.chitchat,SIMULATED: replace with the real WhatsApp reply

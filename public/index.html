@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Bank · Help</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">N</span> Nova Bank <span class="tag">Help · starter, fake AI</span></div>
+  <nav>
+    <button id="tab-chat" class="tab active" type="button">Customer chat</button>
+    <button id="tab-inbox" class="tab" type="button">Agent inbox</button>
+  </nav>
+</header>
+
+<main>
+  <section id="view-chat" class="view">
+    <div class="login">
+      <label for="customer">Log in as</label>
+      <select id="customer"></select>
+      <span class="hint">Synthetic customers only. This stands in for the bank's real login.</span>
+    </div>
+
+    <div id="messages" class="messages" aria-live="polite">
+      <div class="msg bot">Hi, I'm Nova's assistant. I can explain a fee, tell you where your dispute is, or help with a card replacement. You can talk to a person at any time.</div>
+    </div>
+
+    <form id="composer" class="composer">
+      <input id="text" dir="auto" autocomplete="off" placeholder="Type in Arabic, English or Franco, e.g. 3ayez a3raf el 25 geneh dol eh" maxlength="1000">
+      <button type="submit">Send</button>
+    </form>
+    <div class="actions">
+      <button id="person" type="button" class="secondary">Talk to a person</button>
+    </div>
+  </section>
+
+  <section id="view-inbox" class="view" hidden>
+    <div class="inbox-head">
+      <h2>Agent inbox</h2>
+      <button id="refresh" type="button" class="secondary">Refresh</button>
+    </div>
+    <table>
+      <thead><tr><th>Ticket</th><th>Queue</th><th>Priority</th><th>Customer</th><th>Message</th><th>Status</th></tr></thead>
+      <tbody id="tickets"><tr><td colspan="6" class="empty">No tickets yet. Handoffs from the chat appear here.</td></tr></tbody>
+    </table>
+  </section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

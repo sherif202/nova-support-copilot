@@ -1,0 +1,548 @@
+[
+  {
+    "card_id": "CARD-0001-1",
+    "customer_id": "C-0001",
+    "product": "Nova Debit Card",
+    "last4": "7891",
+    "expiry": "2028-02",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0002-1",
+    "customer_id": "C-0002",
+    "product": "Nova Debit Card",
+    "last4": "2606",
+    "expiry": "2027-06",
+    "status": "blocked",
+    "blocked_reason": "reported lost",
+    "blocked_on": "2026-10-11",
+    "renewal": {
+      "type": "lost_stolen",
+      "fee_rule": "CRD-3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0003-1",
+    "customer_id": "C-0003",
+    "product": "Nova Debit Card",
+    "last4": "4400",
+    "expiry": "2029-01",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0004-1",
+    "customer_id": "C-0004",
+    "product": "Nova Debit Card",
+    "last4": "6577",
+    "expiry": "2029-03",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0004-2",
+    "customer_id": "C-0004",
+    "product": "Classic Credit Card",
+    "last4": "2930",
+    "expiry": "2027-05",
+    "status": "active",
+    "opened": "2025-06-28"
+  },
+  {
+    "card_id": "CARD-0005-1",
+    "customer_id": "C-0005",
+    "product": "Nova Debit Card",
+    "last4": "4437",
+    "expiry": "2029-02",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0006-1",
+    "customer_id": "C-0006",
+    "product": "Nova Debit Card",
+    "last4": "1405",
+    "expiry": "2028-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0006-2",
+    "customer_id": "C-0006",
+    "product": "Classic Credit Card",
+    "last4": "1288",
+    "expiry": "2028-04",
+    "status": "active",
+    "opened": "2025-06-05"
+  },
+  {
+    "card_id": "CARD-0007-1",
+    "customer_id": "C-0007",
+    "product": "Nova Debit Card",
+    "last4": "4474",
+    "expiry": "2027-04",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0008-1",
+    "customer_id": "C-0008",
+    "product": "Nova Debit Card",
+    "last4": "2907",
+    "expiry": "2028-12",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0008-2",
+    "customer_id": "C-0008",
+    "product": "Classic Credit Card",
+    "last4": "3142",
+    "expiry": "2028-03",
+    "status": "active",
+    "opened": "2024-08-09"
+  },
+  {
+    "card_id": "CARD-0009-1",
+    "customer_id": "C-0009",
+    "product": "Nova Debit Card",
+    "last4": "4511",
+    "expiry": "2030-04",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0010-1",
+    "customer_id": "C-0010",
+    "product": "Nova Debit Card",
+    "last4": "4678",
+    "expiry": "2030-08",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0011-1",
+    "customer_id": "C-0011",
+    "product": "Nova Debit Card",
+    "last4": "8484",
+    "expiry": "2027-06",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0012-1",
+    "customer_id": "C-0012",
+    "product": "Nova Debit Card",
+    "last4": "4548",
+    "expiry": "2026-11",
+    "status": "active",
+    "renewal": {
+      "type": "expiry",
+      "dispatch_date": "2026-10-31",
+      "fee_rule": "FEE-4.3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0013-1",
+    "customer_id": "C-0013",
+    "product": "Nova Debit Card",
+    "last4": "7585",
+    "expiry": "2030-09",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0014-1",
+    "customer_id": "C-0014",
+    "product": "Nova Debit Card",
+    "last4": "6897",
+    "expiry": "2028-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0014-2",
+    "customer_id": "C-0014",
+    "product": "Classic Credit Card",
+    "last4": "8327",
+    "expiry": "2030-05",
+    "status": "active",
+    "opened": "2026-05-04"
+  },
+  {
+    "card_id": "CARD-0015-1",
+    "customer_id": "C-0015",
+    "product": "Nova Debit Card",
+    "last4": "4585",
+    "expiry": "2029-09",
+    "status": "active",
+    "renewal": {
+      "type": "damaged",
+      "requested": "2026-09-06",
+      "delivery": "express",
+      "fee_rule": "FEE-4.2",
+      "fee_egp": 100,
+      "express_fee_rule": "FEE-4.4",
+      "express_fee_egp": 75,
+      "dispatch_date": "2026-09-06",
+      "delivered": "2026-09-08"
+    }
+  },
+  {
+    "card_id": "CARD-0016-1",
+    "customer_id": "C-0016",
+    "product": "Nova Debit Card",
+    "last4": "2611",
+    "expiry": "2028-10",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0017-1",
+    "customer_id": "C-0017",
+    "product": "Nova Debit Card",
+    "last4": "5365",
+    "expiry": "2030-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0018-1",
+    "customer_id": "C-0018",
+    "product": "Nova Debit Card",
+    "last4": "4622",
+    "expiry": "2030-07",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0019-1",
+    "customer_id": "C-0019",
+    "product": "Nova Debit Card",
+    "last4": "9955",
+    "expiry": "2027-06",
+    "status": "blocked",
+    "blocked_reason": "reported lost",
+    "blocked_on": "2026-10-24",
+    "renewal": {
+      "type": "lost_stolen",
+      "fee_rule": "CRD-3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0020-1",
+    "customer_id": "C-0020",
+    "product": "Nova Debit Card",
+    "last4": "3535",
+    "expiry": "2027-04",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0021-1",
+    "customer_id": "C-0021",
+    "product": "Nova Debit Card",
+    "last4": "4659",
+    "expiry": "2027-11",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0022-1",
+    "customer_id": "C-0022",
+    "product": "Nova Debit Card",
+    "last4": "2383",
+    "expiry": "2027-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0023-1",
+    "customer_id": "C-0023",
+    "product": "Nova Debit Card",
+    "last4": "7160",
+    "expiry": "2030-01",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0024-1",
+    "customer_id": "C-0024",
+    "product": "Nova Debit Card",
+    "last4": "6370",
+    "expiry": "2027-06",
+    "status": "blocked",
+    "blocked_reason": "reported lost",
+    "blocked_on": "2026-09-28",
+    "renewal": {
+      "type": "lost_stolen",
+      "fee_rule": "CRD-3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0025-1",
+    "customer_id": "C-0025",
+    "product": "Nova Debit Card",
+    "last4": "3521",
+    "expiry": "2028-09",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0026-1",
+    "customer_id": "C-0026",
+    "product": "Nova Debit Card",
+    "last4": "1559",
+    "expiry": "2028-07",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0027-1",
+    "customer_id": "C-0027",
+    "product": "Nova Debit Card",
+    "last4": "8927",
+    "expiry": "2027-01",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0028-1",
+    "customer_id": "C-0028",
+    "product": "Nova Debit Card",
+    "last4": "4047",
+    "expiry": "2030-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0029-1",
+    "customer_id": "C-0029",
+    "product": "Nova Debit Card",
+    "last4": "9152",
+    "expiry": "2029-01",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0029-2",
+    "customer_id": "C-0029",
+    "product": "Classic Credit Card",
+    "last4": "4998",
+    "expiry": "2030-03",
+    "status": "active",
+    "opened": "2025-03-14"
+  },
+  {
+    "card_id": "CARD-0030-1",
+    "customer_id": "C-0030",
+    "product": "Nova Debit Card",
+    "last4": "2549",
+    "expiry": "2028-04",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0030-2",
+    "customer_id": "C-0030",
+    "product": "Classic Credit Card",
+    "last4": "7834",
+    "expiry": "2028-03",
+    "status": "active",
+    "opened": "2026-04-26"
+  },
+  {
+    "card_id": "CARD-0031-1",
+    "customer_id": "C-0031",
+    "product": "Nova Debit Card",
+    "last4": "3989",
+    "expiry": "2027-08",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0032-1",
+    "customer_id": "C-0032",
+    "product": "Nova Debit Card",
+    "last4": "5828",
+    "expiry": "2028-01",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0033-1",
+    "customer_id": "C-0033",
+    "product": "Nova Debit Card",
+    "last4": "1990",
+    "expiry": "2029-02",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0034-1",
+    "customer_id": "C-0034",
+    "product": "Nova Debit Card",
+    "last4": "3644",
+    "expiry": "2027-08",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0035-1",
+    "customer_id": "C-0035",
+    "product": "Nova Debit Card",
+    "last4": "6077",
+    "expiry": "2027-08",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0036-1",
+    "customer_id": "C-0036",
+    "product": "Nova Debit Card",
+    "last4": "1622",
+    "expiry": "2028-10",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0037-1",
+    "customer_id": "C-0037",
+    "product": "Nova Debit Card",
+    "last4": "9212",
+    "expiry": "2026-11",
+    "status": "active",
+    "renewal": {
+      "type": "expiry",
+      "dispatch_date": "2026-10-31",
+      "fee_rule": "FEE-4.3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0038-1",
+    "customer_id": "C-0038",
+    "product": "Nova Debit Card",
+    "last4": "5610",
+    "expiry": "2027-06",
+    "status": "blocked",
+    "blocked_reason": "reported lost",
+    "blocked_on": "2026-10-11",
+    "renewal": {
+      "type": "lost_stolen",
+      "fee_rule": "CRD-3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0039-1",
+    "customer_id": "C-0039",
+    "product": "Nova Debit Card",
+    "last4": "9882",
+    "expiry": "2029-04",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0040-1",
+    "customer_id": "C-0040",
+    "product": "Nova Debit Card",
+    "last4": "3059",
+    "expiry": "2030-02",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0040-2",
+    "customer_id": "C-0040",
+    "product": "Classic Credit Card",
+    "last4": "1425",
+    "expiry": "2030-07",
+    "status": "active",
+    "opened": "2025-11-16"
+  },
+  {
+    "card_id": "CARD-0041-1",
+    "customer_id": "C-0041",
+    "product": "Nova Debit Card",
+    "last4": "7293",
+    "expiry": "2027-06",
+    "status": "blocked",
+    "blocked_reason": "reported lost",
+    "blocked_on": "2026-09-12",
+    "renewal": {
+      "type": "lost_stolen",
+      "fee_rule": "CRD-3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0042-1",
+    "customer_id": "C-0042",
+    "product": "Nova Debit Card",
+    "last4": "5177",
+    "expiry": "2029-10",
+    "status": "replacement_in_transit",
+    "renewal": {
+      "type": "damaged",
+      "requested": "2026-10-25",
+      "delivery": "standard",
+      "fee_rule": "FEE-4.2",
+      "fee_egp": 100,
+      "dispatch_date": "2026-10-26",
+      "expected_by": "2026-11-01"
+    }
+  },
+  {
+    "card_id": "CARD-0043-1",
+    "customer_id": "C-0043",
+    "product": "Nova Debit Card",
+    "last4": "3937",
+    "expiry": "2027-08",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0043-2",
+    "customer_id": "C-0043",
+    "product": "Classic Credit Card",
+    "last4": "2433",
+    "expiry": "2030-10",
+    "status": "active",
+    "opened": "2024-05-28"
+  },
+  {
+    "card_id": "CARD-0044-1",
+    "customer_id": "C-0044",
+    "product": "Nova Debit Card",
+    "last4": "4978",
+    "expiry": "2029-05",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0045-1",
+    "customer_id": "C-0045",
+    "product": "Nova Debit Card",
+    "last4": "6630",
+    "expiry": "2026-10",
+    "status": "active",
+    "renewal": {
+      "type": "expiry",
+      "dispatch_date": "2026-10-01",
+      "delivered": null,
+      "fee_rule": "FEE-4.3",
+      "fee_egp": 0
+    }
+  },
+  {
+    "card_id": "CARD-0046-1",
+    "customer_id": "C-0046",
+    "product": "Nova Debit Card",
+    "last4": "4078",
+    "expiry": "2030-12",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0047-1",
+    "customer_id": "C-0047",
+    "product": "Nova Debit Card",
+    "last4": "1614",
+    "expiry": "2027-12",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0048-1",
+    "customer_id": "C-0048",
+    "product": "Nova Debit Card",
+    "last4": "6025",
+    "expiry": "2028-02",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0049-1",
+    "customer_id": "C-0049",
+    "product": "Nova Debit Card",
+    "last4": "2401",
+    "expiry": "2029-07",
+    "status": "active"
+  },
+  {
+    "card_id": "CARD-0050-1",
+    "customer_id": "C-0050",
+    "product": "Nova Debit Card",
+    "last4": "3657",
+    "expiry": "2028-03",
+    "status": "active"
+  }
+]

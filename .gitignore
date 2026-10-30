@@ -1,0 +1,17 @@
+# Secrets: your API key lives here. Never commit it.
+.env
+
+# Packages, if you ever add any
+node_modules/
+
+# Chat logs from your own testing
+logs/*.jsonl
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# Sealed holdout test set and the kit zips: never commit
+holdout.md
+nova-holdout-sealed.zip
+nova-support-copilot.zip
