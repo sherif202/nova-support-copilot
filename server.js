@@ -24,7 +24,7 @@ function loadEnv() {
 loadEnv();
 
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
-const { prompts } = require("./lib/prompts");
+const { prompts, reply } = require("./lib/prompts");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -67,16 +67,82 @@ function readBody(req) {
   });
 }
 
-// FAKE copilot. This is the function you will replace.
-// It ignores the message and the customer and always returns the same answer.
-function fakeCopilot(customerId, message) {
+// The AI client. The key comes from .env and is never printed or sent to the browser.
+const Anthropic = require("@anthropic-ai/sdk");
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 15000, maxRetries: 1 });
+const UNDERSTAND_MODEL = process.env.UNDERSTAND_MODEL || "claude-haiku-5-5";
+
+// The JSON shape the understand prompt asks for (prompts/understand.md, section 8).
+const UNDERSTAND_SCHEMA = {
+  type: "object",
+  properties: {
+    input_language: { type: "string", enum: ["arabic", "english", "franco"] },
+    category: { type: "string" },
+    intent: { type: "string" },
+    priority: { type: "string", enum: ["P0", "P1", "P2", "P3", "P4"] },
+    confidence: { type: "number" },
+    rewrite: { type: "string" },
+    injection_suspected: { type: "boolean" },
+    wants_person: { type: "boolean" },
+  },
+  required: ["input_language", "category", "intent", "priority", "confidence", "rewrite", "injection_suspected", "wants_person"],
+  additionalProperties: false,
+};
+
+// Step 1 of the copilot: label the message. The whole understand prompt is the cached system block;
+// the customer's message is the only thing that changes per call.
+async function understand(message) {
+  const started = Date.now();
+  const response = await anthropic.messages.create({
+    model: UNDERSTAND_MODEL,
+    max_tokens: 2048,
+    output_config: { effort: "low", format: { type: "json_schema", schema: UNDERSTAND_SCHEMA } },
+    system: [{ type: "text", text: prompts.understand.system, cache_control: { type: "ephemeral" } }],
+    messages: [{ role: "user", content: message }],
+  });
+  const text = response.content.filter((block) => block.type === "text").map((block) => block.text).join("");
+  const label = JSON.parse(text);
+  for (const field of UNDERSTAND_SCHEMA.required) {
+    if (!(field in label)) throw new Error(`Understand reply is missing ${field}`);
+  }
+  const usage = response.usage;
+  console.log(
+    `[understand] ${label.intent} ${label.priority} conf=${label.confidence} | in=${usage.input_tokens} ` +
+      `cache_read=${usage.cache_read_input_tokens || 0} cache_write=${usage.cache_creation_input_tokens || 0} ` +
+      `out=${usage.output_tokens} | ${Date.now() - started} ms`
+  );
+  return { label, usage, model: UNDERSTAND_MODEL };
+}
+
+// The copilot. Step 6: the labels are real; the answer text stays a placeholder until step 8.
+async function copilot(customerId, message) {
+  let label;
+  try {
+    ({ label } = await understand(message));
+  } catch (err) {
+    // A failed or broken model reply never reaches the customer as an error: a person takes over.
+    console.error(`[understand] failed: ${err.message}`);
+    const result = {
+      input_language: "unknown",
+      reply_language: "english",
+      category: "General",
+      intent: "general.unknown",
+      priority: "P4",
+      confidence: 0,
+      sources: [],
+      action: "handoff",
+      ticket_status: "moved_to_agent",
+    };
+    const ticket = newTicket(customerId, message, result, "Agent");
+    return { ...result, answer_text: reply("R-MODEL-DOWN", "english", { REF: ticket.ticket_id }) };
+  }
   return {
-    input_language: "unknown",
-    reply_language: "english",
-    category: "General",
-    intent: "general.info",
-    priority: "P4",
-    confidence: 1.0,
+    input_language: label.input_language,
+    reply_language: label.input_language === "english" ? "english" : "arabic",
+    category: label.category,
+    intent: label.intent,
+    priority: label.priority,
+    confidence: label.confidence,
     answer_text: "Thanks for your message! Your request has been received and we will get back to you soon.",
     sources: [],
     action: "answer",
@@ -147,7 +213,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const customerId = String(body.customerId || "");
       const message = String(body.message || "");
-      const result = fakeCopilot(customerId, message);
+      const result = await copilot(customerId, message);
       return sendJson(res, 200, result);
     }
 
