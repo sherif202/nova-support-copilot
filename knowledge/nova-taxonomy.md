@@ -63,6 +63,11 @@ A higher priority always wins. A message that mentions a fee AND a payment the c
 | رجعولي الـ 100 جنيه من فضلك | fee.explain | fee.waiver_request | Asking for the money back is a waiver request (P3), not a question about the fee. Found in the Stage 2 labelling check |
 | el kart da3 mny | card.replace_damaged | fraud.card_lost_stolen | "da3" means lost. Found in the Stage 2 labelling check |
 | محتاجين أوراق إيه عشان الاعتراض؟ | dispute.status | dispute.documents | Any question about papers is documents, even without the word "documents" |
+| شالوا مني 50 جنيه كده من غير ما أعرف ليه | fee.explain | fee.overdraft | EGP 50 is the overdraft fee (FEE-3.1). An unexplained EGP 50 charge, once or several times in a month, is fee.overdraft unless another fee is named. Found in the Stage 4 eval |
+| ba3at el wara2 khalas, lessa fe 7aga na2sa? | general.info | dispute.documents | Asking what is still missing after sending a form or papers is about a dispute's documents. Found in the Stage 4 eval |
+| el kart et2sar mn el nos | fraud.card_lost_stolen | card.replace_damaged | "et2sar" means broke (damaged). Only "etsara2" (stolen) or "da3" (lost) is fraud. Found in the Stage 4 eval |
+| el visa ma3edetsh fi Dubai el naharda | card.replace_damaged | service.status | A card declined abroad, with no charge they don't know, is a service question: check the notices. Found in the Stage 4 eval |
+| dafa3t 15 geneh masareef ba3d ma 7awelt le akhoya | fraud.unknown_txn | fee.explain | A fee after a transfer the customer made is a fee question. Only a payment they didn't make is fraud. Found in the Stage 4 eval |
 
 ## Fraud word list (checked in code before the model runs)
 
