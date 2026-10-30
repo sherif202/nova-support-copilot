@@ -23,6 +23,20 @@ function addMessage(text, who, extra) {
   $("messages").scrollTop = $("messages").scrollHeight;
 }
 
+// Shown under every fraud reply. In this demo no real card can be blocked, so it says so.
+function addBlockCardButton() {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "block-card";
+  button.textContent = "Block card";
+  button.addEventListener("click", () => {
+    button.disabled = true;
+    addMessage("Demo only: no real card is blocked here. In the real app this blocks your card at once. You can also call the 24/7 hotline on 19999 (fictional).", "bot", { fraud: true });
+  });
+  $("messages").appendChild(button);
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
 async function loadCustomers() {
   const res = await fetch("/api/customers");
   const customers = await res.json();
@@ -56,6 +70,7 @@ $("composer").addEventListener("submit", async (e) => {
     if (!res.ok) throw new Error(data.error || "Request failed");
     const chips = [data.intent, data.priority].concat(data.sources || []).filter(Boolean);
     addMessage(data.answer_text, "bot", { chips, fraud: data.priority === "P0" });
+    if (data.block_card) addBlockCardButton();
   } catch (err) {
     addMessage("Sorry, I couldn't answer that. Please try again or talk to a person.", "bot");
   }

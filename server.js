@@ -27,6 +27,7 @@ loadEnv();
 const { prompts, reply, answerUserTurn } = require("./lib/prompts");
 const { lookup, liveNotices } = require("./lib/lookup");
 const { guard, mask } = require("./lib/guard");
+const { fraudSignal } = require("./lib/fraud");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -206,7 +207,8 @@ const fixedLanguage = (language) => (language === "english" ? "english" : "arabi
 
 // A fixed reply from prompts/replies.md, with a ticket so a person picks it up.
 function handOff(customerId, message, base, replyId, queue) {
-  const result = { ...base, sources: [], action: "handoff", ticket_status: "moved_to_agent" };
+  const status = queue === "Fraud" ? "moved_to_fraud" : "moved_to_agent";
+  const result = { ...base, sources: [], action: "handoff", ticket_status: status };
   const ticket = newTicket(customerId, message, result, queue);
   return {
     ...result,
@@ -215,8 +217,33 @@ function handOff(customerId, message, base, replyId, queue) {
   };
 }
 
-// The copilot: understand, then answer P2 and P4 from sources. P0, P1 and P3 are routed in steps 10 and 11.
+// Franco-Arabic: Latin letters with numbers standing for Arabic sounds (3ayez, fa2ed) or common Franco words.
+function scriptLanguage(text) {
+  if (/[؀-ۿ]/.test(text)) return "arabic";
+  if (/[a-z][2357]|[2357][a-z]|\b(?:msh|mesh|ana|elly|3ayez|3ayza|eh|dah?|di|ya3ny|law|ma3|fen)\b/i.test(text)) return "franco";
+  return "english";
+}
+
+// Fraud goes first, to a person: the fixed R-FRAUD reply, the Block card button and the Fraud queue.
+// Never an answer model (step 10).
+function fraudHandOff(customerId, message, base) {
+  return { ...handOff(customerId, message, { ...base, priority: "P0" }, "R-FRAUD", "Fraud"), block_card: true };
+}
+
+// The copilot: fraud words first (no model), then understand, then answer P2 and P4 from sources.
+// P1 and P3 are routed in step 11.
 async function copilot(customerId, message, testNow) {
+  const signal = fraudSignal(message);
+  if (signal) {
+    console.log(`[fraud] word list matched (${signal.signal}), no model call`);
+    return fraudHandOff(customerId, message, {
+      input_language: scriptLanguage(message),
+      category: "Fraud and security",
+      intent: signal.intent,
+      confidence: 1,
+    });
+  }
+
   let label;
   try {
     ({ label } = await understand(message));
@@ -233,6 +260,11 @@ async function copilot(customerId, message, testNow) {
     priority: label.priority,
     confidence: label.confidence,
   };
+
+  if (label.priority === "P0" || label.intent.startsWith("fraud.")) {
+    console.log("[fraud] understand step said P0");
+    return fraudHandOff(customerId, message, base);
+  }
 
   if (label.priority !== "P2" && label.priority !== "P4") {
     return {
