@@ -24,7 +24,8 @@ function loadEnv() {
 loadEnv();
 
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
-const { prompts, reply, answerUserTurn } = require("./lib/prompts");
+const { prompts, reply, answerUserTurn, retryNote } = require("./lib/prompts");
+const { runChecks } = require("./lib/checks");
 const { lookup, liveNotices } = require("./lib/lookup");
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
@@ -109,41 +110,48 @@ const ANSWER_SCHEMA = {
 const ANSWER_MODEL = process.env.ANSWER_MODEL || "claude-haiku-5-5";
 const ANSWER_EFFORT = process.env.ANSWER_EFFORT || "low";
 
-// One model call that must return one JSON object. The system prompt is cached; only `user` changes.
-// Never sends temperature. Throws on a failed call or broken JSON, so the caller can hand off.
-async function callJson(step, { model, effort, system, user, schema }) {
+// One model call. The system prompt is cached; only the messages change. Never sends temperature.
+// Throws only when the call itself fails (network, timeout, API error).
+async function callModel(step, { model, effort, system, messages, schema }) {
   const started = Date.now();
   const response = await anthropic.messages.create({
     model,
     max_tokens: 4096,
     output_config: { effort, format: { type: "json_schema", schema } },
     system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-    messages: [{ role: "user", content: user }],
+    messages,
   });
   const text = response.content.filter((block) => block.type === "text").map((block) => block.text).join("");
-  const json = JSON.parse(text);
-  for (const field of schema.required) {
-    if (!(field in json)) throw new Error(`${step} reply is missing ${field}`);
-  }
   const usage = response.usage;
   const ms = Date.now() - started;
   console.log(
     `[${step}] ${model} | in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens || 0} ` +
       `cache_write=${usage.cache_creation_input_tokens || 0} out=${usage.output_tokens} | ${ms} ms`
   );
-  return { json, usage, ms, model };
+  return { text, usage, ms, model };
+}
+
+// The model's JSON, or null when it is broken or missing a field.
+function parseJson(text, schema) {
+  try {
+    const json = JSON.parse(text);
+    return schema.required.every((field) => field in json) ? json : null;
+  } catch {
+    return null;
+  }
 }
 
 // Step 1 of the copilot: label the message. The customer's message is the whole user turn.
 async function understand(message) {
-  const result = await callJson("understand", {
+  const result = await callModel("understand", {
     model: UNDERSTAND_MODEL,
     effort: "low",
     system: prompts.understand.system,
-    user: message,
+    messages: [{ role: "user", content: message }],
     schema: UNDERSTAND_SCHEMA,
   });
-  const label = result.json;
+  const label = parseJson(result.text, UNDERSTAND_SCHEMA);
+  if (!label) throw new Error("understand returned broken JSON");
   console.log(`[understand] ${label.intent} ${label.priority} conf=${label.confidence}`);
   return { ...result, label };
 }
@@ -177,6 +185,9 @@ function cairoNow(testNow) {
 
 // Step 2: write the answer from this customer's own top 3 records and the cached policies.
 // Maintenance questions also get the notices that are live now or later today, never expired ones.
+// Step 12: every answer is checked in code. One retry with prompts/retry.md if a check fails or the JSON
+// is broken; if the retry fails too, status is "check_failed". Never a third try.
+// Returns { status: "ok" | "handoff" | "check_failed", json, attempts, checks_passed, failed_check, ... }.
 async function answer(customerId, message, label, testNow) {
   const now = cairoNow(testNow);
   const found = lookup(customerId, message, label.intent);
@@ -191,16 +202,47 @@ async function answer(customerId, message, label, testNow) {
     REWRITE: label.rewrite,
     MASKED_MESSAGE: message,
   });
-  const result = await callJson("answer", {
-    model: ANSWER_MODEL,
-    effort: ANSWER_EFFORT,
-    system: prompts.answer.system,
-    user,
-    schema: ANSWER_SCHEMA,
-  });
-  console.log(`[answer] now=${now.text} notices=${notices.map((n) => n.notice_id).join(",") || "none"}`);
-  console.log(`[answer] retrieved=${found.retrieved_ids.join(",") || "none"} sources=${result.json.sources.join(",") || "none"} action=${result.json.action}`);
-  return { ...result, retrieved_ids: found.retrieved_ids, notice_ids: notices.map((n) => n.notice_id) };
+  const ctx = {
+    message,
+    inputLanguage: label.input_language,
+    records: found.records,
+    recordIds: found.all_ids,
+    notices,
+    noticeIds: notices.map((n) => n.notice_id),
+  };
+  const meta = { retrieved_ids: found.retrieved_ids, notice_ids: ctx.noticeIds, usages: [] };
+  console.log(`[answer] now=${now.text} notices=${ctx.noticeIds.join(",") || "none"} retrieved=${found.retrieved_ids.join(",") || "none"}`);
+
+  const messages = [{ role: "user", content: user }];
+  let failed = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    if (attempt === 2) {
+      messages.push({ role: "user", content: retryNote(failed.check, failed.detail) });
+      console.log(`[answer] retry once: ${failed.check}`);
+    }
+    const result = await callModel("answer", {
+      model: ANSWER_MODEL,
+      effort: ANSWER_EFFORT,
+      system: prompts.answer.system,
+      messages,
+      schema: ANSWER_SCHEMA,
+    });
+    meta.usages.push(result.usage);
+    const json = parseJson(result.text, ANSWER_SCHEMA);
+    if (!json) {
+      failed = { check: "broken_json", detail: {} };
+    } else {
+      if (json.action === "handoff") return { ...meta, status: "handoff", json, attempts: attempt, checks_passed: [] };
+      // A maintenance answer always rests on DIG-8, the rule for sharing notices (build step 8b).
+      if (json.sources.some((id) => id.startsWith("ANN-")) && !json.sources.includes("DIG-8")) json.sources.push("DIG-8");
+      const checked = runChecks(json, ctx);
+      console.log(`[answer] sources=${json.sources.join(",") || "none"} checks passed=${checked.passed.join(",")}${checked.failed ? ` FAILED=${checked.failed.check}` : ""}`);
+      if (!checked.failed) return { ...meta, status: "ok", json, attempts: attempt, checks_passed: checked.passed };
+      failed = checked.failed;
+    }
+    messages.push({ role: "assistant", content: result.text || "{}" });
+  }
+  return { ...meta, status: "check_failed", json: null, attempts: 2, checks_passed: [], failed_check: failed.check };
 }
 
 const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
@@ -279,13 +321,8 @@ async function copilot(customerId, message, testNow) {
     console.error(`[answer] failed: ${err.message}`);
     return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
-  if (answered.json.action === "handoff") {
-    return handOff(customerId, message, base, "R-NO-SOURCE", "Agent");
-  }
-  // A maintenance answer always rests on DIG-8, the rule for sharing notices (build step 8b).
-  if (answered.json.sources.some((id) => id.startsWith("ANN-")) && !answered.json.sources.includes("DIG-8")) {
-    answered.json.sources.push("DIG-8");
-  }
+  if (answered.status === "handoff") return handOff(customerId, message, base, "R-NO-SOURCE", "Agent");
+  if (answered.status === "check_failed") return handOff(customerId, message, base, "R-CHECK-FAILED", "Agent");
   return {
     ...base,
     reply_language: answered.json.reply_language,
