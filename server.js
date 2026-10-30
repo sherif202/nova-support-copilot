@@ -26,6 +26,7 @@ loadEnv();
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
 const { prompts, reply, answerUserTurn } = require("./lib/prompts");
 const { lookup, liveNotices } = require("./lib/lookup");
+const { guard, mask } = require("./lib/guard");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -331,7 +332,25 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const customerId = String(body.customerId || "");
       const message = String(body.message || "");
-      const result = await copilot(customerId, message, body.testNow);
+      // Step 9: junk, length and masking checks in code, before anything is sent anywhere or saved.
+      const checked = guard(message);
+      if (checked.stop) {
+        console.log(`[guard] ${checked.stop}, no model call`);
+        return sendJson(res, 200, {
+          input_language: checked.language,
+          reply_language: checked.language,
+          category: "General",
+          intent: "general.unknown",
+          priority: "P4",
+          confidence: 0,
+          answer_text: reply(checked.stop, checked.language),
+          sources: [],
+          action: "answer",
+          ticket_status: "resolved_pending_confirmation",
+        });
+      }
+      if (checked.injection_flagged) console.log("[guard] injection phrase flagged");
+      const result = await copilot(customerId, checked.masked, body.testNow);
       return sendJson(res, 200, result);
     }
 
@@ -340,7 +359,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const ticket = newTicket(
         String(body.customerId || ""),
-        String(body.message || "Customer asked for a person"),
+        mask(String(body.message || "Customer asked for a person")).slice(0, 1000),
         { intent: "general.chitchat", priority: "P4", ticket_status: "moved_to_agent" },
         "Agent"
       );
