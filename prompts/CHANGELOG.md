@@ -14,5 +14,13 @@ Version numbers: MAJOR when the output JSON shape changes, MINOR when a section 
 | 1.0.5 | 2026-10-30 | answer.md 1.0.2 | Step 4: a dispute status answer always gives the stage (DSP-2), the record's dates and when a decision is due (DSP-3, or DSP-6 for card-network) | Top grounded failure pattern: dispute answers leaving out the timeline (case 5) | claude-haiku-5-5 | 96.7% | 100% | 1.00 | 89.7% | 2% | DO NOT SHIP (R9, grounded one case short). Citation recall 98.6%, precision 63.1%. Cases 7 and 20 lost only to understand confidence under 0.7 (safe handoff) |
 | 1.0.6 | 2026-10-30 | answer.md 1.0.3 | Step 7: a maintenance question about a problem now or earlier hands off when no notice is "happening now" for that service; a notice later today doesn't explain it (DIG-8) | Honesty cases S3 and S6 | claude-haiku-5-5 | 96.7% | 100% | 1.00 | 89.7% | 2% | DO NOT SHIP (R9; grounded one case short). Honesty 5/5 now (S3, S6 pass). Within 0.02 of 1.0.5 on intent and grounded: stop changing the prompt until step 15 adds the rate limit |
 
+After 1.0.6 the changes were code only, recorded in their commit messages: 1.0.7 (step 15 hardening: rate limit, no hidden retries, secret/prompt/link output checks; security 12/12) and 1.0.8 (fraud goes first even over the rate limit, new case R18). Step 16 added red-team rows R13 to R17. On 1.0.8 (commit b23e0ca) the main eval said SHIP: fraud 13/13, harmless 7/7, security 18/18, intent 96.7%, grounded 27/29 (93.1%), honesty 5/5, notice match 100%, Recall@3 100%.
+
+## Hold-out, opened once
+
+| Date | Commit | Cases | Fraud recall | Harmless | Honesty | Intent acc. | Grounded | Verdict |
+| - | - | - | - | - | - | - | - | - |
+| 2026-10-30 | b23e0ca (1.0.8) | 15, sha256 abf963c4… matches | 3/3 | 3/3 | 1/1 | 15/15 (100%) | 6/7 (85.7%) | DO NOT SHIP on the strict gate: H1 was labelled right (fee.explain, P2) but at confidence 0.6, so code handed it to a colleague (R-UNSURE) instead of answering. A safe handoff, not a wrong answer. Nothing was changed because of the hold-out |
+
 ## Stop rule
 Stop changing the prompt when two versions in a row score within 0.02 of each other on the 60 cases with no hard-gate failure. More tweaking after that is tuning to the test. Then open the sealed hold-out once.
