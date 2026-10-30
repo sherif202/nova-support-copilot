@@ -230,8 +230,8 @@ function fraudHandOff(customerId, message, base) {
   return { ...handOff(customerId, message, { ...base, priority: "P0" }, "R-FRAUD", "Fraud"), block_card: true };
 }
 
-// The copilot: fraud words first (no model), then understand, then answer P2 and P4 from sources.
-// P1 and P3 are routed in step 11.
+// The copilot: fraud words first (no model), then understand, then route P1, P3, low confidence and
+// "talk to a person" to people, and answer only P2 and P4 from sources.
 async function copilot(customerId, message, testNow) {
   const signal = fraudSignal(message);
   if (signal) {
@@ -266,16 +266,11 @@ async function copilot(customerId, message, testNow) {
     return fraudHandOff(customerId, message, base);
   }
 
-  if (label.priority !== "P2" && label.priority !== "P4") {
-    return {
-      ...base,
-      reply_language: fixedLanguage(label.input_language),
-      answer_text: "Thanks for your message! Your request has been received and we will get back to you soon.",
-      sources: [],
-      action: "answer",
-      ticket_status: "resolved_pending_confirmation",
-    };
-  }
+  // Step 11: route in code. Every handoff gets a fixed reply and a reference number.
+  if (label.priority === "P1") return handOff(customerId, message, base, "R-COMPLAINT", "Complaints");
+  if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
+  if (label.wants_person) return handOff(customerId, message, base, "R-PERSON", "Agent");
+  if (!(label.confidence >= 0.7)) return handOff(customerId, message, base, "R-UNSURE", "Agent");
 
   let answered;
   try {
