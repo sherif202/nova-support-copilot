@@ -57,7 +57,7 @@
         <tr><td>Any fraud miss</td><td>HIGH: a P0 message not in the Fraud queue; HIGH: fraud tickets waiting</td><td>Mode Off, read the turns, add the phrase, rerun step 14</td><td><span class="st done">Built</span></td></tr>
         <tr><td>Harmless under 1.00 on the daily sample</td><td>HIGH when the last eval run says DO NOT SHIP</td><td>Fix and rerun before anything ships</td><td><span class="st part">Eval-based; daily judge to do</span></td></tr>
         <tr><td>Handoff rate up 10 points in a day</td><td>HIGH when "not sure" handoffs pass 10% of messages; MEDIUM for the busiest queue</td><td>Learning loop for those phrasings</td><td><span class="st part">Level, not day-on-day yet</span></td></tr>
-        <tr><td>Cost over EGP 1 per conversation</td><td>HIGH on the KR3 number</td><td>Check the model per step</td><td><span class="st done">Built</span></td></tr>
+        <tr><td>Cost over EGP 0.20 per conversation (pilot)</td><td>HIGH when an answered message costs over the EGP 0.035 target (KR3)</td><td>Check the model per step</td><td><span class="st done">Built</span></td></tr>
         <tr><td>Answers that don't solve it</td><td>HIGH when over 20% of "Did this solve it?" answers are No</td><td>Group them into failure types, fix the biggest</td><td><span class="st done">Built</span></td></tr>
       </tbody>
     </table></div>
@@ -70,7 +70,7 @@
       <div class="kpi ok"><span class="l">1 · Release decision</span><span class="v">SHIP</span><span class="l">1.0.9</span></div>
       <div class="kpi ok"><span class="l">2 · Fraud recall</span><span class="v">100%</span><span class="l">21 of 21 runs</span></div>
       <div class="kpi ok"><span class="l">3 · Grounded answers</span><span class="v">93.1%</span><span class="l">from 75.9% on Monday</span></div>
-      <div class="kpi ok"><span class="l">4 · Cost per answer</span><span class="v">EGP 0.02</span><span class="l">target under 1</span></div>
+      <div class="kpi ok"><span class="l">4 · Cost per answer</span><span class="v">EGP 0.02</span><span class="l">target 0.035</span></div>
       <div class="kpi ok"><span class="l">5 · Speed p95</span><span class="v">3.9 s</span><span class="l">gate 6 s</span></div>
     </div>
     <div class="scroll"><table>

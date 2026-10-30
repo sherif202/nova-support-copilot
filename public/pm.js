@@ -76,7 +76,7 @@
     tiles.append(
       tile("KR1 · Verified resolution", pct(L.verified_resolution_rate), `${L.solved_yes} said solved, ${L.solved_no} not solved · target 40%`, L.verified_resolution_rate === null ? "" : L.verified_resolution_rate >= 0.4 ? "ok" : "warn"),
       tile("KR2 · Fraud recall (live)", L.fraud_total ? `${L.fraud_routed}/${L.fraud_total}` : "—", "must be 100%", fraudOk ? "ok" : "bad"),
-      tile("KR3 · Cost per answered message", L.egp_per_answered === null ? "—" : `EGP ${L.egp_per_answered.toFixed(3)}`, `${usd(L.usd_per_answered, 5)} · target under EGP 1`, L.egp_per_answered === null ? "" : L.egp_per_answered < 1 ? "ok" : "bad"),
+      tile("KR3 · Cost per answered message", L.egp_per_answered === null ? "—" : `EGP ${L.egp_per_answered.toFixed(3)}`, `${usd(L.usd_per_answered, 5)} · target under EGP 0.035`, L.egp_per_answered === null ? "" : L.egp_per_answered < 0.035 ? "ok" : "bad"),
       tile("KR4 · Speed p95", secs(L.p95_seconds), `p50 ${secs(L.p50_seconds)} · gate 6 s`, L.p95_seconds === null ? "" : L.p95_seconds <= 6 ? "ok" : "bad"),
       tile("Messages", num(L.messages), `${num(L.with_ai)} used AI · ${num(L.answered_by_ai)} answered by AI`),
       tile("Automation rate", pct(L.automation_rate), `handoff rate ${pct(L.handoff_rate)}`),
