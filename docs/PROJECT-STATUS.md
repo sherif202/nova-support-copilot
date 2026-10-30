@@ -89,7 +89,7 @@ Earlier decisions (Round 0, model choice, threshold, automation modes, product n
 - **Known gaps from the last shadow run:** the copilot doesn't infer "closed on Saturday" from the Sunday-to-Thursday hours (2 handoffs), and Nova has no branch list, so "nearest branch" always goes to a person (2 handoffs).
 - **Case 21 got easier:** the safe deposit box is also the "bad answer" example inside the answer prompt. Case 59 (certificate of balance) is the clean honesty check.
 - **OpenAI and Gemini were not tested** (no keys). Anthropic is for the pilot only.
-- **The published lifecycle pages** (`docs/LIFECYCLE-PAGES.md`) were written before this round; the GitHub copies are the current version.
+- **The published lifecycle pages** (`docs/LIFECYCLE-PAGES.md`) match the GitHub copies as of commit 19b4cec.
 
 ## What's next, and what it needs
 
