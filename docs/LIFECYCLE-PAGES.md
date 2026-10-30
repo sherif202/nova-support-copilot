@@ -20,4 +20,6 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 
 **Status (30 Oct 2026):** the project stopped before the internal beta, with 1.0.11 as the locked baseline and a shadow resolution rate of 63%; see [PROJECT-STATUS.md](PROJECT-STATUS.md). The published pages above match the GitHub copies in `docs/stages/` as of commit 19b4cec.
 
+Offline copies: the plan and stages 1 to 4 are saved in `docs/lifecycle/` (as published on 30 Oct 2026); stages 5 to 9 are in `docs/stages/`.
+
 Cost target used everywhere: EGP 0.035 per answered message (Stage 3), with a pilot alert at EGP 0.20 per conversation (Stage 8).

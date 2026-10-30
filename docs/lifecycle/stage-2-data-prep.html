@@ -1,0 +1,474 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nova Data Prep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a working sheet for stage 2. Status and gaps first (what exists versus what the brief needs), then the eval set design, then how to source, clean and label, then the plan and the gate. Same family as the Stage 1 page. */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --ink: #15202b; --muted: #59677a; --line: #d6dce3;
+  --brand: #0e6b70; --brand-soft: #dff0ef;
+  --stage: #5a2ea6; --stage-soft: #eee8fb;
+  --yes: #1e7a3a; --yes-soft: #e3f3e7;
+  --part: #9a5b00; --part-soft: #fbefdc;
+  --no: #b42318; --no-soft: #fdecea;
+  --heat1: #e9f4f3; --heat2: #bfe1de; --heat3: #7fc3bd;
+  --sans: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  --heat1: #16302f; --heat2: #1d4a48; --heat3: #2a6c69;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  --heat1: #16302f; --heat2: #1d4a48; --heat3: #2a6c69;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14.5px; line-height: 1.5; }
+a { color: var(--brand); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 3.6vw, 36px); }
+h2 { font-size: 18px; }
+h3 { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+code { font-family: var(--mono); font-size: 12.5px; }
+
+header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
+.stagecard { border: 1px solid var(--stage); background: var(--stage-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-size: 13px; max-width: 360px; }
+.stagecard b.l { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+
+.verdict { background: var(--surface); border: 2px solid var(--brand); border-radius: 12px; padding: 16px 18px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; }
+.verdict .badge { font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: .05em; color: var(--brand); background: var(--brand-soft); border: 1px solid var(--brand); border-radius: 8px; padding: 8px 10px; text-align: center; line-height: 1.3; text-transform: uppercase; }
+.verdict p { font-size: 15.5px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ph { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+.tag { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; border: 1px solid var(--stage); color: var(--stage); background: var(--stage-soft); }
+.tag.d { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.ph .q { color: var(--muted); font-size: 13px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.scroll table { min-width: 700px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 500; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.sev { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 6px; border: 1px solid; white-space: nowrap; }
+.y { color: var(--yes); background: var(--yes-soft); border-color: var(--yes); }
+.p { color: var(--part); background: var(--part-soft); border-color: var(--part); }
+.no { color: var(--no); background: var(--no-soft); border-color: var(--no); }
+
+/* Inventory progress */
+.prog { display: grid; grid-template-columns: minmax(0, 1fr) 70px; gap: 8px; align-items: center; min-width: 140px; }
+.track { height: 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.fill { height: 100%; background: var(--c, var(--brand)); border-radius: 999px; }
+.prog span { font-family: var(--mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Eval matrix */
+.mx td.cell { text-align: center; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.mx td.cell b { display: block; font-size: 14px; }
+.mx td.cell small { color: var(--muted); font-size: 10.5px; }
+.h0 { background: var(--surface); } .h1 { background: var(--heat1); } .h2 { background: var(--heat2); } .h3 { background: var(--heat3); }
+.mx tr.grp td { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); padding-top: 9px; }
+.mx tfoot td { font-weight: 600; border-top: 2px solid var(--ink); }
+
+/* Language mix bars */
+.mix { display: grid; gap: 8px; }
+.mixrow { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 12.5px; }
+.stack { display: flex; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+.stack span { display: grid; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+.s-en { background: var(--heat1); } .s-ar { background: var(--heat2); } .s-fr { background: var(--heat3); }
+.key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+.key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--line); }
+
+/* Pipeline */
+.pipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pstep { border: 1px solid var(--line); border-top: 4px solid var(--brand); border-radius: 10px; padding: 14px; background: var(--bg); display: grid; gap: 8px; align-content: start; min-width: 0; font-size: 13px; }
+.pstep .pn { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+.pstep b.t { font-size: 15px; }
+.pstep ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+/* Labelling guide */
+.order { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; counter-reset: o; }
+.order li { counter-increment: o; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; font-size: 13px; align-items: start; }
+.order li::before { content: counter(o); font-family: var(--mono); font-weight: 600; font-size: 12px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--brand); color: var(--brand); }
+.pair { font-size: 13px; }
+.pair td:first-child { font-family: var(--mono); font-size: 12.5px; }
+
+.code { font-family: var(--mono); font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; overflow-x: auto; white-space: pre; line-height: 1.55; }
+
+.catch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ccell { border: 1px dashed var(--stage); border-radius: 10px; padding: 12px; display: grid; gap: 4px; align-content: start; font-size: 13px; min-width: 0; }
+.ccell b { font-size: 14px; }
+
+.days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.day { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--bg); display: grid; gap: 6px; align-content: start; font-size: 12.5px; min-width: 0; }
+.day b { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--brand); }
+.day ul { margin: 0; padding-left: 16px; display: grid; gap: 3px; }
+
+.gate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.gate li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 6px; align-items: start; }
+.gate li::before { content: ""; width: 12px; height: 12px; margin-top: 4px; border: 1.5px solid var(--brand); border-radius: 3px; }
+.approved { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; border: 1px solid var(--yes); background: var(--yes-soft); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.approved b { color: var(--yes); font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+footer { font-size: 12px; color: var(--muted); }
+
+@media (max-width: 960px) {
+  header, .two, .pipe, .catch { grid-template-columns: minmax(0, 1fr); }
+  .days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .verdict { grid-template-columns: minmax(0, 1fr); }
+  .days, .gate { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Nova Bank · support copilot · Stage 2 of 9 · starts after Stage 1 approval, 29 Oct 2026</span>
+    <h1>Data Collection &amp; Prep</h1>
+    <p class="muted">What data the copilot needs, what exists today in the local build kit, the gap, and how to source, clean and label the rest. The eval set is designed first, before any model is chosen.</p>
+  </div>
+  <div class="stagecard">
+    <b class="l">Phase 1 of 4 · Frame &amp; Prepare</b>
+    <span><b>Do:</b> Source, clean, label. Build your prompt and eval datasets.</span>
+    <span><b>Catch:</b> Your eval set is the real asset. Build it before the model.</span>
+  </div>
+</header>
+
+<p class="approved"><b>Stage 2 approved</b><span>Approved on 29 Oct 2026. Moving to Stage 3, Model Selection.</span></p>
+<p class="approved" style="border-color:var(--part);background:var(--part-soft)"><b style="color:var(--part)">Updated 30 Oct after Stage 3</b><span>New data file: the examples bank (<code>knowledge/examples.jsonl</code>, 43 synthetic examples). The release rule now uses cost per message. The model check can test GPT and Gemini on this eval set today.</span></p>
+<p class="approved"><b>Stage 1 approved</b><span>AI fits narrowly, Triple Fit 3.7 / 5. Carried into this stage as an open assumption: most contacts need information, not an action.</span></p>
+<p class="approved" style="border-color:var(--part);background:var(--part-soft)"><b style="color:var(--part)">Data generated · 29 Oct</b><span>All Stage 2 files are built and pass the checks. Two human steps are <b>simulated</b> and marked in the files: the friends' WhatsApp phrasing and the second labeller. Swap in the real ones before Stage 7.</span></p>
+
+<section class="verdict" aria-label="Where we stand">
+  <div class="badge">Status<br>approved<br>29 Oct</div>
+  <p><b>Every Stage 2 dataset is built and passes the checks:</b> 50 customers, 504 transactions, 58 cards, 15 disputes, 200 labelled tickets, a 60-case eval set (one third Franco-Arabic) and 15 sealed hold-out cases. Two human inputs are simulated, and the retrieval baseline runs at build step 14. Next: Stage 3, Model Selection.</p>
+</section>
+
+<!-- Inventory -->
+<section class="panel" aria-labelledby="inv">
+  <div class="ph"><span class="tag d">Inventory</span><h2 id="inv">What the brief asks for, and what exists</h2><span class="q">Counted from the local build kit today</span></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Dataset</th><th>What's in it</th><th class="n">Target</th><th>Today</th><th>Kit file</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td><b>Customers</b></td><td>customer_id, name, plan, tenure, channel, card last 4</td><td class="n">≈50</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>50 · done</span></div></td><td><code>data/customers.json</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Transactions</b></td><td>date, merchant, amount, category, status (posted, pending, disputed)</td><td class="n">≈500</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>504 · done</span></div></td><td><code>data/transactions.json</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Cards</b> <span class="sev y">new</span></td><td>card_id, last 4, product, expiry, status, renewal or replacement with dispatch and delivery dates</td><td class="n">1 per customer</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>58 · done</span></div></td><td><code>data/cards.json</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Disputes</b></td><td>dispute_id, transaction, stage, receipt date, missing documents</td><td class="n">≈15</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>15 · done</span></div></td><td><code>data/disputes.json</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Policies and FAQs</b></td><td>one entry per rule ID: fees, disputes, cards, fraud, the copilot itself</td><td class="n">≈20 docs</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>39 rules</span></div></td><td><code>knowledge/nova-policies.md</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Examples bank</b> <span class="sev y">new</span></td><td>approved example messages with the right intent and priority; real phrasings added weekly. Read by every model, so learning survives a vendor switch. Never contains an eval or hold-out case</td><td class="n">43</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>43 · synthetic</span></div></td><td><code>knowledge/examples.jsonl</code></td><td><span class="sev p">Add real phrasings</span></td></tr>
+        <tr><td><b>Taxonomy</b></td><td>7 categories, 21 intents (now with service.status), P0–P4, traps, fraud word list, glossary</td><td class="n">1</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>done</span></div></td><td><code>knowledge/nova-taxonomy.md</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Contact-center tickets</b></td><td>ticket_id, message, category, resolution time, agent notes, <i>plus our labels</i></td><td class="n">≈200</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>200 · labels simulated</span></div></td><td><code>data/tickets-labelled.csv</code></td><td><span class="sev p">Swap in real labels</span></td></tr>
+        <tr><td><b>Eval set, core</b></td><td>message, expected intent, priority, action, benchmark answer, sources, trap</td><td class="n">60</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>60 · done</span></div></td><td><code>knowledge/evalset.md</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Red-team and junk</b></td><td>attacks R1–R12, junk inputs J1–J4</td><td class="n">16</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>16 · done</span></div></td><td><code>knowledge/evalset.md</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Service status notices</b> <span class="sev y">new</span></td><td>notice_id, services affected, start and end (Cairo time), the SMS wording in English and Arabic, who published it</td><td class="n">every live notice</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>3 samples</span></div></td><td><code>data/service-status.json</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Service status cases</b> <span class="sev y">new</span></td><td>S1–S6: during, before and after a window, nothing announced, fraud during maintenance</td><td class="n">6</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>6 · done</span></div></td><td><code>knowledge/evalset.md</code></td><td><span class="sev y">Ready</span></td></tr>
+        <tr><td><b>Hold-out set</b></td><td>sealed cases, used only for the final release check</td><td class="n">15</td><td><div class="prog"><div class="track"><div class="fill" style="width:100%; --c: var(--yes)"></div></div><span>15 · sealed</span></div></td><td><code>nova-holdout-sealed.zip</code> (outside the kit)</td><td><span class="sev y">Ready</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Targets for customers, transactions, policies and tickets come from the Nova brief. The dispute, eval and hold-out targets come from the lifecycle plan. All data is synthetic; the brief forbids production data.</p>
+</section>
+
+<!-- Eval design -->
+<section class="panel" aria-labelledby="ev">
+  <div class="ph"><span class="tag">Catch</span><h2 id="ev">The eval set, designed before the model</h2><span class="q">Cell = today → target. Darker = more cases needed.</span></div>
+  <div class="scroll">
+    <table class="mx">
+      <thead><tr><th>Priority and intent</th><th class="n">Arabic</th><th class="n">English</th><th class="n">Franco</th><th class="n">Total</th><th>Why this many</th></tr></thead>
+      <tbody>
+        <tr class="grp"><td colspan="6">P2 · in scope, answered by the copilot · 30</td></tr>
+        <tr><td>fee.explain</td><td class="cell h3"><b>0 → 3</b></td><td class="cell h0"><b>3 → 3</b></td><td class="cell h2"><b>1 → 3</b></td><td class="n">4 → 9</td><td class="small">The intent AI exists for; covers every fee rule in transactions</td></tr>
+        <tr><td>fee.overdraft</td><td class="cell h0"><b>1 → 1</b></td><td class="cell h1"><b>0 → 1</b></td><td class="cell h1"><b>0 → 1</b></td><td class="n">1 → 3</td><td class="small">Includes the "at most 3 a month" rule</td></tr>
+        <tr><td>dispute.status</td><td class="cell h2"><b>0 → 2</b></td><td class="cell h1"><b>2 → 3</b></td><td class="cell h1"><b>1 → 2</b></td><td class="n">3 → 7</td><td class="small">Each stage of DSP-2 at least once; refund bait</td></tr>
+        <tr><td>dispute.documents</td><td class="cell h1"><b>0 → 1</b></td><td class="cell h0"><b>1 → 1</b></td><td class="cell h1"><b>0 → 1</b></td><td class="n">1 → 3</td><td class="small">Over and under the EGP 5,000 police-report line</td></tr>
+        <tr><td>card.replace_damaged</td><td class="cell h1"><b>0 → 1</b></td><td class="cell h2"><b>0 → 2</b></td><td class="cell h1"><b>1 → 2</b></td><td class="n">1 → 5</td><td class="small">Cairo versus other cities; express delivery</td></tr>
+        <tr><td>card.replace_expired</td><td class="cell h1"><b>0 → 1</b></td><td class="cell h0"><b>1 → 1</b></td><td class="cell h1"><b>0 → 1</b></td><td class="n">1 → 3</td><td class="small">Free renewal; "do I have to pay?"</td></tr>
+        <tr class="grp"><td colspan="6">P0 · fraud, straight to a person · 10</td></tr>
+        <tr><td>fraud.* (lost card, didn't make it, OTP, takeover)</td><td class="cell h2"><b>1 → 3</b></td><td class="cell h2"><b>1 → 3</b></td><td class="cell h2"><b>2 → 4</b></td><td class="n">4 → 10</td><td class="small">Fraud recall must be 100%, so it needs the most look-alikes</td></tr>
+        <tr class="grp"><td colspan="6">P1, P3, P4 · hand off or general · 20</td></tr>
+        <tr><td>complaint and sensitive (P1)</td><td class="cell h1"><b>1 → 2</b></td><td class="cell h0"><b>1 → 1</b></td><td class="cell h1"><b>0 → 1</b></td><td class="n">2 → 4</td><td class="small">Reference number every time; one vulnerable customer</td></tr>
+        <tr><td>out of scope (P3)</td><td class="cell h3"><b>0 → 3</b></td><td class="cell h1"><b>3 → 4</b></td><td class="cell h3"><b>0 → 3</b></td><td class="n">3 → 10</td><td class="small">Waivers, loans, advice, another person's account, new disputes</td></tr>
+        <tr><td>general (P4)</td><td class="cell h2"><b>0 → 2</b></td><td class="cell h1"><b>1 → 2</b></td><td class="cell h1"><b>1 → 2</b></td><td class="n">2 → 6</td><td class="small">"No source" cases (cheque book) and "talk to a person"</td></tr>
+      </tbody>
+      <tfoot><tr><td>Total</td><td class="n">3 → 19</td><td class="n">13 → 21</td><td class="n">6 → 20</td><td class="n">22 → 60</td><td class="small">Plus 16 red-team and junk, 6 service status, and 15 sealed hold-out</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="two">
+    <div class="mix" aria-label="Language mix">
+      <h3>Language mix</h3>
+      <div class="mixrow"><span>Today</span><div class="stack"><span class="s-en" style="width:35%">EN 35%</span><span class="s-ar" style="width:32%">AR 32%</span><span class="s-fr" style="width:33%">FR 33%</span></div></div>
+      <div class="mixrow"><span>Target</span><div class="stack"><span class="s-en" style="width:35%">EN 35%</span><span class="s-ar" style="width:32%">AR 32%</span><span class="s-fr" style="width:33%">FR 33%</span></div></div>
+      <div class="key"><span><i class="s-en"></i>English</span><span><i class="s-ar"></i>Arabic script</span><span><i class="s-fr"></i>Franco-Arabic</span></div>
+    </div>
+    <div class="small" style="display:grid;gap:6px">
+      <h3>Rules for the set</h3>
+      <p><b>Freeze the first 22</b> as the regression core. They never change; a fix that breaks one is not a fix.</p>
+      <p><b>Every case cites a source</b> (rule ID or record ID) or says "no source". That is how stage 5 tests retrieval on its own.</p>
+      <p><b>A teammate writes half</b> of the new cases, so the test doesn't only check what the prompt writer expects.</p>
+      <p><b>The hold-out stays sealed</b> until the final release check.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Retrieval labels and eval methods -->
+<section class="panel" aria-labelledby="rt">
+  <div class="ph"><span class="tag">Catch</span><h2 id="rt">Label what should be retrieved, not only the answer</h2><span class="q">So retrieval can be measured before generation</span></div>
+  <p class="small">Nova's copilot doesn't search a vector index in the MVP. It retrieves in three simpler ways, and each one gets its own label and its own metric. Measuring them <b>before</b> the answer is written tells you whether a wrong answer came from fetching the wrong evidence or from writing badly.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>What is retrieved</th><th>How</th><th>Label on each case</th><th>Metric</th><th class="n">Target</th></tr></thead>
+      <tbody>
+        <tr><td><b>Customer records</b></td><td>Code ranks this customer's transactions, disputes and cards by match to the amount, date and merchant in the message, and passes the top 3</td><td><code>expected_records</code>, in order</td><td>Recall@3 and MRR (is the right row first?)</td><td class="n">≥ 95% · ≥ 0.9</td></tr>
+        <tr><td><b>Policy rules</b></td><td>All rules sit in the prompt (CAG), so the "retrieval" is which rule IDs the model picks and cites</td><td><code>expected_rules</code></td><td>Citation recall and citation precision</td><td class="n">≥ 90% · ≥ 90%</td></tr>
+        <tr><td><b>Service notices</b></td><td>Code keeps only notices that are live now or later today</td><td><code>expected_notice</code> or "none"</td><td>Exact match; no expired notice ever passed</td><td class="n">100%</td></tr>
+        <tr><td><b>Phase 2: long documents</b></td><td>Hybrid search over chunks of the full handbook</td><td><code>expected_chunks</code></td><td>Precision@k, Recall@k, nDCG</td><td class="n">set in phase 2</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="two">
+    <div style="display:grid;gap:6px;min-width:0"><h3>Worked example · case 1</h3>
+<div class="code">Message   3ayez a3raf el 25 geneh elly et5asamo yom 14/9
+Expected  records: TXN-2026-09-14-0087   rules: FEE-2.3
+
+Lookup top 3 (no model call yet)
+  1  TXN-2026-09-14-0087  Fee: other-bank ATM  -25   ✓
+  2  TXN-2026-09-14-0086  ATM, other bank     -500
+  3  TXN-2026-09-01-0003  Card yearly fee     -120
+
+Recall@3    = 1 of 1 right rows found   = 100%
+Precision@3 = 1 of 3 rows are right     =  33%
+MRR         = right row is first        = 1.0
+Citations   = [FEE-2.3] vs [FEE-2.3]    = P 100%, R 100%</div></div>
+    <div class="small" style="display:grid;gap:8px;align-content:start">
+      <h3>Why these metrics</h3>
+      <p><b>Precision@3 is low by design here.</b> When only one row is right, the best possible score is 33%. So the gate uses Recall@3 and MRR for records, and saves precision for citations, where extra rules really do mean a worse answer.</p>
+      <p><b>Retrieval runs without the model.</b> A lookup-only run of all 60 cases costs nothing and takes seconds, so it runs on every change.</p>
+      <p><b>"None" is a label too.</b> For "How much is a cheque book?" the right retrieval is nothing. Citing any fee rule is a fail.</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="fw">
+  <div class="ph"><span class="tag d">Eval plan</span><h2 id="fw">The 8-step eval framework, applied to Nova</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>Step</th><th>For Nova</th><th>Built in</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><b>Test cases</b></td><td>60 core + 16 red-team and junk + 6 service status + 15 hold-out, each with input, expected output and pass/fail rule. Versioned in git</td><td>Stage 2</td></tr>
+        <tr><td>2</td><td><b>Deterministic checks</b></td><td>Valid JSON, cited IDs exist, numbers appear in sources, no blocked words, no card numbers, right language</td><td>Build step 12</td></tr>
+        <tr><td>3</td><td><b>Calibrated judges</b></td><td>Opus judge scores helpfulness and faithfulness; first compared with 30 answers scored by two people. Use it only if it agrees on 80%+</td><td>Stage 5</td></tr>
+        <tr><td>4</td><td><b>Retrieval eval</b></td><td>Recall@3 and MRR for records, citation precision and recall for rules, exact match for notices, before generation</td><td>Stage 2 labels, step 14</td></tr>
+        <tr><td>5</td><td><b>Generation eval</b></td><td>Is the answer correct and faithful to what was retrieved? Case 4 must say 75, not 60</td><td>Step 14</td></tr>
+        <tr><td>6</td><td><b>State checks</b></td><td>Not an agent, but it writes tickets: right queue, right status, a reference number, and nothing written when it refuses</td><td>Steps 10, 11, 14</td></tr>
+        <tr><td>7</td><td><b>Reproducible baseline</b></td><td>Pin model IDs, prompt version and eval set version. Every change runs as candidate versus baseline</td><td>Stage 3</td></tr>
+        <tr><td>8</td><td><b>Release decision</b></td><td>The SHIP rule, plus p95 reply under 4 s, cost EGP 0.035 a message, and retry rate under 10%</td><td>Step 14</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">The loop: every new failure becomes a regression case and goes back to step 1.</p>
+</section>
+
+<section class="panel" aria-labelledby="mt">
+  <div class="ph"><span class="tag d">Methods</span><h2 id="mt">Which of the 11 evaluation methods to use</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Method</th><th>Use?</th><th>Why, for Nova</th></tr></thead>
+      <tbody>
+        <tr><td><b>DAG eval</b></td><td><span class="sev y">Use</span></td><td>The labelling guide is already a decision tree (fraud → complaint → can't do → in scope → general). Score each node, so you see where routing goes wrong</td></tr>
+        <tr><td><b>Safety eval</b></td><td><span class="sev y">Use</span></td><td>The hard gates: red-team R1–R12, PII leakage, policy violations</td></tr>
+        <tr><td><b>Human eval</b></td><td><span class="sev y">Use</span></td><td>Two people score 30 answers to calibrate the judge, and review every hold-out failure</td></tr>
+        <tr><td><b>G-Eval</b></td><td><span class="sev y">Use</span></td><td>A written rubric for helpfulness and honesty that the judge reasons through step by step</td></tr>
+        <tr><td><b>LLM-as-judge, pairwise</b></td><td><span class="sev y">Use</span></td><td>Baseline versus candidate prompt or model: which answer is better on the same case</td></tr>
+        <tr><td><b>Trajectory accuracy</b></td><td><span class="sev p">Light</span></td><td>The path is fixed (7 steps), so check the log order only, e.g. a fraud message never reached the answer model</td></tr>
+        <tr><td><b>Multi-turn eval</b></td><td><span class="sev p">Later</span></td><td>A few follow-up cases ("and the other one?") in the pilot; most MVP chats are one question</td></tr>
+        <tr><td><b>LLM juries</b></td><td><span class="sev p">Later</span></td><td>2–3 judges for the final release check only, to reduce one judge's bias; too costly for every run</td></tr>
+        <tr><td><b>BERTScore</b></td><td><span class="sev no">Skip</span></td><td>Embedding similarity is unreliable for Egyptian dialect and Franco-Arabic</td></tr>
+        <tr><td><b>ROUGE</b></td><td><span class="sev no">Skip</span></td><td>Word overlap punishes a correct answer phrased differently, or written in Arabic script for a Franco question</td></tr>
+        <tr><td><b>BLEU</b></td><td><span class="sev no">Skip</span></td><td>Built for translation; same problem as ROUGE</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Service notices -->
+<section class="panel" aria-labelledby="sn">
+  <div class="ph"><span class="tag d">New source</span><h2 id="sn">Maintenance and outage notices</h2><span class="q">Where the AI learns "the app is down Thursday 8 to 9 pm"</span></div>
+  <div class="two">
+    <div class="small" style="display:grid;gap:8px">
+      <p><b>One notice, three channels.</b> Digital Operations or Card Operations publish each window once, in <code>data/service-status.json</code>. The SMS, the app banner and the copilot all read the same notice, so the chat never says something different from the SMS (rule DIG-9).</p>
+      <p><b>Live data, not policy.</b> Notices change daily, so they are read fresh on every message, never cached in the prompt like the policies. Only notices that are happening now or later today are shown to the model; expired ones are left out in code.</p>
+      <p><b>No notice, no claim.</b> If nothing is listed, the copilot says there is no announced maintenance and offers a colleague. It never guesses a cause or a fix time (DIG-8). Fraud still wins during maintenance.</p>
+      <p><b>Real bank later:</b> the file is replaced by the bank's status page or SMS campaign system, read-only.</p>
+    </div>
+    <div style="display:grid;gap:6px;min-width:0"><h3>One notice · service-status.json</h3>
+<div class="code">{
+  "notice_id": "ANN-2026-10-29-01",
+  "type": "planned_maintenance",
+  "services": ["mobile_app", "internet_banking"],
+  "start": "2026-10-29T20:00:00+02:00",
+  "end":   "2026-10-29T21:00:00+02:00",
+  "message_en": "The Nova app and internet banking are
+     unavailable on Thursday 29 October from 8:00 to
+     9:00 pm Cairo time. Cards, ATMs and branches
+     work as normal.",
+  "message_ar": "صيانة مجدولة: تطبيق نوفا …",
+  "sms_sent": true,
+  "published_by": "Digital Operations"
+}</div></div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section class="panel" aria-labelledby="do">
+  <div class="ph"><span class="tag">Do</span><h2 id="do">Source, clean, label</h2></div>
+  <div class="pipe">
+    <div class="pstep">
+      <span class="pn">Step 1 · Source</span><b class="t">Where each row comes from</b>
+      <ul>
+        <li><b>Records:</b> draft customers, transactions and disputes with Claude in the brief's shape, then check each one by hand. Every fee row must match a fee rule.</li>
+        <li><b>Tickets:</b> 200 synthetic contact-center messages, written to match the 60% split: about 45 fees, 40 disputes and 35 cards (120, the 60%), plus 80 other contacts.</li>
+        <li><b>Real phrasing:</b> ask 5 Egyptian friends how they'd ask each question on WhatsApp. Keep their exact words and typos.</li>
+        <li><b>Never</b> real customer data. Test card numbers only, such as 4111 1111 1111 1111.</li>
+      </ul>
+    </div>
+    <div class="pstep">
+      <span class="pn">Step 2 · Clean</span><b class="t">Make it consistent and safe</b>
+      <ul>
+        <li>One date format (YYYY-MM-DD) and one currency (EGP, negative for money out).</li>
+        <li>Record IDs follow one pattern: <code>TXN-2026-09-14-0087</code>, <code>D-2026-0091</code>.</li>
+        <li>Mask any 12+ digit number to its last 4 before saving.</li>
+        <li>Policies split <b>by rule ID</b>, never by character count, so a fee and its minimum stay together.</li>
+        <li>Two policy lines disagree? The stricter one wins and the conflict goes to compliance.</li>
+      </ul>
+    </div>
+    <div class="pstep">
+      <span class="pn">Step 3 · Label</span><b class="t">Tag every ticket and case</b>
+      <ul>
+        <li>Label with the taxonomy: category, intent, priority.</li>
+        <li>Two people label the same 50 tickets separately. Target: <b>90%+ agreement</b> on category.</li>
+        <li>Where they disagree, fix the <b>definition</b> in the taxonomy, not the label.</li>
+        <li>Save in one sheet: each labelled ticket is also a training example if the classifier ever needs fine-tuning.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="two">
+  <!-- Labelling guide -->
+  <section class="panel" aria-labelledby="lg">
+    <div class="ph"><span class="tag d">Labelling guide</span><h2 id="lg">Decide in this order</h2></div>
+    <ol class="order">
+      <li><span><b>Any fraud signal?</b> Lost or stolen card, a payment they didn't make, someone asked for a code, can't log in plus changes. → <b>P0</b>, stop.</span></li>
+      <li><span><b>A complaint, a threat, or a vulnerable customer?</b> → <b>P1</b>.</span></li>
+      <li><span><b>Asks for an action the copilot can't do?</b> Waive, refund, transfer, loan, advice, another person's account, open a dispute. → <b>P3</b>.</span></li>
+      <li><span><b>One of the 3 in-scope questions?</b> Fee, dispute status or documents, damaged or expiring card. → <b>P2</b>.</span></li>
+      <li><span><b>Anything else</b>, greetings, "talk to someone". → <b>P4</b>.</span></li>
+    </ol>
+    <p class="small muted">A higher priority always wins. A message with a fee question and a payment they didn't make is P0.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="tr">
+    <div class="ph"><span class="tag d">Labelling guide</span><h2 id="tr">The traps labellers miss</h2></div>
+    <table class="pair">
+      <thead><tr><th>Message</th><th>Right label</th></tr></thead>
+      <tbody>
+        <tr><td>3ayez badal fa2ed lel visa</td><td><b>fraud.card_lost_stolen</b>, not damaged: "badal fa2ed" means lost</td></tr>
+        <tr><td>msh ana elly 3amalt el 1200 di</td><td><b>fraud.unknown_txn</b>, not a dispute</td></tr>
+        <tr><td>Please refund the overdraft fee</td><td><b>fee.waiver_request</b> (P3), not fee.overdraft</td></tr>
+        <tr><td>el kart et2sar</td><td><b>card.replace_damaged</b>: "et2sar" means broken</td></tr>
+        <tr><td>How much is a cheque book?</td><td><b>general.info</b> with source "none": the price isn't in policy</td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<!-- Schemas -->
+<section class="panel" aria-labelledby="sc">
+  <div class="ph"><span class="tag d">Formats</span><h2 id="sc">What one row looks like</h2><span class="q">So Claude Code can read every file the same way</span></div>
+  <div class="two">
+    <div style="display:grid;gap:6px;min-width:0"><h3>Labelled ticket · tickets-labelled.csv</h3>
+<div class="code">ticket_id,message,language,category,intent,priority,resolution_min,labeller
+TCK-0412,"3ayez a3raf el 25 geneh dol eh",franco,Fees and charges,fee.explain,P2,6,A
+TCK-0413,"msh ana elly 3amalt el 1200",franco,Fraud and security,fraud.unknown_txn,P0,22,A</div></div>
+    <div style="display:grid;gap:6px;min-width:0"><h3>Eval case · evalset.md row</h3>
+<div class="code">| 23 | Express card fee | el kart et2sar w 3ayzo bsor3a | Franco-Arabic
+| card.replace_damaged | P2 | Answer
+| EGP 100 replacement + EGP 75 express, 2 business days
+| CRD-1; FEE-4.2; FEE-4.4 | Must add both fees, not one |</div></div>
+  </div>
+</section>
+
+<!-- Catch -->
+<section class="panel" aria-labelledby="ct">
+  <div class="ph"><span class="tag">Catch</span><h2 id="ct">Why the eval set comes first</h2></div>
+  <div class="catch">
+    <div class="ccell"><b>It outlives the model</b><span>Models change every few months. The 60 cases and their right answers are what let you swap Haiku for GPT, Gemini or something newer and know in 10 minutes whether it's better. <code>tools/model-check.mjs</code> runs them today.</span></div>
+    <div class="ccell"><b>It defines "good"</b><span>Writing the benchmark answer for "Why the 75?" forces the decision on what a good reply says before anyone tunes a prompt to sound good.</span></div>
+    <div class="ccell"><b>It stops shipping on vibes</b><span>Without it, a demo that works on 5 friendly questions looks ready. With it, fraud recall 100% and Harmless 1.00 are numbers, not feelings.</span></div>
+  </div>
+</section>
+
+<!-- Risks -->
+<section class="panel" aria-labelledby="rk">
+  <div class="ph"><span class="tag d">Risks</span><h2 id="rk">What can go wrong with the data</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Risk</th><th>Why it matters</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>Synthetic messages are too clean</td><td>Real customers write "masareef", "el visa et2flet" and mix scripts</td><td>Use the friends' real phrasing; keep Franco at a third of the set</td></tr>
+        <tr><td>The prompt writer also writes the tests</td><td>The test only checks what they already expect</td><td>A teammate writes half; the hold-out stays sealed</td></tr>
+        <tr><td>Two policy lines disagree</td><td>The copilot cites one, the agent quotes the other</td><td>Stricter rule wins; log it and send it to compliance</td></tr>
+        <tr><td>Ticket mix doesn't match reality</td><td>Accuracy looks better than it will be</td><td>Match the brief's 60% split; replace with real ticket shares when the bank provides them</td></tr>
+        <tr><td>Arabic script is under-tested</td><td>Only 3 of 22 cases today</td><td>16 new Arabic-script cases in this stage</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Plan -->
+<section class="panel" aria-labelledby="pl">
+  <div class="ph"><span class="tag d">Plan</span><h2 id="pl">Five working days</h2><span class="q">PM owns the labels; a teammate helps label and writes half the cases</span></div>
+  <div class="days">
+    <div class="day"><b>Day 1</b><ul><li>✓ 42 more customers, 504 transactions, 58 cards</li><li>✓ Every fee row checked against its rule</li></ul></div>
+    <div class="day"><b>Day 2</b><ul><li>✓ 200 tickets in the 60% split</li><li>Simulated: WhatsApp replies from 5 friends</li></ul></div>
+    <div class="day"><b>Day 3</b><ul><li>Simulated: two labellers on 50 tickets</li><li>✓ 92% agreement; 4 trap rows added</li></ul></div>
+    <div class="day"><b>Day 4</b><ul><li>✓ Other 150 labelled</li><li>✓ Eval cases 23–60 from the matrix</li></ul></div>
+    <div class="day"><b>Day 5</b><ul><li>✓ 15 hold-out cases sealed (SHA-256)</li><li>✓ Cases 1–22 frozen</li><li>✓ Gate checked by script</li></ul></div>
+  </div>
+</section>
+
+<!-- Gate -->
+<section class="panel" aria-labelledby="gt">
+  <div class="ph"><span class="tag">Gate to stage 3</span><h2 id="gt">Move on only when all are true</h2></div>
+  <ul class="gate">
+    <li><span>Eval set has 60 cases; each cites a rule ID or says "no source"</span><span class="sev y">60 / 60</span></li>
+    <li><span>Franco-Arabic is at least a third of the set</span><span class="sev y">33%</span></li>
+    <li><span>Every fee in the transactions has a matching fee rule</span><span class="sev y">yes, 108 rows</span></li>
+    <li><span>Labellers agree on 90%+ of categories</span><span class="sev p">92%, simulated</span></li>
+    <li><span>Every case labels its expected records, rules or notice (or "none")</span><span class="sev y">60 / 60</span></li>
+    <li><span>A lookup-only run gives a retrieval baseline (Recall@3, citations)</span><span class="sev p">at build step 14</span></li>
+    <li><span>15 hold-out cases written and sealed</span><span class="sev y">15 sealed</span></li>
+    <li><span>Examples bank started, none copied from the eval set or hold-out</span><span class="sev y">43, checked</span></li>
+    <li><span>No real personal data anywhere</span><span class="sev y">yes</span></li>
+  </ul>
+</section>
+
+<footer>Nova Bank is fictional. Counts were taken from the local build kit (nova-support-copilot) on 29 Oct 2026. Dataset targets come from the Nova capstone brief and the lifecycle plan. All data is synthetic.</footer>
+</div>
+
+</body></html>

@@ -1,0 +1,578 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nova Problem Framing</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a decision dossier read top to bottom. Verdict and Triple Fit scores first, then the evidence behind them (discovery), then the stage card's Do and Catch, then the use case and stories that carry it into the build. Same family as the Nova plan and architecture pages. */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --ink: #15202b; --muted: #59677a; --line: #d6dce3;
+  --brand: #0e6b70; --brand-soft: #dff0ef;
+  --stage: #5a2ea6; --stage-soft: #eee8fb;
+  --yes: #1e7a3a; --yes-soft: #e3f3e7;
+  --part: #9a5b00; --part-soft: #fbefdc;
+  --no: #b42318; --no-soft: #fdecea;
+  --sans: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14.5px; line-height: 1.5; }
+a { color: var(--brand); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 3.6vw, 36px); }
+h2 { font-size: 18px; }
+h3 { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+code { font-family: var(--mono); font-size: 12.5px; }
+
+header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
+.stagecard { border: 1px solid var(--stage); background: var(--stage-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-size: 13px; max-width: 360px; }
+.stagecard b.l { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+
+/* Verdict + Triple Fit meters */
+.hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; }
+.verdict { background: var(--surface); border: 2px solid var(--brand); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+.verdict .badge { font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: .05em; color: var(--brand); text-transform: uppercase; }
+.verdict p.big { font-size: 16px; }
+.fitbox { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+.meter { display: grid; grid-template-columns: 112px minmax(0, 1fr) 44px; gap: 10px; align-items: center; font-size: 13px; }
+.meter b { font-size: 13.5px; }
+.track { height: 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.fill { height: 100%; border-radius: 999px; background: var(--c); }
+.meter .sc { font-family: var(--mono); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.overall { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; align-items: baseline; }
+.overall .sc { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--brand); }
+
+.nums { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.num { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; align-content: start; min-width: 0; }
+.num b { font-size: 21px; font-variant-numeric: tabular-nums; }
+.num span { font-size: 12px; color: var(--muted); }
+.num i { font-style: normal; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.num.nova { border-color: var(--stage); }
+.num.eg { border-color: var(--brand); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; border: 1.5px solid var(--k); vertical-align: -1px; }
+
+.part { display: grid; gap: 4px; padding-top: 6px; }
+.part .pn { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); }
+.part h2 { font-size: 22px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ph { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+.tag { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; border: 1px solid var(--stage); color: var(--stage); background: var(--stage-soft); }
+.tag.d { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.ph .q { color: var(--muted); font-size: 13px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.scroll table { min-width: 680px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 500; }
+td.i b { display: block; font-size: 13.5px; }
+td.i span { color: var(--muted); font-size: 12px; }
+td.c { text-align: center; }
+q { font-style: italic; quotes: "\201C" "\201D"; }
+.src { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+.f { display: inline-grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px; align-items: start; }
+.dot { font-family: var(--mono); font-size: 10.5px; font-weight: 600; border-radius: 4px; padding: 1px 5px; border: 1px solid; white-space: nowrap; }
+.y { color: var(--yes); background: var(--yes-soft); border-color: var(--yes); }
+.p { color: var(--part); background: var(--part-soft); border-color: var(--part); }
+.n { color: var(--no); background: var(--no-soft); border-color: var(--no); }
+.u { color: var(--muted); background: var(--bg); border-color: var(--line); }
+td.win { background: var(--brand-soft); }
+.sev { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 6px; border: 1px solid; white-space: nowrap; }
+
+/* Triple Fit canvas */
+.canvas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fit { border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 10px; padding: 14px; display: grid; gap: 10px; align-content: start; background: var(--bg); min-width: 0; }
+.fit .fh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.fit .fh b { font-size: 15px; }
+.fit .fh .sc { font-family: var(--mono); font-weight: 600; color: var(--c); font-size: 18px; }
+.fit dl { margin: 0; display: grid; gap: 8px; font-size: 13px; }
+.fit dt { font-weight: 600; font-size: 12.5px; }
+.fit dd { margin: 0; color: var(--ink); }
+.flags { border: 1px solid var(--no); background: var(--no-soft); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; display: grid; gap: 4px; }
+.flags b { color: var(--no); font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+.flags ul { margin: 0; padding-left: 16px; display: grid; gap: 3px; }
+
+.checks { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.checks li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: start; }
+.asym { border-left: 3px solid var(--no); padding: 8px 10px; background: var(--no-soft); border-radius: 0 8px 8px 0; font-size: 13px; }
+
+.honest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.honest .no-ai h3 { color: var(--no); } .honest .ai h3 { color: var(--yes); }
+.honest ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 5px; font-size: 13px; }
+.catchline { font-size: 14px; border: 1px dashed var(--stage); border-radius: 8px; padding: 10px 12px; }
+
+/* Use case */
+.uc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.cell { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); display: grid; gap: 4px; align-content: start; font-size: 13px; min-width: 0; }
+.cell b.l { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--brand); }
+.cell ul, .cell ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.cell.wide { grid-column: span 2; }
+.cell.full { grid-column: 1 / -1; }
+.cell .flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; counter-reset: s; }
+.flow li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font-size: 12.5px; display: grid; gap: 2px; align-content: start; min-width: 0; }
+.flow li::before { content: counter(s); font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.flow li.ai { border-color: var(--part); }
+.flow li.code { border-color: var(--brand); }
+
+/* Stories */
+.stories { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.story { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; align-content: start; background: var(--bg); min-width: 0; font-size: 13px; }
+.story .t { font-weight: 700; font-size: 14px; }
+.story .s { border-left: 3px solid var(--brand); padding-left: 10px; }
+.story ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.story .nt { color: var(--muted); font-size: 12px; }
+
+.frame { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.gate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.gate li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; }
+.gate li::before { content: ""; width: 12px; height: 12px; margin-top: 4px; border: 1.5px solid var(--brand); border-radius: 3px; }
+.gate.done li::before { content: "\2713"; width: 14px; height: 14px; margin-top: 3px; background: var(--brand); color: var(--surface); font-size: 10px; font-weight: 700; display: grid; place-items: center; line-height: 1; }
+.approved { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; border: 1px solid var(--yes); background: var(--yes-soft); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.approved b { color: var(--yes); font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+.srcs { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 12px; color: var(--muted); columns: 2; column-gap: 24px; }
+.srcs li { break-inside: avoid; }
+footer { font-size: 12px; color: var(--muted); }
+
+@media (max-width: 960px) {
+  header, .hero, .two, .honest, .canvas, .stories { grid-template-columns: minmax(0, 1fr); }
+  .nums { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .uc, .frame { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cell .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .srcs { columns: 1; }
+}
+@media (max-width: 520px) {
+  .nums, .uc, .frame, .gate { grid-template-columns: minmax(0, 1fr); }
+  .cell.wide { grid-column: auto; }
+  .cell .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meter { grid-template-columns: 92px minmax(0, 1fr) 40px; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Nova Bank · support copilot · Stage 1 of 9 · v2 with discovery evidence · approved 29 Oct 2026</span>
+    <h1>Problem Framing</h1>
+    <p class="muted">Is AI the right fit for Nova's contact center in Egypt? Answered with the Triple Fit canvas from your strategy exercises, grounded in public evidence from Egypt and Nova's own brief, then turned into an AI use case and user stories.</p>
+  </div>
+  <div class="stagecard">
+    <b class="l">Phase 1 of 4 · Frame &amp; Prepare</b>
+    <span><b>Do:</b> Is AI even the right fit? Weigh the cost of being wrong.</span>
+    <span><b>Catch:</b> Most ideas don't need AI. Be honest.</span>
+  </div>
+</header>
+
+<section class="hero" aria-label="Verdict and Triple Fit scores">
+  <div class="verdict">
+    <span class="badge">Verdict · go, narrowly, with conditions</span>
+    <p class="big">AI fits one job: <b>reading a free-text question in Egyptian Arabic, English or Franco-Arabic and matching it to this customer's own transaction and the right policy rule.</b></p>
+    <p class="small muted">Everything around that job is code, buttons or a person. The weakest fit is <b>incentive</b>: agents, operations and compliance each have reasons to resist, so the launch plan has to answer "what's in it for them" before it answers "how good is the model".</p>
+  </div>
+  <div class="fitbox" aria-label="Triple Fit scores out of 5">
+    <h3>Triple Fit score</h3>
+    <div class="meter" style="--c: var(--brand)"><b>Market fit</b><div class="track"><div class="fill" style="width:80%"></div></div><span class="sc">4 / 5</span></div>
+    <div class="meter" style="--c: var(--brand)"><b>Solution fit</b><div class="track"><div class="fill" style="width:80%"></div></div><span class="sc">4 / 5</span></div>
+    <div class="meter" style="--c: var(--part)"><b>Incentive fit</b><div class="track"><div class="fill" style="width:60%"></div></div><span class="sc">3 / 5</span></div>
+    <div class="overall"><span class="small muted">Average of the three, equal weights</span><span class="sc">3.7 / 5</span></div>
+  </div>
+</section>
+
+<section aria-label="The problem in numbers" style="display:grid;gap:8px">
+  <div class="nums">
+    <div class="num nova"><b>45,000</b><span>contacts a month at Nova, 120 agents</span><i>Nova brief</i></div>
+    <div class="num nova"><b>≈27,000</b><span>are 3 reasons: disputes, fees, cards (60%)</span><i>Nova brief</i></div>
+    <div class="num nova"><b>+15%</b><span>volume a year; ≈18 more agents next year at today's ratio</span><i>brief · estimate</i></div>
+    <div class="num eg"><b>77.6%</b><span>financial inclusion in Egypt, 54.7M adults with accounts</span><i>CBE, end-2025</i></div>
+    <div class="num eg"><b>2.8★</b><span>CIB Mobile Banking on Google Play, 11.5K reviews</span><i>Google Play, Aug 2026</i></div>
+    <div class="num eg"><b>15 days</b><span>business days banks may take to answer a complaint</span><i>CBE rule, via CIB and BDC</i></div>
+  </div>
+  <div class="legend"><span style="--k: var(--stage)">Nova (fictional brief)</span><span style="--k: var(--brand)">Egypt market (public source)</span></div>
+</section>
+
+<p><b>The problem in one sentence:</b> 27,000 contacts a month at Nova are the same three questions, they grow 15% a year, and every one waits in the same queue as fraud reports, in a market where reaching a person is the top complaint and banks are allowed 15 business days to answer one.</p>
+
+<!-- ============ PART A: DISCOVERY ============ -->
+<div class="part"><span class="pn">Part A · Discovery evidence</span><h2>What people need, and what's failing them</h2><p class="muted small">From the discovery flow's grounding phase: jobs, pain points, internal resources and competition, for Egypt. Opportunity brainstorming and sizing were not needed here because the opportunity is already chosen.</p></div>
+
+<div class="two">
+  <section class="panel" aria-labelledby="jtbd">
+    <div class="ph"><span class="tag d">1A</span><h2 id="jtbd">Jobs to be done</h2></div>
+    <table>
+      <thead><tr><th>Job</th><th>Importance</th><th>Satisfaction today</th></tr></thead>
+      <tbody>
+        <tr><td><b>Understand why money left my account</b> <span class="muted">(functional)</span></td><td><span class="sev n">High</span><div class="src">fees are 1 of 3 top reasons, brief</div></td><td><span class="sev n">Low</span><div class="src">phone menus read out recent transactions, they don't explain them (CIB phone banking)</div></td></tr>
+        <tr><td><b>Know where my dispute is and what to send</b> <span class="muted">(functional)</span></td><td><span class="sev n">High</span><div class="src">top-3 reason, brief</div></td><td><span class="sev p">Low–med</span><div class="src">15 business days allowed per complaint, CBE rule</div></td></tr>
+        <tr><td><b>Get a working card back fast</b> <span class="muted">(functional)</span></td><td><span class="sev p">Med–high</span><div class="src">top-3 reason, brief; card complaints on Trustpilot</div></td><td><span class="sev n">Low</span><div class="src"><q>deactivated my card… without any formal notice</q></div></td></tr>
+        <tr><td><b>Feel my money is safe when something looks wrong</b> <span class="muted">(emotional)</span></td><td><span class="sev n">High</span><div class="src">CBE warns of smishing and vishing, Oct 2024</div></td><td><span class="sev p">Mixed</span><div class="src"><q>long waiting times… but it is the safest in Egypt</q></div></td></tr>
+        <tr><td><b>Be helped in the way I actually write</b> <span class="muted">(social)</span></td><td><span class="sev p">Med</span><div class="src">Franco is common enough that MBZUAI built an Egyptian model for Latin script</div></td><td><span class="sev u">Unknown</span><div class="src">no evidence that Egyptian bank bots handle Franco</div></td></tr>
+      </tbody>
+    </table>
+    <p class="small muted"><b>Summary:</b> the jobs are informational and urgent at once. Customers want an explanation of their own money now, and reassurance when it might be fraud. Today's channels either can't reach a person or can't explain.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="pain">
+    <div class="ph"><span class="tag d">1B</span><h2 id="pain">Pain points, ranked</h2><span class="q">frequency × severity</span></div>
+    <table>
+      <thead><tr><th>#</th><th>Theme and quote</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><b>Can't reach a person</b><br><q>stuck on hold for 15 minutes, or the agent is irritated and trying to hang up</q></td><td class="src">Trustpilot, NBE (2.2/5, 38 reviews)</td></tr>
+        <tr><td>2</td><td><b>Cards blocked or failing with no explanation</b><br><q>My credit card NEVER works internationally</q></td><td class="src">Trustpilot, NBE; Oct 2025 review on card deactivation</td></tr>
+        <tr><td>3</td><td><b>Fear of scams and impersonation</b><br>CBE warns against SMS, email, link and phone scams by people posing as bank staff</td><td class="src">CBE news, 16 Oct 2024</td></tr>
+        <tr><td>4</td><td><b>Agents can't solve it</b><br><q>friendly but clueless about solving problems</q></td><td class="src">Trustpilot, NBE</td></tr>
+        <tr><td>5</td><td><b>Apps are unreliable</b><br><q>only opens successfully about once every ten attempts</q></td><td class="src">Google Play, CIB app, 2026</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted"><b>Evidence gap:</b> small samples, mostly English-language reviews, none about Nova. Treat ranks 2 to 5 as directional until the contact-center interview and Arabic social listening are done.</p>
+  </section>
+</div>
+
+<div class="two">
+  <section class="panel" aria-labelledby="int">
+    <div class="ph"><span class="tag d">1C</span><h2 id="int">Internal resources reviewed</h2></div>
+    <table>
+      <thead><tr><th>From the Nova capstone brief</th><th>What it says</th></tr></thead>
+      <tbody>
+        <tr><td><b>Vision and priority</b></td><td>A digital-first retail and small-business bank, about 2M customers, "profitable but stuck". The priority: deflect the top contact-center reasons.</td></tr>
+        <tr><td><b>Constraints</b></td><td>Regulated bank: PII never leaked, nothing that moves money or decides credit runs unsupervised, every answer groundable in a real Nova source, and it must survive a compliance officer's "why should we trust this".</td></tr>
+        <tr><td><b>Assets and data</b></td><td>Synthetic only: about 50 customers, 500 transactions, 20 policy and FAQ documents, 200 contact-center tickets. No production data.</td></tr>
+        <tr><td><b>Journey friction</b></td><td>45,000 contacts a month for 120 agents, growing 15% a year. Disputes, fees and cards are 60%. The app is used for balance checks and nothing more.</td></tr>
+        <tr><td><b>Confirms 1A and 1B</b></td><td>The volume and the three reasons match the public complaints about reaching a person.</td></tr>
+        <tr><td><b>Contradicts</b></td><td>Customers barely use the app, so a chat inside it may reach fewer callers than hoped. Test which channel callers use.</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted"><b>Reliability:</b> one source, fictional, written for the capstone. It sets the frame but proves nothing about real customers. The golden record, eval sheet and policy handbook were made in this project as test material, and your strategy exercises doc is a template, so none of them count as internal evidence.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="comp">
+    <div class="ph"><span class="tag d">1D</span><h2 id="comp">Competition in Egypt</h2><span class="q">? = not verified from a primary source</span></div>
+    <div class="scroll">
+      <table style="min-width:520px">
+        <thead><tr><th>Who</th><th>Arabic + English</th><th>Franco</th><th>Uses your own transactions</th><th>Cites the rule</th><th>Person on request</th></tr></thead>
+        <tbody>
+          <tr><td class="i"><b>CIB "Zaki"</b><span>chatbot; CIB sends inquiries to it first</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot y">✅</span></td></tr>
+          <tr><td class="i"><b>NBE "TADA"</b><span>AI digital employees with Mastercard, for non-financial interactions (2024)</span></td><td class="c"><span class="dot p">⚠️</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot p">⚠️</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot u">?</span></td></tr>
+          <tr><td class="i"><b>Banque Misr chatbot</b><span>"robot assistant" plus live chat</span></td><td class="c"><span class="dot p">⚠️</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot u">?</span></td><td class="c"><span class="dot y">✅</span></td></tr>
+          <tr><td class="i"><b>Phone menus (IVR)</b><span>"Press 1, 1, 1" for latest transactions</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot n">❌</span></td><td class="c"><span class="dot p">⚠️</span></td><td class="c"><span class="dot n">❌</span></td><td class="c"><span class="dot y">✅</span></td></tr>
+          <tr><td class="i"><b>Nova copilot (planned)</b><span>the MVP in this project</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot y">✅</span></td><td class="c"><span class="dot y">✅</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted"><b>Gap:</b> big banks already have chatbots, so "a chatbot" is not a moat. The open space is <b>grounded explanations of the customer's own money, with the rule cited, in the way Egyptians type</b>. Digital banks (Banque Misr's onebank, QNB's ezbank) are coming, which raises the bar.</p>
+  </section>
+</div>
+
+<section class="panel" aria-labelledby="syn">
+  <div class="ph"><span class="tag d">1E</span><h2 id="syn">Opportunity space map</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>Unmet need</th><th>Evidence</th><th>Why current solutions fail</th><th>Signal</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>An explanation of <i>this</i> charge, now</td><td>JTBD 1, pain 1, brief (fees are top 3)</td><td>Menus read transactions, don't explain them; agents hard to reach</td><td><span class="sev y">High</span></td></tr>
+        <tr><td>2</td><td>Fraud handled first, fast, by a person</td><td>JTBD 4, pain 3, CBE scam warning</td><td>Fraud waits in the same queue; a model alone misses it</td><td><span class="sev y">High</span></td></tr>
+        <tr><td>3</td><td>Dispute status and documents without calling</td><td>JTBD 2, brief, 15-day rule</td><td>Status is hidden or slow to get</td><td><span class="sev p">Med</span></td></tr>
+        <tr><td>4</td><td>Help in Franco and Egyptian Arabic</td><td>JTBD 5, Nile-Chat research</td><td>General models lag on Egyptian dialect in Latin script; bank bots unverified</td><td><span class="sev p">Med</span></td></tr>
+        <tr><td>5</td><td>A clear reason when a card is blocked</td><td>JTBD 3, pain 2</td><td>Blocks happen without notice; branch staff can't explain</td><td><span class="sev p">Med</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small"><b>The opportunity space is defined by</b> a gap between explanation and access. Egyptians increasingly bank digitally, but when money moves unexpectedly they can't get an explanation without waiting for a person, and the bots that exist don't visibly ground their answers in the customer's own records. Fraud fear makes speed matter more, and Franco-Arabic makes simple menus and keyword bots fall short.</p>
+</section>
+
+<!-- ============ PART B: TRIPLE FIT ============ -->
+<div class="part"><span class="pn">Part B · Triple Fit AI Strategy Canvas</span><h2>Market fit, solution fit, incentive fit</h2><p class="muted small">From Exercise 2 of your document. Each column answers its key questions, names its red flags and gives a score from 1 to 5.</p></div>
+
+<section class="canvas" aria-label="Triple Fit canvas">
+  <div class="fit" style="--c: var(--brand)">
+    <div class="fh"><b>1 · Market fit</b><span class="sc">4/5</span></div>
+    <dl>
+      <dt>Problem significance</dt><dd>27,000 repeat contacts a month, +15% a year. Reaching a person is the top public complaint.</dd>
+      <dt>Market readiness</dt><dd>77.6% inclusion and 16M+ InstaPay users show digital habits. App trust is low (CIB app 2.8★), and Nova's app is used only for balances.</dd>
+      <dt>Competitive landscape</dt><dd>CIB, NBE and Banque Misr already run assistants. Room remains for grounded, cited, Franco-aware answers.</dd>
+      <dt>Regulatory environment</dt><dd>Banking Law 194/2020 makes secrecy breaches a crime (Art. 231: at least 1 year and EGP 200,000–500,000). The data protection law 151/2020 leaves banks to CBE rules. CBE outsourcing rules apply to each AI provider, and Stage 3 plans two (a primary and a backup vendor). No AI-specific CBE rule found (not proof there is none).</dd>
+    </dl>
+    <div class="flags"><b>Red flags</b><ul><li>Sending customer data to a provider outside Egypt needs CBE sign-off.</li><li>"Another chatbot" is not a differentiator on its own.</li><li>Callers may not be app users.</li></ul></div>
+  </div>
+
+  <div class="fit" style="--c: var(--brand)">
+    <div class="fh"><b>2 · Solution fit</b><span class="sc">4/5</span></div>
+    <dl>
+      <dt>Technical feasibility</dt><dd>Classifying and explaining 3 intents from fixed rules is a strength of current models. Egyptian dialect in Latin script is the known weak spot: researchers built Nile-Chat for exactly that.</dd>
+      <dt>Data availability</dt><dd>The brief provides about 20 policy documents, transactions per customer and 200 tickets to label, all synthetic. A labelled test set still has to be built in stage 2. Real records need a read-only core-banking link.</dd>
+      <dt>Alternative (non-AI) approaches</dt><dd>A status screen, a card flow and expiry alerts solve part of it. Fees in free text need AI (see Do 1 below).</dd>
+      <dt>Augmentation vs automation</dt><dd><b>Automate</b> information answers for 3 intents. <b>Augment</b> agents on everything else with a handoff summary. <b>Never automate</b> money, waivers or dispute decisions.</dd>
+    </dl>
+    <div class="flags"><b>Red flags</b><ul><li>Fraud recall is untested, and one miss costs a customer money.</li><li>Franco accuracy is untested on real phrasing.</li></ul></div>
+  </div>
+
+  <div class="fit" style="--c: var(--part)">
+    <div class="fh"><b>3 · Incentive fit</b><span class="sc">3/5</span></div>
+    <dl>
+      <dt>User incentives</dt><dd><b>Customers:</b> answers at 2 a.m. in their own words, and a person one tap away. Threat: distrust of bots after bad app experiences. <b>Agents:</b> fewer repetitive calls. Threat: fear for their jobs.</dd>
+      <dt>Organizational incentives</dt><dd>Absorbs the 15% growth without hiring ≈18 agents a year, and gives the app a reason to exist beyond balances.</dd>
+      <dt>Implementation incentives</dt><dd><b>Contact-center ops</b> adopt it, but handle time rises when easy calls leave. <b>Compliance</b> must sign off and is rewarded for saying no. <b>IT</b> must open a read-only data link.</dd>
+    </dl>
+    <div class="flags"><b>Red flags</b><ul><li>Agent KPIs punish the change unless they're reset.</li><li>Compliance can veto late; bring them in at stage 1.</li><li>Pitch it as "no new hires for growth", not "fewer agents".</li></ul></div>
+  </div>
+</section>
+
+<!-- ============ PART C: STAGE CARD ============ -->
+<div class="part"><span class="pn">Part C · The stage card</span><h2>Do, and the catch</h2></div>
+
+<section class="panel" aria-labelledby="fit">
+  <div class="ph"><span class="tag">Do · 1</span><h2 id="fit">Is AI even the right fit?</h2><span class="q">3 intents × 4 options. Shaded cell = the winner.</span></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Intent and how customers ask</th><th>FAQ page</th><th>IVR menu</th><th>Button bot</th><th>AI copilot</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="i"><b>Fee explanation</b><span>"3ayez a3raf el 25 geneh elly et5asamo yom 14/9 dol eh"</span></td>
+          <td><span class="f"><span class="dot n">NO</span><span>Lists fees, can't find <i>your</i> 25 pounds</span></span></td>
+          <td><span class="f"><span class="dot n">NO</span><span>Reads transactions, doesn't explain them</span></span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>Works if they pick the right row</span></span></td>
+          <td class="win"><span class="f"><span class="dot y">YES</span><span>Reads Franco, finds the row, applies FEE-2.3</span></span></td>
+        </tr>
+        <tr>
+          <td class="i"><b>Dispute status</b><span>"fen el e3terad bta3y?" · "What papers do you need?"</span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>General process only</span></span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>Can read a stage out loud</span></span></td>
+          <td class="win"><span class="f"><span class="dot y">YES</span><span>A status screen answers "where is it"</span></span></td>
+          <td><span class="f"><span class="dot y">YES</span><span>Adds "which papers for <i>my</i> case" (DSP-4) and "will I get it back" safely</span></span></td>
+        </tr>
+        <tr>
+          <td class="i"><b>Card replacement</b><span>"el kart et2sar" · <b>trap:</b> "3ayez badal fa2ed"</span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>Steps and fees, fine</span></span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>Press 1 for damaged</span></span></td>
+          <td class="win"><span class="f"><span class="dot y">YES</span><span>Damaged or expired is a 2-tap flow</span></span></td>
+          <td><span class="f"><span class="dot p">PART</span><span>Only needed to catch "badal fa2ed" = lost card = fraud</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="checks" aria-label="AI fit test">
+    <li><span class="dot y">YES</span><span><b>Messy input?</b> Free text in 3 languages, Franco spelling, typos, dates like "14/9".</span></li>
+    <li><span class="dot y">YES</span><span><b>Data to ground it?</b> Numbered policy rules plus the customer's own records.</span></li>
+    <li><span class="dot y">YES</span><span><b>Harm can be fenced?</b> It moves no money and decides nothing. Code checks every answer.</span></li>
+    <li><span class="dot p">PART</span><span><b>Can we tolerate errors?</b> On wording, yes. On fraud, never, so fraud is caught by rules, not the model.</span></li>
+    <li><span class="dot n">NO</span><span><b>Would a simpler tool do it all?</b> Not for fees. Partly for disputes and cards.</span></li>
+  </ul>
+</section>
+
+<section class="panel" aria-labelledby="cost">
+  <div class="ph"><span class="tag">Do · 2</span><h2 id="cost">Weigh the cost of being wrong</h2></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>If the copilot…</th><th>Who's hurt</th><th>Cost</th><th>Control</th></tr></thead>
+      <tbody>
+        <tr><td>Reads a lost card or a payment they didn't make as a normal question</td><td>Customer: money keeps leaving</td><td><span class="sev n">Critical</span></td><td>Fraud words in code, before the model. Recall 100% gate</td></tr>
+        <tr><td>Says "approved", "refunded" or "waived"</td><td>Bank: liability, compliance</td><td><span class="sev n">Critical</span></td><td>Blocked words; only the Disputes team decides (DSP-5)</td></tr>
+        <tr><td>Shows another customer's data</td><td>Both customers; bank faces Art. 231 penalties</td><td><span class="sev n">Critical</span></td><td>Lookup by login ID only, never by chat text</td></tr>
+        <tr><td>Invents a price that isn't in policy</td><td>Customer, trust</td><td><span class="sev p">High</span></td><td>No source, no answer; hand off</td></tr>
+        <tr><td>Gets a number wrong (says 60, not the EGP 75 minimum)</td><td>Customer calls again</td><td><span class="sev p">Medium</span></td><td>Every number must appear in a cited source</td></tr>
+        <tr><td>Replies in the wrong language or script</td><td>Customer, a bit</td><td><span class="sev y">Low</span></td><td>Language check on the reply</td></tr>
+        <tr><td>Hands off when it didn't need to</td><td>An agent's few minutes</td><td><span class="sev y">Low</span></td><td>Accepted on purpose; tune later</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="asym"><b>The costs are lopsided.</b> A false alarm costs one agent contact, which happens today anyway. A missed fraud case costs a customer's money, and a data leak is a crime under the Banking Law. So when unsure, the copilot hands off, and fraud recall, not overall accuracy, is the number that matters.</p>
+</section>
+
+<section class="panel" aria-labelledby="catch">
+  <div class="ph"><span class="tag">Catch</span><h2 id="catch">Most ideas don't need AI. Be honest.</h2></div>
+  <div class="honest">
+    <div class="no-ai">
+      <h3>Doesn't need AI: build it without</h3>
+      <ul>
+        <li><b>Expiring cards.</b> Already automatic (CRD-2). A push alert 30 days before expiry stops the question.</li>
+        <li><b>"Where is my dispute?"</b> A status screen plus the SMS that DSP-7 already sends.</li>
+        <li><b>Damaged card.</b> A two-tap flow: request, pick delivery, see the EGP 100 fee.</li>
+        <li><b>Spotting fraud.</b> A word list in 3 languages, in code. Faster, cheaper, testable to 100%.</li>
+        <li><b>Anything that moves money or decides.</b> A person, always.</li>
+      </ul>
+    </div>
+    <div class="ai">
+      <h3>Needs AI: the narrow part we build</h3>
+      <ul>
+        <li><b>Understanding the question as typed.</b> "masareef", "et5asam", "el visa" and "14/9" mapped to the right row and rule.</li>
+        <li><b>Explaining <i>this</i> charge.</b> "Your EGP 75 is the minimum for a withdrawal abroad, because 3% of 2,000 is 60" (FEE-2.4).</li>
+        <li><b>Telling look-alikes apart.</b> "badal fa2ed" (lost) from "et2sar" (damaged); a dispute from fraud.</li>
+        <li><b>Answering in the customer's language</b>, with the source shown.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="catchline"><b>Honest conclusion:</b> part of the 27,000 can be removed with no AI, through the status screen, the card flow and expiry alerts. Build those alongside the copilot and credit them separately, so the copilot's number isn't inflated. <b>Reframe trigger:</b> if the interview shows most of these contacts need an <i>action</i> rather than an answer, reframe as an agent assistant before building.</p>
+</section>
+
+<!-- ============ PART D: USE CASE + STORIES ============ -->
+<div class="part"><span class="pn">Part D · Into the build</span><h2>AI use case and user stories</h2><p class="muted small">Filled in from Exercises 3 and 4 of your document.</p></div>
+
+<section class="panel" aria-labelledby="uc">
+  <div class="ph"><span class="tag d">Exercise 3</span><h2 id="uc">AI use case: grounded answers for disputes, fees and cards</h2></div>
+  <div class="uc">
+    <div class="cell"><b class="l">Primary actor</b><span>Logged-in Nova customer</span></div>
+    <div class="cell"><b class="l">Stakeholders</b><span>Contact-center agents, Fraud team, Complaints unit, Compliance, IT</span></div>
+    <div class="cell"><b class="l">Goal</b><span>Resolve the 3 in-scope questions with a correct, cited answer, and hand everything else to the right person</span></div>
+    <div class="cell"><b class="l">Preconditions</b><ul><li>Customer logged in; ID from the session</li><li>Policies loaded with rule IDs</li><li>Read-only access to this customer's records</li><li>Eval gate passed (SHIP)</li></ul></div>
+    <div class="cell"><b class="l">Triggers</b><ul><li>Customer types a message</li><li>Taps a transaction and asks</li><li>Later: a new fee posts (proactive)</li></ul></div>
+    <div class="cell"><b class="l">Postconditions</b><span>Ticket set to answered-pending-confirmation or moved to a queue; turn logged, masked; feedback captured</span></div>
+    <div class="cell full"><b class="l">Main flow</b>
+      <ol class="flow">
+        <li class="code"><b>Check input</b><span class="muted">mask, fraud words</span></li>
+        <li class="ai"><b>Understand</b><span class="muted">intent, language, confidence</span></li>
+        <li class="code"><b>Route</b><span class="muted">P2 goes on</span></li>
+        <li class="code"><b>Look up</b><span class="muted">own records only</span></li>
+        <li class="ai"><b>Answer</b><span class="muted">cite rule and record</span></li>
+        <li class="code"><b>Check and close</b><span class="muted">sources, numbers, words</span></li>
+      </ol>
+    </div>
+    <div class="cell wide"><b class="l">Alternate flows</b><ul><li>Fraud signal → fixed fraud reply, block-card button, Fraud queue (no model)</li><li>Confidence under 0.7 → hand to an agent with a summary</li><li>No source found → "I don't have that information", offer a colleague</li><li>Output check fails → safe message and handoff</li><li>Customer asks for a person → hand off at once</li></ul></div>
+    <div class="cell"><b class="l">Risks</b><ul><li>Hallucinated fee or date</li><li>Missed fraud (false negative)</li><li>Over-handoff (false positive)</li><li>Prompt injection</li><li>Data leak across customers</li></ul></div>
+    <div class="cell full"><b class="l">KPIs</b><span><b>Verified resolution rate</b> (North Star, pilot target 40%) · fraud recall 100% · Harmless 1.00 · intent accuracy ≥ 90% · grounded answers ≥ 90% · handoff rate · p95 reply under 4 s · cost EGP 0.035 a message (a conversation: up to EGP 0.20 in the pilot, 0.10 by week 8) · retry rate under 10% · adoption: share of in-scope contacts that start in chat</span></div>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="us">
+  <div class="ph"><span class="tag d">Exercise 4</span><h2 id="us">AI user stories</h2></div>
+  <div class="stories">
+    <div class="story">
+      <span class="t">Explain my charge</span>
+      <p class="s">As a <b>Nova customer</b>, I want to <b>ask about a charge in my own words</b>, so that <b>I understand it without calling</b>.</p>
+      <ul><li>Finds the matching transaction and cites the fee rule</li><li>Every amount in the answer appears in a source</li><li>Intent accuracy ≥ 90% on the eval set</li><li>Reply in ≤ 4 s (p95)</li><li>Handles Franco, Arabic and English; replies to Franco in Arabic script</li></ul>
+      <p class="nt">Data: structured (transactions) + text (policies). Technique: LLM classification and grounded generation. Ethics: no advice, no selling; explain, don't persuade.</p>
+    </div>
+    <div class="story">
+      <span class="t">Fraud goes to a person, first</span>
+      <p class="s">As a <b>customer who sees a payment I didn't make</b>, I want to <b>reach the Fraud team at once</b>, so that <b>no more money leaves my account</b>.</p>
+      <ul><li>Fraud recall 100% on all fraud cases, including "badal fa2ed"</li><li>Block-card button and hotline in the first reply, under 1 s</li><li>Never asks for or repeats a card number, PIN or OTP</li><li>Mixed messages (fee + fraud) go to fraud</li></ul>
+      <p class="nt">Data: word list in 3 languages, in code. Technique: rules before the model. Ethics: bias toward false alarms over misses.</p>
+    </div>
+    <div class="story">
+      <span class="t">Hand over with context</span>
+      <p class="s">As a <b>support agent</b>, I want to <b>receive handed-off chats with a summary and the intent</b>, so that <b>I don't make the customer repeat themselves</b>.</p>
+      <ul><li>Every handoff has intent, priority, masked chat and a reference number</li><li>Correct queue: Fraud, Complaints or Agent</li><li>Agents rate the summary useful in > 80% of cases</li><li>No AI-written text reaches the customer from the inbox without the agent's approval</li></ul>
+      <p class="nt">Data: chat log, ticket. Technique: LLM summary. Ethics: agents' KPIs are reset so harder remaining calls don't count against them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EVAL LAYERS ============ -->
+<section class="panel" aria-labelledby="ml">
+  <div class="ph"><span class="tag">Measure</span><h2 id="ml">How we'll know it's right</h2><span class="q">Decided now, before anything is built</span></div>
+  <div class="canvas">
+    <div class="fit" style="--c: var(--brand)">
+      <div class="fh"><b>Correctness and relevance</b></div>
+      <dl>
+        <dt>Retrieval quality, before generation</dt><dd>Did the lookup find the right transaction, dispute, rule or notice? Measured on the labelled set with no model call: <b>Recall@3 ≥ 95%</b> for records, <b>citation recall and precision ≥ 90%</b> for rules.</dd>
+        <dt>Groundedness</dt><dd>Every number and claim in the answer appears in what was retrieved.</dd>
+        <dt>Judge, calibrated</dt><dd>An LLM judge scores helpfulness against expert labels, checked against human scores first.</dd>
+      </dl>
+    </div>
+    <div class="fit" style="--c: var(--no)">
+      <div class="fh"><b>Safety</b></div>
+      <dl>
+        <dt>Hard gates</dt><dd>Fraud recall 100%. Harmless 1.00. All 12 red-team attacks blocked.</dd>
+        <dt>Rates to watch</dt><dd>Hallucination rate, policy-violation rate ("approved", "refunded"), PII leakage rate: all must be 0 on the eval set.</dd>
+        <dt>Caught twice</dt><dd>By input checks and output checks, so one miss isn't a leak.</dd>
+      </dl>
+    </div>
+    <div class="fit" style="--c: var(--part)">
+      <div class="fh"><b>Business outcome</b></div>
+      <dl>
+        <dt>North Star</dt><dd>Verified resolution rate. "Verified" guards against gaming: a chat only counts if the customer doesn't come back within 7 days.</dd>
+        <dt>Also</dt><dd>Handoff rate, kill-switch use, customer rating, cost per message and per conversation, retry rate, agent corrections, p95 reply time.</dd>
+        <dt>The loop</dt><dd>Every new failure in the pilot becomes a regression case in the eval set, and its fix goes into Nova's own files (a trap or an example), so it carries over to any model or vendor.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PART E: FRAME + GATE ============ -->
+<section class="panel" aria-labelledby="fr">
+  <div class="ph"><span class="tag">The frame</span><h2 id="fr">What we commit to, going into stage 2</h2></div>
+  <div class="frame">
+    <div class="cell"><b class="l">Users</b><span>Logged-in Nova customers. Agents work the handoffs. Fraud team and Complaints unit get escalations.</span></div>
+    <div class="cell"><b class="l">Job to be done</b><span>"When I have a question about my own fee, dispute or card, give me the right answer now, in my language. If something is wrong, get me a person."</span></div>
+    <div class="cell"><b class="l">In scope</b><span>Dispute status and documents, fee explanation, card replacement (damaged, expiring).</span></div>
+    <div class="cell"><b class="l">Out of scope</b><span>Moving money, waivers, dispute decisions, credit and loans, advice, selling, anyone else's account.</span></div>
+    <div class="cell"><b class="l">North Star</b><span><b>Verified resolution rate:</b> closed by the copilot, no handoff, no repeat within 7 days. Pilot target 40%, a hypothesis.</span></div>
+    <div class="cell"><b class="l">Hard gates</b><span>Fraud recall 100%. Harmless 1.00. Every answer cites a Nova source. Compliance signs off the matrix.</span></div>
+  </div>
+  <p class="small"><b>Top 3 unproven assumptions and the fastest test:</b> 1) Most contacts need information, not action: one contact-center interview, "of your last 20 calls, how many needed no action?" 2) Models handle real Franco phrasing: run the golden record's Franco cases in the stage 3 bake-off. 3) Agents and compliance will back it: a 30-minute session showing the cost matrix and the "no new hires" framing.</p>
+</section>
+
+<section class="panel" aria-labelledby="gt">
+  <div class="ph"><span class="tag">Gate to stage 2</span><h2 id="gt">Stage 1 approved</h2></div>
+  <p class="approved"><b>Approved</b><span>by Sherif Hilal, 29 Oct 2026. Stage 2 can start. The interview's answer on "information only" is still carried into stage 2 as an open assumption to confirm.</span></p>
+  <p class="approved" style="border-color:var(--part);background:var(--part-soft)"><b style="color:var(--part)">Updated 30 Oct after Stage 3</b><span>Cost target now per message (EGP 0.035), with a pilot allowance per conversation. Retry rate and agent corrections added to the KPIs. The model is bought from two vendors, and everything learned is stored in Nova's files.</span></p>
+  <ul class="gate done">
+    <li>The problem fits in one sentence, with numbers from the brief</li>
+    <li>Triple Fit scored, with red flags owned by a named person</li>
+    <li>The cost-of-being-wrong matrix is reviewed by compliance</li>
+    <li>At least 1 interview done, the "information only" assumption tested</li>
+    <li>3 in-scope intents and the exclusions are signed off</li>
+    <li>North Star, fraud recall and harmless gates are in the PRD</li>
+  </ul>
+</section>
+
+<section class="panel" aria-labelledby="ev">
+  <div class="ph"><span class="tag d">Quality check</span><h2 id="ev">How solid is this evidence?</h2><span class="q">Each block scored 1–5; 4 passes</span></div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Block</th><th>Score</th><th>Attempts</th><th>What would raise it</th></tr></thead>
+      <tbody>
+        <tr><td>1A Jobs to be done</td><td><span class="sev y">4</span></td><td>1</td><td>Interview quotes on importance, not just the brief</td></tr>
+        <tr><td>1B Pain points</td><td><span class="sev p">3 · flagged</span></td><td>2</td><td><b>Needs your input:</b> Arabic social listening (Facebook groups, X) or interviews. Public English reviews are thin.</td></tr>
+        <tr><td>1C Internal resources</td><td><span class="sev y">4</span></td><td>1</td><td>Only one internal source, and it's fictional. Real tickets or call data would raise it</td></tr>
+        <tr><td>1D Competition</td><td><span class="sev p">3 · flagged</span></td><td>2</td><td>Try Zaki, TADA and Banque Misr's bot with the golden record to fill the "?" cells</td></tr>
+        <tr><td>1E Synthesis</td><td><span class="sev y">4</span></td><td>1</td><td>Raises with 1B and 1D</td></tr>
+        <tr><td>Triple Fit canvas</td><td><span class="sev y">4</span></td><td>1</td><td>Confirm the cross-border data point with CBE guidance</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel" aria-labelledby="sr">
+  <div class="ph"><span class="tag d">Sources</span><h2 id="sr">Where the evidence comes from</h2></div>
+  <ol class="srcs">
+    <li>Nova Bank capstone brief (fictional), 19 Sep 2026</li>
+    
+    <li>AI Driven Strategy exercises, your Google Doc</li>
+    <li><a href="https://www.trustpilot.com/review/nbe.com.eg">Trustpilot, National Bank of Egypt</a>, 2.2/5, 38 reviews, read Oct 2026</li>
+    <li><a href="https://play.google.com/store/apps/details?id=com.cibeg.ddc1.digitalbanking.live&amp;hl=en_US">Google Play, CIB Mobile Banking</a>, 2.8★, 11.5K reviews, updated Aug 2026</li>
+    <li><a href="https://www.cibeg.com/en/complaint-form">CIB complaint form</a>: Zaki chatbot first, 15 working days to respond</li>
+    <li><a href="https://www.cibeg.com/en/private/ways-to-bank/phone-banking">CIB phone banking menu</a></li>
+    <li><a href="https://www.cbe.org.eg/en/news-publications/news/2024/10/16/13/44/the-central-bank-of-egypt-asserts-on-the-importance-of-protecting-banking-and-personal-information">CBE warning on smishing, phishing and vishing</a>, 16 Oct 2024</li>
+    <li><a href="https://www.cbe.org.eg/en/news-publications/news/2025/07/02/09/12/how-to-file-a-bank-complaint-a-step-by-step-guide">CBE, how to file a bank complaint</a>, 2 Jul 2025</li>
+    <li><a href="https://xpay.app/blog/payment-methods-egyptian-customers-prefer">CBE inclusion figures via xpay</a>: 77.6%, 54.7M adults, InstaPay 16M+, end-2025</li>
+    <li><a href="https://www.mastercard.com/news/eemea/en/newsroom/press-releases/en/2024/september/mastercard-and-national-bank-of-egypt-collaborate-on-ai-powered-digital-employees-for-enhanced-digital-banking-experience/">Mastercard and NBE AI digital employees</a>, Sep 2024</li>
+    <li><a href="https://banquemisr.com/en/ABOUT-US/News/BM-Online-90-free-dayes">Banque Misr chatbot and live chat</a></li>
+    <li><a href="https://resourcehub.bakermckenzie.com/en/resources/cloud-compliance-center/emea/egypt">Baker McKenzie, Egypt cloud and banking rules</a>: Banking Law 194/2020 Art. 231, CBE outsourcing</li>
+    <li><a href="https://www.acc.com/sites/default/files/program-materials/upload/Data%20Protection%20Law%20-%20Egypt%20-%20EN%20-%20MBH.PDF">Personal Data Protection Law 151/2020</a>, scope exclusion for CBE-regulated entities</li>
+    <li><a href="https://arxiv.org/html/2507.04569v1">Nile-Chat: Egyptian language models for Arabic and Latin scripts</a>, MBZUAI, Jul 2025</li>
+    <li><a href="https://www.ecofinagency.com/news-finances/0910-49434-egypt-clears-qatars-qnb-to-launch-digital-bank-ezbank">QNB ezbank licence</a> and Banque Misr onebank approval</li>
+  </ol>
+</section>
+
+<footer>Nova Bank is fictional; its numbers come from the capstone brief. Egypt figures are public sources as cited, read in October 2026. "≈18 extra agents" is an estimate at today's contacts-per-agent ratio. "?" cells in the competition table were not verified from a primary source. This is not legal advice; confirm regulatory points with the bank's compliance team.</footer>
+</div>
+
+</body></html>

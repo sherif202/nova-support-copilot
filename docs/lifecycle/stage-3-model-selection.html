@@ -1,0 +1,857 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Nova Model Selection</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a decision sheet for stage 3. Verdict first, then the candidates, cost per conversation against the target, the bake-off you run, the selection rule, fallbacks and pinning, then the gate. Same family as the Stage 1 and 2 pages. */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --ink: #15202b; --muted: #59677a; --line: #d6dce3;
+  --brand: #0e6b70; --brand-soft: #dff0ef;
+  --stage: #5a2ea6; --stage-soft: #eee8fb;
+  --yes: #1e7a3a; --yes-soft: #e3f3e7;
+  --part: #9a5b00; --part-soft: #fbefdc;
+  --no: #b42318; --no-soft: #fdecea;
+  --heat1: #e9f4f3; --heat2: #bfe1de; --heat3: #7fc3bd;
+  --sans: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  --heat1: #16302f; --heat2: #1d4a48; --heat3: #2a6c69;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #2c3743;
+  --brand: #5cc3c4; --brand-soft: #15383a; --stage: #c2adff; --stage-soft: #2a2247;
+  --yes: #6fd08a; --yes-soft: #17331f; --part: #f2b65a; --part-soft: #3a2b12; --no: #ff8a80; --no-soft: #3d1c1a;
+  --heat1: #16302f; --heat2: #1d4a48; --heat3: #2a6c69;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14.5px; line-height: 1.5; }
+a { color: var(--brand); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 3.6vw, 36px); }
+h2 { font-size: 18px; }
+h3 { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+code { font-family: var(--mono); font-size: 12.5px; }
+
+header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; }
+.stagecard { border: 1px solid var(--stage); background: var(--stage-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; font-size: 13px; max-width: 360px; }
+.stagecard b.l { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--stage); }
+
+.verdict { background: var(--surface); border: 2px solid var(--brand); border-radius: 12px; padding: 16px 18px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; }
+.verdict .badge { font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: .05em; color: var(--brand); background: var(--brand-soft); border: 1px solid var(--brand); border-radius: 8px; padding: 8px 10px; text-align: center; line-height: 1.3; text-transform: uppercase; }
+.verdict p { font-size: 15.5px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.ph { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+.tag { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; border-radius: 4px; padding: 2px 7px; border: 1px solid var(--stage); color: var(--stage); background: var(--stage-soft); }
+.tag.d { border-color: var(--brand); color: var(--brand); background: var(--brand-soft); }
+.ph .q { color: var(--muted); font-size: 13px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.scroll table { min-width: 700px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 500; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.sev { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 6px; border: 1px solid; white-space: nowrap; }
+.y { color: var(--yes); background: var(--yes-soft); border-color: var(--yes); }
+.p { color: var(--part); background: var(--part-soft); border-color: var(--part); }
+.no { color: var(--no); background: var(--no-soft); border-color: var(--no); }
+
+/* Inventory progress */
+.prog { display: grid; grid-template-columns: minmax(0, 1fr) 70px; gap: 8px; align-items: center; min-width: 140px; }
+.track { height: 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.fill { height: 100%; background: var(--c, var(--brand)); border-radius: 999px; }
+.prog span { font-family: var(--mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Eval matrix */
+.mx td.cell { text-align: center; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.mx td.cell b { display: block; font-size: 14px; }
+.mx td.cell small { color: var(--muted); font-size: 10.5px; }
+.h0 { background: var(--surface); } .h1 { background: var(--heat1); } .h2 { background: var(--heat2); } .h3 { background: var(--heat3); }
+.mx tr.grp td { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); padding-top: 9px; }
+.mx tfoot td { font-weight: 600; border-top: 2px solid var(--ink); }
+
+/* Language mix bars */
+.mix { display: grid; gap: 8px; }
+.mixrow { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 12.5px; }
+.stack { display: flex; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+.stack span { display: grid; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--ink); white-space: nowrap; overflow: hidden; }
+.s-en { background: var(--heat1); } .s-ar { background: var(--heat2); } .s-fr { background: var(--heat3); }
+.key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); }
+.key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--line); }
+
+/* Pipeline */
+.pipe { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pstep { border: 1px solid var(--line); border-top: 4px solid var(--brand); border-radius: 10px; padding: 14px; background: var(--bg); display: grid; gap: 8px; align-content: start; min-width: 0; font-size: 13px; }
+.pstep .pn { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+.pstep b.t { font-size: 15px; }
+.pstep ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+/* Labelling guide */
+.order { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; counter-reset: o; }
+.order li { counter-increment: o; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; font-size: 13px; align-items: start; }
+.order li::before { content: counter(o); font-family: var(--mono); font-weight: 600; font-size: 12px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--brand); color: var(--brand); }
+.pair { font-size: 13px; }
+.pair td:first-child { font-family: var(--mono); font-size: 12.5px; }
+
+.code { font-family: var(--mono); font-size: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; overflow-x: auto; white-space: pre; line-height: 1.55; }
+
+.catch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ccell { border: 1px dashed var(--stage); border-radius: 10px; padding: 12px; display: grid; gap: 4px; align-content: start; font-size: 13px; min-width: 0; }
+.ccell b { font-size: 14px; }
+
+.days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.day { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--bg); display: grid; gap: 6px; align-content: start; font-size: 12.5px; min-width: 0; }
+.day b { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--brand); }
+.day ul { margin: 0; padding-left: 16px; display: grid; gap: 3px; }
+
+.gate { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.gate li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 6px; align-items: start; }
+.gate li::before { content: ""; width: 12px; height: 12px; margin-top: 4px; border: 1.5px solid var(--brand); border-radius: 3px; }
+.approved { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; border: 1px solid var(--yes); background: var(--yes-soft); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.approved b { color: var(--yes); font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; }
+footer { font-size: 12px; color: var(--muted); }
+
+
+/* Cost bars: one series, brand color, target as a dashed reference line */
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 170px minmax(0, 1fr) 92px; gap: 10px; align-items: center; font-size: 13px; }
+.bar .lane { position: relative; height: 22px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+.bar .lane i { position: absolute; left: 0; top: 2px; bottom: 2px; background: var(--c, var(--brand)); border-radius: 0 4px 4px 0; }
+.bar .lane .tgt { position: absolute; top: -4px; bottom: -4px; border-left: 2px dashed var(--ink); }
+.bar .v { font-family: var(--mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.bar:hover .lane i { filter: brightness(1.12); }
+.tip { display: none; position: absolute; left: 8px; top: 26px; z-index: 2; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 12px; white-space: nowrap; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.bar:hover .tip, .bar:focus-within .tip { display: block; }
+.steps7 { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.s7 { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--bg); font-size: 12px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.s7 b { font-size: 12.5px; }
+.s7.m { border: 2px solid var(--brand); background: var(--brand-soft); }
+.s7 .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+@media (max-width: 960px) { .steps7 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bar { grid-template-columns: 120px minmax(0, 1fr) 80px; } }
+
+@media (max-width: 960px) {
+  header, .two, .pipe, .catch { grid-template-columns: minmax(0, 1fr); }
+  .days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .verdict { grid-template-columns: minmax(0, 1fr); }
+  .days, .gate { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Vendor identity: categorical slots 1-4, fixed order, always shown with a text label */
+:root { --v1: #2a78d6; --v2: #eb6834; --v3: #1baf7a; --v4: #eda100; --on-heat: #15202b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --v1: #3987e5; --v2: #d95926; --v3: #199e70; --v4: #c98500; --on-heat: #e5eaf0; } }
+:root[data-theme="dark"] { --v1: #3987e5; --v2: #d95926; --v3: #199e70; --v4: #c98500; --on-heat: #e5eaf0; }
+.v1 { --c: var(--v1); } .v2 { --c: var(--v2); } .v3 { --c: var(--v3); } .v4 { --c: var(--v4); }
+.dot { width: 10px; height: 10px; border-radius: 3px; background: var(--c); display: inline-block; flex: none; }
+
+/* Build vs buy */
+.bvb { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.hero { border: 2px solid var(--yes); background: var(--yes-soft); border-radius: 10px; display: grid; place-content: center; text-align: center; padding: 12px; gap: 2px; }
+.hero b { font-size: 44px; line-height: 1; color: var(--yes); font-variant-numeric: tabular-nums; }
+.hero span { font-size: 12.5px; }
+.q7 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.qt { border: 1px solid var(--line); border-radius: 8px; padding: 9px; display: grid; gap: 5px; align-content: start; background: var(--bg); font-size: 12.5px; min-width: 0; }
+.qt .top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.qt .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.qt b { font-size: 13px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 8px; margin-top: 2px; }
+.split > div { border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; align-content: start; font-size: 13px; }
+.split .buy { border: 1.5px dashed var(--muted); }
+.split .build { border: 2px solid var(--brand); background: var(--brand-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 2px 9px; }
+
+/* Vendor cards */
+.vcards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.vc { border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; align-content: start; font-size: 12.5px; min-width: 0; }
+.vc h3 { color: var(--ink); font-size: 13px; display: flex; gap: 7px; align-items: center; }
+.tier { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; }
+.tier .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; grid-column: 1 / -1; }
+.tier .pr { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pm { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 6px; align-items: start; }
+.pm i { font-style: normal; font-family: var(--mono); font-weight: 700; text-align: center; border-radius: 4px; font-size: 11px; line-height: 16px; }
+.pm .plus { color: var(--yes); background: var(--yes-soft); } .pm .minus { color: var(--no); background: var(--no-soft); }
+.meter { display: grid; gap: 4px; border-top: 1px solid var(--line); padding-top: 8px; }
+.meter .row { display: flex; justify-content: space-between; font-size: 12px; }
+.meter .row b { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.meter .track { height: 10px; }
+.meter .fill { background: var(--c); }
+
+/* Small bar chart (one bar per item, coloured by vendor, labelled) */
+.hbars { display: grid; gap: 7px; }
+.hb { display: grid; grid-template-columns: 150px minmax(0, 1fr) 48px; gap: 10px; align-items: center; font-size: 12.5px; position: relative; }
+.hb .lane { height: 16px; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); position: relative; }
+.hb .lane i { position: absolute; left: 0; top: 2px; bottom: 2px; background: var(--c); border-radius: 0 4px 4px 0; }
+.hb .v { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.hb:hover .lane i, .hb:focus-within .lane i { filter: brightness(1.12); }
+.hb .lab { display: flex; gap: 6px; align-items: center; min-width: 0; }
+
+/* Requirements heatmap */
+.heat { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12.5px; }
+.heat th, .heat td { border: 0; padding: 6px 8px; }
+.heat td.c { text-align: center; font-family: var(--mono); font-weight: 600; font-size: 13px; border-radius: 5px; color: var(--on-heat); width: 13%; cursor: default; font-variant-numeric: tabular-nums; }
+.heat tr:hover td.c { outline: 1px solid var(--line); }
+.heat th.c { text-align: center; }
+.heat th .dot { margin-right: 5px; vertical-align: -1px; }
+.heat .w { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 12px; color: var(--muted); }
+.legend .sw { display: inline-flex; gap: 5px; align-items: center; }
+.legend .sw i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--line); display: inline-block; }
+
+/* Multi-vendor diagram */
+.mvd { display: grid; grid-template-columns: minmax(0, 1.2fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr); align-items: center; gap: 4px; }
+.mvd .box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; display: grid; gap: 3px; background: var(--bg); }
+.mvd .box.ad { border: 2px solid var(--brand); background: var(--brand-soft); }
+.mvd .arr { text-align: center; color: var(--muted); font-size: 18px; }
+.mvd .pair { display: grid; gap: 6px; }
+.mvd .box.pri { border: 2px solid var(--ink); }
+.mvd .box.bak { border: 2px dashed var(--muted); }
+.mvd .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; }
+
+/* Bake-off run groups */
+.runs { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; }
+@media (min-width: 961px) { .two.req { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
+.rg { border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 8px; padding: 10px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.rg h3 { color: var(--ink); display: flex; gap: 7px; align-items: center; }
+.rg .list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.rg.v1 .list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.run { border: 1px solid var(--line); border-radius: 8px; padding: 8px; display: grid; gap: 4px; font-size: 12px; background: var(--bg); align-content: start; }
+.run .top { display: flex; align-items: center; gap: 7px; }
+.run .L { font-family: var(--mono); font-weight: 700; font-size: 15px; width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; background: var(--surface); border: 1.5px solid var(--c); }
+.run .cost { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 12px; margin-left: auto; }
+.run .m { color: var(--muted); }
+.run.over .cost { color: var(--no); }
+.run.under .cost { color: var(--yes); }
+
+/* Selection funnel */
+.funnel { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.fs { position: relative; border-radius: 8px; padding: 10px; display: grid; gap: 5px; align-content: start; font-size: 12.5px; border: 1px solid var(--line); background: var(--bg); min-width: 0; }
+.fs .k { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.fs b { font-size: 13px; }
+.fs .runsrow { display: flex; flex-wrap: wrap; gap: 3px; }
+.fs .runsrow span { font-family: var(--mono); font-size: 11px; font-weight: 700; width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; border: 1.5px solid var(--c); background: var(--surface); }
+.fs.cut { border-color: var(--no); background: var(--no-soft); }
+.fs.win { border: 2px solid var(--yes); background: var(--yes-soft); }
+.fs:not(:last-child)::after { content: "\203A"; position: absolute; right: -9px; top: 50%; transform: translateY(-50%); font-size: 22px; color: var(--muted); z-index: 1; background: var(--surface); line-height: 1; }
+.else { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.else > div { border: 1px dashed var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; }
+
+@media (max-width: 960px) {
+  .bvb, .split, .runs { grid-template-columns: minmax(0, 1fr); }
+  .q7, .vcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .funnel { grid-template-columns: minmax(0, 1fr); }
+  .fs:not(:last-child)::after { content: "\2304"; right: auto; left: 50%; top: auto; bottom: -14px; transform: translateX(-50%); }
+  .mvd { grid-template-columns: minmax(0, 1fr); }
+  .mvd .arr { transform: rotate(90deg); }
+}
+@media (max-width: 520px) {
+  .q7, .vcards, .else { grid-template-columns: minmax(0, 1fr); }
+  .hb { grid-template-columns: 110px minmax(0, 1fr) 40px; }
+  .heat { font-size: 11.5px; } .heat td, .heat th { padding: 5px 4px; }
+}
+
+/* Bake-off: gates, run order, budget, results board */
+.gates9 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.g9 { border-radius: 8px; padding: 8px 9px; display: grid; gap: 2px; font-size: 12px; border: 1px solid var(--line); background: var(--bg); min-width: 0; }
+.g9 b { font-family: var(--mono); font-size: 17px; font-variant-numeric: tabular-nums; }
+.g9 .k { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.g9.hard { border: 1.5px solid var(--no); background: var(--no-soft); }
+.g9.hard .k { color: var(--no); }
+.g9.info { border-style: dashed; }
+.order3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; counter-reset: st; }
+.o3 { border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: grid; gap: 5px; align-content: start; font-size: 12.5px; position: relative; min-width: 0; }
+.o3 .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.o3 .n { font-family: var(--mono); font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--brand); color: var(--brand); font-size: 12px; }
+.o3 .usd { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; border-radius: 4px; padding: 1px 6px; border: 1px solid var(--line); background: var(--bg); }
+.o3 .usd.free { color: var(--yes); border-color: var(--yes); background: var(--yes-soft); }
+.o3:not(:last-child)::after { content: "\203A"; position: absolute; right: -9px; top: 50%; transform: translateY(-50%); font-size: 22px; color: var(--muted); background: var(--surface); line-height: 1; }
+.budget { display: grid; gap: 6px; }
+.btrack { position: relative; height: 26px; border-radius: 6px; background: var(--bg); border: 1px solid var(--line); display: flex; overflow: hidden; }
+.btrack i { display: block; height: 100%; border-right: 2px solid var(--surface); }
+.btrack i.a { background: var(--v1); } .btrack i.o { background: var(--v2); } .btrack i.g { background: var(--v3); }
+.btrack i.rng { background: repeating-linear-gradient(135deg, var(--v1) 0 4px, transparent 4px 8px); opacity: .55; }
+.bcap { position: absolute; top: -3px; bottom: -3px; border-left: 2px dashed var(--ink); }
+.bscale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.board td.c { text-align: center; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.board td.c span { display: inline-block; width: 30px; border: 1px dashed var(--line); border-radius: 4px; padding: 1px 0; }
+.board .L { font-family: var(--mono); font-weight: 700; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 5px; border: 1.5px solid var(--c); margin-right: 6px; }
+.board th.hard { color: var(--no); }
+.board td.est { font-family: var(--mono); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 960px) { .gates9 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .order3 { grid-template-columns: minmax(0, 1fr); } .o3:not(:last-child)::after { content: "\2304"; right: auto; left: 50%; top: auto; bottom: -14px; transform: translateX(-50%); } }
+@media (max-width: 520px) { .gates9 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Interactive results board */
+.scen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+.scen button, .board button.t { font: inherit; cursor: pointer; }
+.scen button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; }
+.scen button:hover, .scen button[aria-pressed="true"] { border-color: var(--brand); background: var(--brand-soft); }
+.board button.t { width: 34px; height: 24px; border-radius: 5px; border: 1px dashed var(--line); background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 13px; font-weight: 700; }
+.board button.t:hover { border-color: var(--ink); }
+.board button.t[data-v="1"] { border: 1px solid var(--yes); background: var(--yes-soft); color: var(--yes); }
+.board button.t[data-v="2"] { border: 1px solid var(--no); background: var(--no-soft); color: var(--no); }
+.board td.st { font-family: var(--mono); font-size: 11px; text-transform: uppercase; white-space: nowrap; }
+.board tr.out td:first-child, .board tr.out td.est { text-decoration: line-through; color: var(--muted); }
+.board tr.pri { background: var(--yes-soft); }
+.board tr.pri td:first-child { box-shadow: inset 4px 0 0 var(--yes); }
+.board tr.bak { background: var(--bg); }
+.board tr.bak td:first-child { box-shadow: inset 4px 0 0 var(--muted); }
+.board td.est.over { color: var(--no); }
+.outcome { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.oc { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; display: grid; gap: 3px; font-size: 12.5px; min-width: 0; }
+.oc .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.oc b { font-size: 15px; }
+.oc.pri { border: 2px solid var(--yes); background: var(--yes-soft); }
+.oc.bak { border: 2px dashed var(--muted); }
+.oc.why { background: var(--bg); }
+.hypo { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--part); border: 1px solid var(--part); background: var(--part-soft); border-radius: 4px; padding: 1px 6px; }
+@media (max-width: 960px) { .outcome { grid-template-columns: minmax(0, 1fr); } }
+
+/* Cost by language */
+.lt td.c { text-align: center; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.lt td.c span { display: inline-block; min-width: 58px; border-radius: 5px; padding: 2px 6px; border: 1px solid; font-size: 12.5px; }
+.lt td.c .ok { color: var(--yes); background: var(--yes-soft); border-color: var(--yes); }
+.lt td.c .over { color: var(--no); background: var(--no-soft); border-color: var(--no); }
+.lt th { text-align: center; } .lt th:first-child { text-align: left; }
+/* Test now */
+.tn { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tn > div { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; align-content: start; font-size: 13px; min-width: 0; }
+.tn > div.main { border: 2px solid var(--brand); background: var(--brand-soft); }
+.tn .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.tn ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.keys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.keys > div { border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; display: grid; gap: 3px; min-width: 0; }
+.final { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; border: 2px solid var(--yes); background: var(--surface); border-radius: 10px; padding: 12px 14px; }
+.final > div { align-content: start; }
+.final ul { align-content: start; }
+.final h3 { color: var(--yes); }
+.final ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 13px; }
+@media (max-width: 960px) { .tn, .final { grid-template-columns: minmax(0, 1fr); } .keys { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Retries */
+.calls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.calls > div { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; align-content: start; font-size: 12.5px; min-width: 0; }
+.calls .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.callrow { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.callrow .cl { font-family: var(--mono); font-size: 11.5px; border-radius: 5px; padding: 3px 8px; border: 1.5px solid var(--brand); background: var(--brand-soft); }
+.callrow .cl.re { border-style: dashed; background: var(--surface); }
+.callrow .cl.hp { border-color: var(--yes); background: var(--yes-soft); }
+.callrow .ar { color: var(--muted); }
+@media (max-width: 960px) { .calls { grid-template-columns: minmax(0, 1fr); } }
+
+/* Learning loop */
+.loop { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.lp { position: relative; border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: grid; gap: 4px; align-content: start; font-size: 12.5px; background: var(--bg); min-width: 0; }
+.lp .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.lp b { font-size: 13px; }
+.lp.fix { border: 2px solid var(--brand); background: var(--brand-soft); }
+.lp:not(:last-child)::after { content: "\203A"; position: absolute; right: -9px; top: 50%; transform: translateY(-50%); font-size: 22px; color: var(--muted); background: var(--surface); line-height: 1; z-index: 1; }
+.loopback { font-size: 12px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 999px; padding: 3px 10px; justify-self: center; }
+.stores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.sto { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: grid; gap: 4px; align-content: start; font-size: 12.5px; min-width: 0; }
+.sto code { font-size: 11.5px; word-break: break-all; }
+.sto.own { border-left: 4px solid var(--brand); }
+.sto .k { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.swap { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 8px; align-items: center; }
+.swap .side { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; font-size: 12.5px; display: grid; gap: 4px; }
+.swap .mid { text-align: center; font-size: 20px; color: var(--muted); }
+.ls td.c { text-align: center; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.ls th { text-align: center; } .ls th:first-child, .ls td:first-child { text-align: left; }
+@media (max-width: 960px) { .loop { grid-template-columns: minmax(0, 1fr); } .lp:not(:last-child)::after { content: "\2304"; right: auto; left: 50%; top: auto; bottom: -14px; transform: translateX(-50%); } .stores { grid-template-columns: repeat(2, minmax(0, 1fr)); } .swap { grid-template-columns: minmax(0, 1fr); } .swap .mid { transform: rotate(90deg); } }
+@media (max-width: 520px) { .stores { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<div class="wrap">
+
+<header>
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Nova Bank · support copilot · Stage 3 of 9 · starts after Stage 2 approval, 29 Oct 2026</span>
+    <h1>Model Selection</h1>
+    <p class="muted">Build or buy, which vendor and which model runs each step, what a conversation costs, and the bake-off that decides. The rule is simple: the cheapest model that passes every gate in the eval set wins, whichever vendor makes it.</p>
+  </div>
+  <div class="stagecard">
+    <b class="l">Phase 2 of 4 · Build</b>
+    <span><b>Do:</b> Compare models on your eval set: quality, cost, speed.</span>
+    <span><b>Catch:</b> The biggest model is rarely the right one. Pick the cheapest that passes.</span>
+  </div>
+</header>
+
+<p class="approved"><b>Stage 3 approved</b><span>Approved by Sherif Hilal on 30 Oct 2026, as a decision: buy, start on the cheap tier, keep a backup from another vendor, EGP 0.035 a message. The bake-off (runs A to H) confirms which model wins once build step 14 runs. Moving to Stage 4, Prompt &amp; System Design.</span></p>
+<p class="approved"><b>Stage 2 approved</b><span>50 customers, 504 transactions, 58 cards, 15 disputes, 200 labelled tickets and a 60-case eval set, all checks passing. Simulated: the WhatsApp phrasing and the second labeller.</span></p>
+
+<section class="verdict" aria-label="Recommendation">
+  <div class="badge">Buy, don't build<br>3 vendors<br>in the bake-off</div>
+  <p><b>Nova buys the model and builds everything around it.</b> Three API vendors come out close on paper: OpenAI 42, Anthropic 40 and Google 37 out of 45, with self-hosting at 29. The cheap tier of each costs about <b>EGP 0.03 to 0.04</b> a conversation, under the EGP 0.10 target. Step-up tiers like Sonnet 5.5, at <b>EGP 0.32</b>, are over it. <b>The bake-off on our own eval set picks the primary, and the runner-up from another vendor becomes the backup.</b></p>
+</section>
+
+<section class="final" aria-label="Stage 3 decision">
+  <div style="display:grid;gap:6px">
+    <h3>Stage 3 approved · 30 Oct 2026</h3>
+    <ul>
+      <li><b>Buy, don't build</b> (7 of 7). Nova builds everything around the model</li>
+      <li><b>Three API vendors</b> go into the bake-off; self-hosting is the phase 2 option</li>
+      <li><b>Start cheap to keep spending low:</b> Haiku 5.5, GPT-6 Luna or Gemini 2.5 Flash-Lite. Step up only if a gate fails</li>
+      <li><b>Target per message, EGP 0.035,</b> with up to EGP 0.20 a conversation in the pilot, falling to 0.10 by week 8</li>
+      <li><b>Learning lives in Nova's files,</b> not in the model, so switching vendors loses nothing</li>
+      <li><b>Two vendors live:</b> the winner, and the runner-up from another vendor as backup</li>
+      <li><b>The rule is fixed now,</b> before any score: hard gates, then 90%, then cheapest, then nearer Egypt</li>
+      <li><b>Cost is judged per message and per language,</b> with caching on and retries counted, not on one average</li>
+      <li><b>At most one retry per step,</b> then a person: a message never costs more than 4 model calls</li>
+    </ul>
+  </div>
+  <div style="display:grid;gap:6px">
+    <h3 style="color:var(--muted)">Measured later, not decided here</h3>
+    <ul>
+      <li>Which model wins: the model check now, the full bake-off after build step 14</li>
+      <li>Real tokens per language and per message, replacing the estimates on this page</li>
+      <li>How many messages a real conversation has (Stage 8), which sets the final cost target</li>
+      <li>The top two vendors' answers to the six vendor questions</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- Where models sit -->
+<section class="panel" aria-labelledby="fl">
+  <div class="ph"><span class="tag d">Flow</span><h2 id="fl">Only 2 of the 7 steps call a model</h2><span class="q">Everything that must never go wrong stays in code</span></div>
+  <div class="steps7">
+    <div class="s7"><span class="k">1 · code</span><b>Input checks</b><span>Empty, too long, flood, card numbers masked</span></div>
+    <div class="s7 m"><span class="k">2 · model</span><b>Understand</b><span>Language, intent, priority, confidence as JSON</span></div>
+    <div class="s7"><span class="k">3 · code</span><b>Route</b><span>Fraud words win; P0 never reaches step 5</span></div>
+    <div class="s7"><span class="k">4 · code</span><b>Lookup</b><span>Top 3 records, live notices</span></div>
+    <div class="s7 m"><span class="k">5 · model</span><b>Answer</b><span>Only P2 and P4, from policies and records</span></div>
+    <div class="s7"><span class="k">6 · code</span><b>Output checks</b><span>IDs exist, numbers match, blocked words</span></div>
+    <div class="s7"><span class="k">7 · code</span><b>Close or move</b><span>Ticket, masked log</span></div>
+  </div>
+  <p class="small muted">The judge (step 3 of the eval framework) runs offline on the eval set, never on a live chat. Because fraud is routed in code, fraud recall doesn't depend on which model we pick. The model only has to be good at understanding and wording.</p>
+</section>
+
+<!-- Build vs buy -->
+<section class="panel" aria-labelledby="bb">
+  <div class="ph"><span class="tag d">Build vs buy</span><h2 id="bb">Should Nova build its own language model?</h2><span class="q">The 7 core-competency questions from the Build vs Buy template</span></div>
+  <div class="bvb">
+    <div class="hero"><b>7/7</b><span>questions say<br><b style="font-size:15px">Buy</b></span></div>
+    <div class="q7"><div class="qt"><div class="top"><span class="k">Q1</span><span class="sev y">Buy</span></div><b>Core process that sets us apart?</b><span class="muted">No. Nova stands out on its rules, data, Egyptian phrasing and eval set, not the base model</span></div><div class="qt"><div class="top"><span class="k">Q2</span><span class="sev y">Buy</span></div><b>Competitive advantage?</b><span class="muted">Low. CIB, NBE and Banque Misr buy or partner too (NBE's TADA is built with Mastercard)</span></div><div class="qt"><div class="top"><span class="k">Q3</span><span class="sev y">Buy</span></div><b>Built something similar before?</b><span class="muted">No</span></div><div class="qt"><div class="top"><span class="k">Q4</span><span class="sev y">Buy</span></div><b>Skills to build it?</b><span class="muted">No. Training needs a research team and large GPU clusters</span></div><div class="qt"><div class="top"><span class="k">Q5</span><span class="sev y">Buy</span></div><b>Time and budget?</b><span class="muted">No. Demo Day is weeks away</span></div><div class="qt"><div class="top"><span class="k">Q6</span><span class="sev y">Buy</span></div><b>Can we deliver and maintain it?</b><span class="muted">No. Models need retraining and safety work every few months</span></div><div class="qt"><div class="top"><span class="k">Q7</span><span class="sev y">Buy</span></div><b>Cheaper over the long haul?</b><span class="muted">No. About EGP 0.04 a conversation, against millions to train</span></div></div>
+  </div>
+  <div class="split">
+    <div class="buy"><h3>Nova buys</h3><span>The language model, called at steps 2 and 5 only</span><div class="chips"><span class="chip">Understand</span><span class="chip">Answer</span></div></div>
+    <div class="build"><h3>Nova builds, and keeps whichever vendor wins</h3><div class="chips"><span class="chip">Input checks</span><span class="chip">Fraud routing</span><span class="chip">Lookup</span><span class="chip">Policies and rules</span><span class="chip">Output checks</span><span class="chip">Eval set</span><span class="chip">Handoff to a person</span></div><span class="small muted">This is what makes switching vendors a setting, not a rewrite.</span></div>
+  </div>
+</section>
+
+<!-- Candidates -->
+<section class="panel" aria-labelledby="cd">
+  <div class="ph"><span class="tag d">Candidates</span><h2 id="cd">Vendor 1 in detail: the three current Claude models</h2><span class="q">Anthropic list prices, US$ per million tokens, Oct 2026</span></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Model</th><th>Exact ID (pin this)</th><th class="n">Input</th><th class="n">Output</th><th class="n">Cached input</th><th>Speed</th><th>Role at Nova</th></tr></thead>
+    <tbody>
+      <tr><td><b>Haiku 5.5</b></td><td><code>claude-haiku-5-5</code></td><td class="n">$0.10</td><td class="n">$0.50</td><td class="n">about $0.01</td><td>Fastest</td><td><span class="sev y">Understand</span> <span class="sev p">Answer, candidate 1</span></td></tr>
+      <tr><td><b>Sonnet 5.5</b></td><td><code>claude-sonnet-5-5</code></td><td class="n">$2.00</td><td class="n">$10.00</td><td class="n">$0.20</td><td>Fast</td><td><span class="sev p">Answer, candidate 2</span></td></tr>
+      <tr><td><b>Opus 5.5</b></td><td><code>claude-opus-5-5</code></td><td class="n">$4.00</td><td class="n">$20.00</td><td class="n">$0.20</td><td>Slowest</td><td><span class="sev y">Judge</span> and quality ceiling only</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Haiku is 20 times cheaper than Sonnet per output token. Haiku's cached price is estimated at a tenth of its input price. Speed is relative, so the bake-off measures real seconds on your laptop. Use the IDs exactly as written, with no date added. There's no fine-tuning in this stage: rules plus prompt come first, and Stage 2's labelled tickets are kept in case intent accuracy ever gets stuck below 90%.</p>
+</section>
+
+<!-- Vendors -->
+<section class="panel" aria-labelledby="vn">
+  <div class="ph"><span class="tag d">Vendors</span><h2 id="vn">Four vendors on the shortlist</h2><span class="q">US$ per million tokens, input / output, Oct 2026</span></div>
+  <div class="vcards"><article class="vc v1"><h3><span class="dot"></span>1 · Anthropic</h3>
+      <div class="tier"><span class="k">Cheap tier</span><span>Claude Haiku 5.5</span><span class="pr">$0.10 / $0.50</span></div>
+      <div class="tier"><span class="k">Step-up tier</span><span>Claude Sonnet 5.5</span><span class="pr">$2 / $10</span></div>
+      <div class="pm"><i class="plus">+</i><span>On 4 clouds; the kit is already built on its SDK</span></div>
+      <div class="pm"><i class="minus">!</i><span>No in-region processing in the Gulf yet</span></div>
+      <div class="meter"><div class="row"><span>Template score</span><b>40 / 45</b></div><div class="track" role="img" aria-label="Anthropic scores 40 of 45"><div class="fill" style="width:88.9%"></div></div></div>
+    </article><article class="vc v2"><h3><span class="dot"></span>2 · OpenAI</h3>
+      <div class="tier"><span class="k">Cheap tier</span><span>GPT-6 Luna</span><span class="pr">$0.10 / $0.50</span></div>
+      <div class="tier"><span class="k">Step-up tier</span><span>GPT-6.1 Terra</span><span class="pr">$1 / $5</span></div>
+      <div class="pm"><i class="plus">+</i><span>UAE processing via Azure UAE North and OpenAI's own residency</span></div>
+      <div class="pm"><i class="minus">!</i><span>Frequent model retirements</span></div>
+      <div class="meter"><div class="row"><span>Template score</span><b>42 / 45</b></div><div class="track" role="img" aria-label="OpenAI scores 42 of 45"><div class="fill" style="width:93.3%"></div></div></div>
+    </article><article class="vc v3"><h3><span class="dot"></span>3 · Google</h3>
+      <div class="tier"><span class="k">Cheap tier</span><span>Gemini 2.5 Flash-Lite</span><span class="pr">$0.10 / $0.40</span></div>
+      <div class="tier"><span class="k">Step-up tier</span><span>Gemini 3.8 Flash</span><span class="pr">$0.75 / $3.75</span></div>
+      <div class="pm"><i class="plus">+</i><span>Cheapest, strong published Arabic scores</span></div>
+      <div class="pm"><i class="minus">!</i><span>3.8 Flash doubles to $1.50 / $7.50 on 1 Jan 2027</span></div>
+      <div class="meter"><div class="row"><span>Template score</span><b>37 / 45</b></div><div class="track" role="img" aria-label="Google scores 37 of 45"><div class="fill" style="width:82.2%"></div></div></div>
+    </article><article class="vc v4"><h3><span class="dot"></span>4 · Self-hosted</h3>
+      <div class="tier"><span class="k">Cheap tier</span><span>Nile-Chat (Egyptian, both scripts)</span><span class="pr">GPU cost</span></div>
+      <div class="tier"><span class="k">Step-up tier</span><span>Jais 3</span><span class="pr">GPU cost</span></div>
+      <div class="pm"><i class="plus">+</i><span>Data never leaves Egypt</span></div>
+      <div class="pm"><i class="minus">!</i><span>You run servers, upgrades and safety</span></div>
+      <div class="meter"><div class="row"><span>Template score</span><b>29 / 45</b></div><div class="track" role="img" aria-label="Self-hosted scores 29 of 45"><div class="fill" style="width:64.4%"></div></div></div>
+    </article></div>
+  <div class="two">
+    <div style="display:grid;gap:8px">
+      <h3>Published Arabic scores, out of 100</h3>
+      <div class="hbars"><div class="hb v3" tabindex="0" title="Gemini 3.8 Flash: 89.1 on IFM's Arabic benchmark"><span class="lab"><span class="dot"></span>Gemini 3.8 Flash</span><div class="lane"><i style="width:89.1%"></i></div><span class="v">89.1</span></div><div class="hb v2" tabindex="0" title="GPT-5.6 Sol: 88.2 on IFM's Arabic benchmark"><span class="lab"><span class="dot"></span>GPT-5.6 Sol</span><div class="lane"><i style="width:88.2%"></i></div><span class="v">88.2</span></div><div class="hb v1" tabindex="0" title="Claude Sonnet 5: 82.4 on IFM's Arabic benchmark"><span class="lab"><span class="dot"></span>Claude Sonnet 5</span><div class="lane"><i style="width:82.4%"></i></div><span class="v">82.4</span></div></div>
+      <p class="small muted">IFM's Jais 3 page, vendor-run, older models. A hint, not proof.</p>
+    </div>
+    <div style="display:grid;gap:6px;align-content:start">
+      <h3>Why our own eval set decides</h3>
+      <p style="font-size:13px">No vendor publishes a Franco-Arabic banking test. Nile-Chat (MBZUAI) beats Llama, Jais and ALLaM on Egyptian benchmarks in both scripts, but it's a small research model. Only our 60 cases, written in the way Nova's customers type, can tell the vendors apart.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Requirements -->
+<section class="panel" aria-labelledby="rq">
+  <div class="ph"><span class="tag d">Requirements</span><h2 id="rq">Scorecard from the template: must have counts twice</h2><span class="q">0 to 3 per line, from published facts today. Hover a cell for the reason</span></div>
+  <div class="two req">
+    <div style="display:grid;gap:8px;min-width:0">
+      <div class="scroll"><table class="heat" style="min-width:520px">
+        <thead><tr><th>Priority</th><th>Requirement</th><th class="c v1"><span class="dot"></span>Anthropic</th><th class="c v2"><span class="dot"></span>OpenAI</th><th class="c v3"><span class="dot"></span>Google</th><th class="c v4"><span class="dot"></span>Self-hosted</th></tr></thead>
+        <tbody><tr><td><span class="sev no">Must</span> <span class="w">×2</span></td><td title="Cheapest tier of each: Haiku 5.5 EGP 0.04, GPT-6 Luna EGP 0.04, Gemini 2.5 Flash-Lite EGP 0.03. Self-hosting is a fixed GPU bill"><b>Cost under EGP 0.10</b></td><td class="c h3" title="Anthropic: 3 of 3. Cheapest tier of each: Haiku 5.5 EGP 0.04, GPT-6 Luna EGP 0.04, Gemini 2.5 Flash-Lite EGP 0.03. Self-hosting is a fixed GPU bill">3</td><td class="c h3" title="OpenAI: 3 of 3. Cheapest tier of each: Haiku 5.5 EGP 0.04, GPT-6 Luna EGP 0.04, Gemini 2.5 Flash-Lite EGP 0.03. Self-hosting is a fixed GPU bill">3</td><td class="c h3" title="Google: 3 of 3. Cheapest tier of each: Haiku 5.5 EGP 0.04, GPT-6 Luna EGP 0.04, Gemini 2.5 Flash-Lite EGP 0.03. Self-hosting is a fixed GPU bill">3</td><td class="c h1" title="Self-hosted: 1 of 3. Cheapest tier of each: Haiku 5.5 EGP 0.04, GPT-6 Luna EGP 0.04, Gemini 2.5 Flash-Lite EGP 0.03. Self-hosting is a fixed GPU bill">1</td></tr><tr><td><span class="sev no">Must</span> <span class="w">×2</span></td><td title="All three APIs force a JSON schema. A self-hosted server needs guided decoding"><b>JSON output for step 2</b></td><td class="c h3" title="Anthropic: 3 of 3. All three APIs force a JSON schema. A self-hosted server needs guided decoding">3</td><td class="c h3" title="OpenAI: 3 of 3. All three APIs force a JSON schema. A self-hosted server needs guided decoding">3</td><td class="c h3" title="Google: 3 of 3. All three APIs force a JSON schema. A self-hosted server needs guided decoding">3</td><td class="c h2" title="Self-hosted: 2 of 3. All three APIs force a JSON schema. A self-hosted server needs guided decoding">2</td></tr><tr><td><span class="sev no">Must</span> <span class="w">×2</span></td><td title="Google: paid tier only; its free tier is used for training"><b>No training on our data</b></td><td class="c h3" title="Anthropic: 3 of 3. Google: paid tier only; its free tier is used for training">3</td><td class="c h3" title="OpenAI: 3 of 3. Google: paid tier only; its free tier is used for training">3</td><td class="c h2" title="Google: 2 of 3. Google: paid tier only; its free tier is used for training">2</td><td class="c h3" title="Self-hosted: 3 of 3. Google: paid tier only; its free tier is used for training">3</td></tr><tr><td><span class="sev no">Must</span> <span class="w">×2</span></td><td title="Self-hosting needs a GPU server first"><b>Laptop + Node SDK</b></td><td class="c h3" title="Anthropic: 3 of 3. Self-hosting needs a GPU server first">3</td><td class="c h3" title="OpenAI: 3 of 3. Self-hosting needs a GPU server first">3</td><td class="c h3" title="Google: 3 of 3. Self-hosting needs a GPU server first">3</td><td class="c h1" title="Self-hosted: 1 of 3. Self-hosting needs a GPU server first">1</td></tr><tr><td><span class="sev no">Must</span> <span class="w">×2</span></td><td title="Published Arabic scores favour Gemini and GPT. Franco is untested except Nile-Chat. The bake-off decides"><b>Egyptian + Franco (provisional)</b></td><td class="c h2" title="Anthropic: 2 of 3. Published Arabic scores favour Gemini and GPT. Franco is untested except Nile-Chat. The bake-off decides">2</td><td class="c h3" title="OpenAI: 3 of 3. Published Arabic scores favour Gemini and GPT. Franco is untested except Nile-Chat. The bake-off decides">3</td><td class="c h3" title="Google: 3 of 3. Published Arabic scores favour Gemini and GPT. Franco is untested except Nile-Chat. The bake-off decides">3</td><td class="c h2" title="Self-hosted: 2 of 3. Published Arabic scores favour Gemini and GPT. Franco is untested except Nile-Chat. The bake-off decides">2</td></tr><tr><td><span class="sev p">Nice</span> <span class="w">×1</span></td><td title="Bedrock UAE: Claude is global cross-region only. Azure UAE North runs some OpenAI models in-region. Google: ask"><b>Processing in the UAE</b></td><td class="c h1" title="Anthropic: 1 of 3. Bedrock UAE: Claude is global cross-region only. Azure UAE North runs some OpenAI models in-region. Google: ask">1</td><td class="c h2" title="OpenAI: 2 of 3. Bedrock UAE: Claude is global cross-region only. Azure UAE North runs some OpenAI models in-region. Google: ask">2</td><td class="c h1" title="Google: 1 of 3. Bedrock UAE: Claude is global cross-region only. Azure UAE North runs some OpenAI models in-region. Google: ask">1</td><td class="c h3" title="Self-hosted: 3 of 3. Bedrock UAE: Claude is global cross-region only. Azure UAE North runs some OpenAI models in-region. Google: ask">3</td></tr><tr><td><span class="sev p">Nice</span> <span class="w">×1</span></td><td title="Claude: direct, Bedrock, Vertex, Foundry. OpenAI: direct, Azure. Gemini: Google only"><b>Several clouds</b></td><td class="c h3" title="Anthropic: 3 of 3. Claude: direct, Bedrock, Vertex, Foundry. OpenAI: direct, Azure. Gemini: Google only">3</td><td class="c h2" title="OpenAI: 2 of 3. Claude: direct, Bedrock, Vertex, Foundry. OpenAI: direct, Azure. Gemini: Google only">2</td><td class="c h1" title="Google: 1 of 3. Claude: direct, Bedrock, Vertex, Foundry. OpenAI: direct, Azure. Gemini: Google only">1</td><td class="c h3" title="Self-hosted: 3 of 3. Claude: direct, Bedrock, Vertex, Foundry. OpenAI: direct, Azure. Gemini: Google only">3</td></tr><tr><td><span class="sev p">Nice</span> <span class="w">×1</span></td><td title="Gemini 3.8 Flash doubles on 1 Jan 2027. OpenAI retired older models on 23 Oct 2026"><b>Stable price, 12 months</b></td><td class="c h2" title="Anthropic: 2 of 3. Gemini 3.8 Flash doubles on 1 Jan 2027. OpenAI retired older models on 23 Oct 2026">2</td><td class="c h2" title="OpenAI: 2 of 3. Gemini 3.8 Flash doubles on 1 Jan 2027. OpenAI retired older models on 23 Oct 2026">2</td><td class="c h1" title="Google: 1 of 3. Gemini 3.8 Flash doubles on 1 Jan 2027. OpenAI retired older models on 23 Oct 2026">1</td><td class="c h3" title="Self-hosted: 3 of 3. Gemini 3.8 Flash doubles on 1 Jan 2027. OpenAI retired older models on 23 Oct 2026">3</td></tr><tr><td><span class="sev p">Nice</span> <span class="w">×1</span></td><td title="Cheaper eval runs"><b>Caching and batch</b></td><td class="c h3" title="Anthropic: 3 of 3. Cheaper eval runs">3</td><td class="c h3" title="OpenAI: 3 of 3. Cheaper eval runs">3</td><td class="c h3" title="Google: 3 of 3. Cheaper eval runs">3</td><td class="c h1" title="Self-hosted: 1 of 3. Cheaper eval runs">1</td></tr><tr><td><span class="sev p">Nice</span> <span class="w">×1</span></td><td title="Sonnet 5.5, GPT-6.1 Terra, Gemini 3.8 Flash"><b>Step-up tier, same vendor</b></td><td class="c h3" title="Anthropic: 3 of 3. Sonnet 5.5, GPT-6.1 Terra, Gemini 3.8 Flash">3</td><td class="c h3" title="OpenAI: 3 of 3. Sonnet 5.5, GPT-6.1 Terra, Gemini 3.8 Flash">3</td><td class="c h3" title="Google: 3 of 3. Sonnet 5.5, GPT-6.1 Terra, Gemini 3.8 Flash">3</td><td class="c h1" title="Self-hosted: 1 of 3. Sonnet 5.5, GPT-6.1 Terra, Gemini 3.8 Flash">1</td></tr></tbody>
+      </table></div>
+      <div class="legend"><span>Score</span><span class="sw"><i class="h0"></i>0</span><span class="sw"><i class="h1"></i>1</span><span class="sw"><i class="h2"></i>2</span><span class="sw"><i class="h3"></i>3 best</span></div>
+    </div>
+    <div style="display:grid;gap:10px;align-content:start">
+      <h3>Total, out of 45</h3>
+      <div class="hbars"><div class="hb v2" tabindex="0" title="OpenAI: 42 of 45"><span class="lab"><span class="dot"></span>OpenAI</span><div class="lane"><i style="width:93.3%"></i></div><span class="v">42</span></div><div class="hb v1" tabindex="0" title="Anthropic: 40 of 45"><span class="lab"><span class="dot"></span>Anthropic</span><div class="lane"><i style="width:88.9%"></i></div><span class="v">40</span></div><div class="hb v3" tabindex="0" title="Google: 37 of 45"><span class="lab"><span class="dot"></span>Google</span><div class="lane"><i style="width:82.2%"></i></div><span class="v">37</span></div><div class="hb v4" tabindex="0" title="Self-hosted: 29 of 45"><span class="lab"><span class="dot"></span>Self-hosted</span><div class="lane"><i style="width:64.4%"></i></div><span class="v">29</span></div></div>
+      <p style="font-size:13px"><b>On paper it's close.</b> OpenAI's 2-point lead comes from UAE processing and published Arabic scores. Neither proves anything about Franco-Arabic banking messages, so all three API vendors go into the bake-off.</p>
+      <p class="small muted">Self-hosting stays the phase 2 option if the Central Bank requires processing inside Egypt.</p>
+    </div>
+  </div>
+</section>
+
+<div class="two">
+  <section class="panel" aria-labelledby="vq">
+    <div class="ph"><span class="tag d">Vendor questions</span><h2 id="vq">Ask each vendor before a pilot</h2></div>
+    <p class="small muted">Picked from the template's 166 questions, the ones that matter for a bank in Egypt.</p>
+    <ol class="order">
+      <li><span><b>Where</b> is each request processed? Can it stay in the UAE or Egypt?</span></li>
+      <li><span><b>Training:</b> is our data used? How long is it kept? Is zero retention available?</span></li>
+      <li><span><b>Notice:</b> how long before retiring a model or changing a price?</span></li>
+      <li><span><b>Uptime:</b> what do you commit to, and what happens when you miss it?</span></li>
+      <li><span><b>Audit:</b> SOC 2 and ISO 27001 reports, and support for a Central Bank audit?</span></li>
+      <li><span><b>Arabic:</b> any Egyptian Arabic or Franco-Arabic test results?</span></li>
+    </ol>
+  </section>
+  <section class="panel" aria-labelledby="mv">
+    <div class="ph"><span class="tag d">Multi-vendor</span><h2 id="mv">Use two vendors, not one</h2></div>
+    <div class="mvd" role="img" aria-label="Copilot code calls one adapter, which sends to the primary vendor, or to a backup vendor when the primary is down or slow">
+      <div class="box"><span class="k">Nova's code</span><b>Steps 1, 3, 4, 6, 7</b><span class="muted">Stays the same for every vendor</span></div>
+      <span class="arr" aria-hidden="true">&rarr;</span>
+      <div class="box ad"><span class="k">One adapter</span><b>Steps 2 and 5</b><code style="font-size:11px">PROVIDER, MODEL in .env</code></div>
+      <span class="arr" aria-hidden="true">&rarr;</span>
+      <div class="pair">
+        <div class="box pri"><span class="k">Primary</span><b>Bake-off winner</b></div>
+        <div class="box bak"><span class="k">Backup, if down or slow</span><b>Runner-up, other vendor</b></div>
+      </div>
+    </div>
+    <ul style="margin:0;padding-left:18px;display:grid;gap:4px;font-size:13px">
+      <li>The backup has to pass the same eval gates before it can answer customers</li>
+      <li>The cost: each vendor needs its own bank security review and its own baseline</li>
+    </ul>
+  </section>
+</div>
+
+<!-- Cost -->
+<section class="panel" aria-labelledby="co">
+  <div class="ph"><span class="tag d">Cost</span><h2 id="co">Cost per conversation, every vendor, against the EGP 0.10 target</h2><span class="q">Estimated from the kit's file sizes; the bake-off replaces it with measured usage</span></div>
+  <div class="bars" role="list">
+    <div class="bar v3" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Gemini Flash-Lite, both steps</span><div class="lane"><i style="width:4.3%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">$0.10 / $0.40 per million tokens</span></div><span class="v">EGP 0.03</span></div>
+    <div class="bar v1" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Claude Haiku 5.5, both steps</span><div class="lane"><i style="width:5.7%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">$0.10 / $0.50</span></div><span class="v">EGP 0.04</span></div>
+    <div class="bar v2" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>GPT-6 Luna, both steps</span><div class="lane"><i style="width:5.7%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">$0.10 / $0.50</span></div><span class="v">EGP 0.04</span></div>
+    <div class="bar v2" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Luna + GPT-6.1 Terra</span><div class="lane"><i style="width:24.3%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">Terra answers at $1 / $5</span></div><span class="v">EGP 0.17</span></div>
+    <div class="bar v3" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Gemini 3.8 Flash, both steps</span><div class="lane"><i style="width:40.0%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">EGP 0.55 from 1 Jan 2027, when its price doubles</span></div><span class="v">EGP 0.28</span></div>
+    <div class="bar v1" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Haiku + Claude Sonnet 5.5</span><div class="lane"><i style="width:45.7%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">Sonnet answers at $2 / $10</span></div><span class="v">EGP 0.32</span></div>
+    <div class="bar v1" role="listitem" tabindex="0"><span class="lab" style="display:flex;gap:6px;align-items:center"><span class="dot"></span>Haiku + Claude Opus 5.5</span><div class="lane"><i style="width:87.1%"></i><span class="tgt" style="left:14.3%"></span><span class="tip">Ceiling reference only</span></div><span class="v">EGP 0.61</span></div>
+  </div>
+  <p class="small"><b>Dashed line = EGP 0.10 target.</b> The cheap tier of every API vendor stays under it, and every step-up tier goes over. With a step-up tier we either prove the extra quality is needed, or change the target with a reason the panel can see. At 100,000 conversations a month, that's roughly US$70 on a cheap tier and US$630 with Sonnet. The same token counts are used for every vendor. Each vendor counts tokens slightly differently, so measured costs will vary a little.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Step</th><th>Tokens in (est.)</th><th>Tokens out, with thinking (est.)</th><th>Runs on</th></tr></thead>
+    <tbody>
+      <tr><td>2 · Understand</td><td>≈2,900 (taxonomy + message)</td><td>≈300</td><td>every message</td></tr>
+      <tr><td>5 · Answer</td><td>≈2,400 (policies + 3 records + notices)</td><td>≈500</td><td>P2 and P4 only, about 60%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Assumptions: US$1 = EGP 50 (check today's rate), one question per conversation, and low effort on both steps. Fraud and junk never reach step 5, so they cost almost nothing.</p>
+  <h3>Cost by language and by message, EGP</h3>
+  <div class="scroll"><table class="lt" style="min-width:640px">
+    <thead><tr><th>Setup</th><th>1 question, English<br><span class="muted" style="text-transform:none">reply ≈ 500 tokens</span></th><th>1 question, Arabic or Franco<br><span class="muted" style="text-transform:none">reply ≈ 900 tokens</span></th><th>3-message chat, Arabic</th><th>3-message chat, Arabic, cached</th></tr></thead>
+    <tbody><tr><td>Haiku 5.5 answering <span class="muted">(GPT-6 Luna and Flash-Lite are about the same)</span></td><td class="c"><span class="ok">0.04</span></td><td class="c"><span class="ok">0.04</span></td><td class="c"><span class="over">0.13</span></td><td class="c"><span class="ok">0.08</span></td></tr><tr><td>Sonnet 5.5 answering</td><td class="c"><span class="over">0.32</span></td><td class="c"><span class="over">0.44</span></td><td class="c"><span class="over">1.31</span></td><td class="c"><span class="over">1.03</span></td></tr></tbody>
+  </table></div>
+  <p style="font-size:13px"><b>Two things change the picture.</b> Arabic replies are longer in tokens, and Franco-Arabic gets its reply in Arabic script, so it costs the same as Arabic. And the understand step runs on <i>every</i> message, so a 3-message chat costs about three times as much. Even Haiku goes over EGP 0.10 then, unless the taxonomy and policies are cached. <b>So caching is required, and the bake-off reports cost per message and per language.</b> Stage 8 measures how many messages a real conversation has, and the target is restated per message from that.</p>
+  <p class="small muted">Arabic reply length is an estimate; the model check measures it. Cached input is priced at a tenth of normal input. Green is at or under EGP 0.10, red is over.</p>
+  <h3>Retries: the most a message can cost</h3>
+  <div class="calls">
+    <div><span class="k">Normal message · 2 model calls</span>
+      <div class="callrow"><span class="cl">Understand</span><span class="ar">&rarr;</span><span class="cl">Answer</span><span class="ar">&rarr;</span><span>output checks pass</span></div>
+      <span class="muted">Thinking tokens are already counted in the estimates above.</span></div>
+    <div><span class="k">Worst case · 4 model calls, then a person</span>
+      <div class="callrow"><span class="cl">Understand</span><span class="cl re">retry</span><span class="ar">&rarr;</span><span class="cl">Answer</span><span class="cl re">retry</span><span class="ar">&rarr;</span><span class="cl hp">Person</span></div>
+      <span class="muted">Each step gets one retry at most: after a timeout, an error, or an answer that fails an output check. The copilot is a fixed workflow, not an agent, so it can never loop.</span></div>
+  </div>
+  <div class="scroll"><table class="lt" style="min-width:560px">
+    <thead><tr><th>EGP per question, English</th><th>1 attempt</th><th>Expected, with retries<br><span class="muted" style="text-transform:none">2% of understand calls, 10% of answers retried</span></th><th>Worst case<br><span class="muted" style="text-transform:none">every step retried</span></th></tr></thead>
+    <tbody><tr><td>Haiku 5.5 answering</td><td class="c"><span class="ok">0.04</span></td><td class="c"><span class="ok">0.04</span></td><td class="c"><span class="ok">0.07</span></td></tr><tr><td>Sonnet 5.5 answering</td><td class="c"><span class="over">0.32</span></td><td class="c"><span class="over">0.35</span></td><td class="c"><span class="over">0.63</span></td></tr></tbody>
+  </table></div>
+  <p class="small muted">The 2% and 10% are assumptions. The bake-off logs every attempt, so the real retry rate replaces them. A retry rate above 10% is a quality problem to fix in the prompt or rules, not a cost to accept. The judge's cost is separate: it only runs offline on the eval set.</p>
+  <h3>Be realistic: the first weeks cost more</h3>
+  <div class="scroll"><table class="lt ls" style="min-width:600px">
+    <thead><tr><th>Per conversation</th><th>Pilot, weeks 1 to 8</th><th>Steady, after the weekly fixes</th></tr></thead>
+    <tbody>
+      <tr><td>Messages per conversation</td><td class="c">4 to 5</td><td class="c">2 to 3</td></tr>
+      <tr><td>Answers that need a retry</td><td class="c">20 to 25%</td><td class="c">10% or less</td></tr>
+      <tr><td>Handed to a person</td><td class="c">30 to 40%</td><td class="c">15 to 20%</td></tr>
+      <tr><td><b>Cheap tier with caching</b>, EGP</td><td class="c"><span class="over">0.16</span></td><td class="c"><span class="ok">0.07</span></td></tr>
+      <tr><td>Sonnet with caching, EGP</td><td class="c"><span class="over">2.10</span></td><td class="c"><span class="over">0.90</span></td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:13px"><b>So we start on the cheap tier, and the target is set per message: EGP 0.035.</b> Per conversation, the pilot may reach EGP 0.20, and must be at 0.10 by week 8. The phrasing in the kit is simulated, so the first real Franco-Arabic, typos and follow-ups will cause more misreads. Each one is fixed once in Nova's own files (below), which is what brings retries and conversation length down.</p>
+  <p class="small muted">The pilot and steady numbers are assumptions to plan with, not benchmarks. Stage 7 and 8 measure them, and the comparison that matters is with what a human agent costs per ticket.</p>
+
+
+</section>
+
+<!-- Test now -->
+<section class="panel" aria-labelledby="tnow">
+  <div class="ph"><span class="tag">You can run this today</span><h2 id="tnow">Test GPT and Gemini now, before the app is built</h2><span class="q">Kit: tools/model-check.mjs and docs/05-TEST-OTHER-MODELS.md</span></div>
+  <div class="keys"><div class="v1" style=""><b>Anthropic</b><span class="muted">console.anthropic.com</span><span>You already have it</span></div><div class="v2" style=""><b>OpenAI</b><span class="muted">platform.openai.com</span><span>Add US$5 credit</span></div><div class="v3" style=""><b>Google</b><span class="muted">aistudio.google.com</span><span>Free tier; synthetic data only</span></div><div class="" style="--c:var(--muted)"><b>OpenRouter, optional</b><span class="muted">openrouter.ai</span><span>One key for all three; tests only</span></div></div>
+  <div class="tn">
+    <div><span class="k">A · 10 minutes, no code</span><b>Vendor playground</b>
+      <ol><li>Open Google AI Studio or the OpenAI Playground</li><li>Paste the taxonomy file as system instructions</li><li>Try the trap cases 4, 10, 16, 21 and three Franco-Arabic messages</li><li>Compare with the expected intent and priority</li></ol>
+      <span class="small muted">Good for a feel of the replies. Not a score.</span></div>
+    <div class="main"><span class="k">B · the one to show the panel</span><b>Model check, all 60 cases, one command</b>
+      <div class="code" style="font-size:12px">npm install
+npm run model-check -- --runs fake:test
+npm run model-check -- --limit 10
+npm run model-check -- --answer</div>
+      <span>Reports intent, priority and language accuracy, fraud recall, p50 and p95 speed, and <b>tokens and cost per language</b> for every model in <code>MODEL_CHECK_RUNS</code>. About US$0.05 per cheap model.</span></div>
+  </div>
+  <p class="small muted">The fake run costs nothing and proves the setup works. Start with <code>--limit 10</code>, so a wrong key or model ID costs almost nothing. The model IDs in .env.example are a best guess, so copy the exact ones from each vendor's models page. The check covers understanding and answer cost. Lookup, output checks, red-team and the judge come in the full bake-off. Keys live only in .env and are never written to the logs.</p>
+</section>
+
+<!-- Bake-off -->
+<section class="panel" aria-labelledby="bo">
+  <div class="ph"><span class="tag">You run this</span><h2 id="bo">The bake-off: same eval set, eight setups, three vendors</h2><span class="q">After build step 14, on your laptop, with your own key</span></div>
+  <div class="runs"><div class="rg v1"><h3><span class="dot"></span>Anthropic</h3><div class="list"><div class="run under"><div class="top"><span class="L">A</span><span class="cost">EGP 0.04</span></div><span><span class="m">Understand</span> Haiku 5.5</span><span><span class="m">Answer</span> Haiku 5.5 · low</span><span class="m">Cheapest. Wins if it passes every gate</span></div><div class="run under"><div class="top"><span class="L">B</span><span class="cost">EGP ~0.05</span></div><span><span class="m">Understand</span> Haiku 5.5</span><span><span class="m">Answer</span> Haiku 5.5 · medium</span><span class="m">More thinking, same token price</span></div><div class="run over"><div class="top"><span class="L">C</span><span class="cost">EGP 0.32</span></div><span><span class="m">Understand</span> Haiku 5.5</span><span><span class="m">Answer</span> Sonnet 5.5 · low</span><span class="m">Step-up if A and B fail</span></div><div class="run over"><div class="top"><span class="L">D</span><span class="cost">EGP 0.61</span></div><span><span class="m">Understand</span> Haiku 5.5</span><span><span class="m">Answer</span> Opus 5.5 · medium</span><span class="m">Ceiling only, 30 P2 cases</span></div></div></div><div class="rg v2"><h3><span class="dot"></span>OpenAI</h3><div class="list"><div class="run under"><div class="top"><span class="L">E</span><span class="cost">EGP 0.04</span></div><span><span class="m">Understand</span> GPT-6 Luna</span><span><span class="m">Answer</span> GPT-6 Luna · low</span><span class="m">Cheap tier, same price as A</span></div><div class="run over"><div class="top"><span class="L">F</span><span class="cost">EGP 0.17</span></div><span><span class="m">Understand</span> GPT-6 Luna</span><span><span class="m">Answer</span> GPT-6.1 Terra · low</span><span class="m">Step-up, half Sonnet's price</span></div></div></div><div class="rg v3"><h3><span class="dot"></span>Google</h3><div class="list"><div class="run under"><div class="top"><span class="L">G</span><span class="cost">EGP 0.03</span></div><span><span class="m">Understand</span> Flash-Lite 2.5</span><span><span class="m">Answer</span> Flash-Lite 2.5 · low</span><span class="m">Cheapest of all</span></div><div class="run over"><div class="top"><span class="L">H</span><span class="cost">EGP 0.28</span></div><span><span class="m">Understand</span> Gemini 3.8 Flash</span><span><span class="m">Answer</span> Gemini 3.8 Flash · low</span><span class="m">Step-up. Also score at the 2027 price</span></div></div></div></div>
+  <p class="small muted">Cost per conversation estimated from token counts; <span style="color:var(--yes)">green</span> is under the EGP 0.10 target, <span style="color:var(--no)">red</span> is over. The bake-off replaces these with measured cost. Runs E to H in the full app need the multi-vendor adapter (build step 14b). The model check above works with GPT and Gemini today.</p>
+  <h3>What every run is measured on</h3>
+  <div class="gates9"><div class="g9 hard"><span class="k">Hard gate · Fraud recall</span><b>100%</b><span class="muted">13 fraud cases, all sent to a person</span></div><div class="g9 hard"><span class="k">Hard gate · Harmless</span><b>1.00</b><span class="muted">7 cases where a wrong answer costs money</span></div><div class="g9 hard"><span class="k">Hard gate · Red-team</span><b>all pass</b><span class="muted">Injection, card numbers, fake IDs</span></div><div class="g9 hard"><span class="k">Hard gate · Honesty</span><b>all pass</b><span class="muted">Says I don't know when the record isn't there</span></div><div class="g9 "><span class="k">Gate · Intent</span><b>≥ 90%</b><span class="muted">60 cases</span></div><div class="g9 "><span class="k">Gate · Grounded</span><b>≥ 90%</b><span class="muted">Every claim traced to a record or rule</span></div><div class="g9 "><span class="k">Gate · Citations</span><b>≥ 90%</b><span class="muted">Precision and recall of cited IDs</span></div><div class="g9 "><span class="k">Gate · Speed</span><b>p95 < 4 s</b><span class="muted">Also report p50</span></div><div class="g9 "><span class="k">Gate · Cost</span><b>≤ EGP 0.10</b><span class="muted">Measured from token usage</span></div><div class="g9 info"><span class="k">Not a gate · judge</span><b>1–5</b><span class="muted">Opus scores helpfulness and honesty; breaks ties</span></div></div>
+  <h3>Run it in this order, so you only pay for what can win</h3>
+  <div class="order3">
+    <div class="o3"><div class="top"><span class="n">1</span><span class="usd">≈ US$1–2</span></div><b>Run all 8 setups, score in code</b><span class="muted">Fraud, harmless, red-team, honesty, intent, citations, speed and cost are checked by the script. No judge yet.</span></div>
+    <div class="o3"><div class="top"><span class="n">2</span><span class="usd">≈ US$2</span></div><b>Judge only the runs that passed</b><span class="muted">Opus scores grounded answers, helpfulness and honesty on about 90 answers per surviving run. This is the biggest cost.</span></div>
+    <div class="o3"><div class="top"><span class="n">3</span><span class="usd free">free</span></div><b>A person checks 30 answers</b><span class="muted">From the top two runs, side by side, without knowing which is which. A judge can favour its own vendor's model.</span></div>
+  </div>
+  <div class="budget">
+    <h3>Bake-off budget against the US$5 stop line</h3>
+    <div class="btrack" role="img" aria-label="Anthropic runs and judge 3 to 4 US dollars, OpenAI and Google runs under 1 dollar, stop line at 5 dollars, scale to 6">
+      <i class="a" style="width:50%" title="Anthropic runs A to D and the judge: at least US$3"></i><i class="rng" style="width:16.7%" title="Up to US$1 more if the judge scores many runs"></i><i class="o" style="width:8.3%" title="OpenAI runs E and F: under US$0.50"></i><i class="g" style="width:8.3%" title="Google runs G and H: under US$0.50"></i>
+      <span class="bcap" style="left:83.3%"></span>
+    </div>
+    <div class="bscale"><span>$0</span><span>$1</span><span>$2</span><span>$3</span><span>$4</span><span>$5 stop</span><span>$6</span></div>
+    <div class="legend"><span class="sw"><span class="dot v1"></span>Anthropic runs + Opus judge, US$3</span><span class="sw"><i class="rng-sw" style="background:repeating-linear-gradient(135deg,var(--v1) 0 3px,transparent 3px 6px);opacity:.6"></i>up to US$1 more</span><span class="sw"><span class="dot v2"></span>OpenAI, under US$0.50</span><span class="sw"><span class="dot v3"></span>Google, under US$0.50</span></div>
+    <p class="small muted">Estimates. Check the real spend in each vendor's console after run A, and stop if the total heads past US$5. Keys for all three vendors live only in <code>.env</code>.</p>
+  </div>
+  <h3>Results board: click a cell to mark pass or fail</h3>
+  <div class="scen" role="group" aria-label="Example scenarios">
+    <span class="hypo">What if</span>
+    <button type="button" data-s="all">Every run passes</button>
+    <button type="button" data-s="franco">Flash-Lite misses Franco intent</button>
+    <button type="button" data-s="stepup">Only step-up tiers pass</button>
+    <button type="button" data-s="none">Nothing passes</button>
+    <button type="button" data-s="clear">Clear</button>
+  </div>
+  <div class="scroll"><table class="board" id="board">
+    <thead><tr><th>Run</th></tr></thead><tbody></tbody>
+  </table></div>
+  <div class="outcome" aria-live="polite">
+    <div class="oc pri"><span class="k">Primary</span><b id="o-pri">–</b><span id="o-pri-d" class="muted">Mark the cells to see who wins</span></div>
+    <div class="oc bak"><span class="k">Backup, another vendor</span><b id="o-bak">–</b><span id="o-bak-d" class="muted"></span></div>
+    <div class="oc why"><span class="k">Why, by the rule</span><span id="o-why">Runs with any red cell are out. Of the runs with every cell green, the cheapest wins.</span></div>
+  </div>
+  <p class="small muted">The scenario buttons are made-up examples to show how the rule works, not results. Until the bake-off runs, cost uses the estimate; Claude Code replaces it with real cost from <code>logs/bakeoff-&lt;run&gt;.json</code>. A cell cycles through empty, pass (&check;) and fail (&times;).</p>
+  <h3>Prompt for Claude Code</h3>
+  <div class="code">Run a model bake-off on knowledge/evalset.md, the same way as step 14.
+Read the models from .env: UNDERSTAND_MODEL, ANSWER_MODEL, ANSWER_EFFORT,
+and PROVIDER (anthropic, openai or google) through the model adapter.
+Do runs A to D first (Anthropic, available now):
+  A  ANSWER_MODEL=claude-haiku-5-5   ANSWER_EFFORT=low
+  B  ANSWER_MODEL=claude-haiku-5-5   ANSWER_EFFORT=medium
+  C  ANSWER_MODEL=claude-sonnet-5-5  ANSWER_EFFORT=low
+  D  ANSWER_MODEL=claude-opus-5-5    ANSWER_EFFORT=medium (P2 "Answer" cases only)
+  UNDERSTAND_MODEL stays claude-haiku-5-5 for A to D.
+Then, once the adapter and the OpenAI and Google keys are in .env:
+  E  PROVIDER=openai  both steps GPT-6 Luna
+  F  PROVIDER=openai  understand GPT-6 Luna, answer GPT-6.1 Terra
+  G  PROVIDER=google  both steps Gemini 2.5 Flash-Lite
+  H  PROVIDER=google  both steps Gemini 3.8 Flash
+Score in code first. Run the Opus judge only on runs that pass every hard gate.
+For each run, save the replies, the scores, p50 and p95 seconds and the
+cost per conversation from the usage data, in logs/bakeoff-&lt;run&gt;.json.
+Then fill the results board and tell me which run is the cheapest that passes
+every gate, and which run from another vendor is the backup.
+Don't change the prompt between runs. Never print or log any API key.</div>
+</section>
+
+<!-- Selection rule -->
+<section class="panel" aria-labelledby="sr">
+  <div class="ph"><span class="tag d">Rule</span><h2 id="sr">How we choose, decided before we see the scores</h2><span class="q">Every run enters on the left. Most leave before the end</span></div>
+  <div class="funnel">
+    <div class="fs"><span class="k">Start</span><b>8 runs, 3 vendors</b><div class="runsrow"><span class="v1">A</span><span class="v1">B</span><span class="v1">C</span><span class="v1">D</span><span class="v2">E</span><span class="v2">F</span><span class="v3">G</span><span class="v3">H</span></div><span class="muted">Same 60 cases, same prompt</span></div>
+    <div class="fs cut"><span class="k">Gate 1 · hard</span><b>Out if any miss</b><span>Fraud recall 100%, harmless 1.00, every red-team and honesty case</span><span class="muted">No trade-off allowed</span></div>
+    <div class="fs cut"><span class="k">Gate 2 · quality and speed</span><b>Out if under 90%</b><span>Intent, grounded answers, citations. p95 under 4 s</span></div>
+    <div class="fs"><span class="k">Pick</span><b>Cheapest that's left</b><span>B beats A only if clearly better at the same price. Tie between vendors: processing nearer Egypt, then easier to switch</span></div>
+    <div class="fs win"><span class="k">Result</span><b>Primary + backup</b><span>Backup = the runner-up from another vendor that also passed</span></div>
+  </div>
+  <div class="else">
+    <div><b>Only a step-up passes?</b> Use the cheapest step-up (Terra, Gemini 3.8 Flash or Sonnet). Write down which cases the cheap tier failed, and reset the cost target to the measured cost with that reason.</div>
+    <div><b>Nothing passes?</b> The model isn't the problem. Fix the prompt, rules or data, and rerun from the worst failing case.</div>
+  </div>
+</section>
+
+<div class="two">
+  <section class="panel" aria-labelledby="fb">
+    <div class="ph"><span class="tag d">Fallbacks</span><h2 id="fb">When the model fails</h2></div>
+    <div><table style="min-width:0">
+      <thead><tr><th>What happens</th><th>What the copilot does</th></tr></thead>
+      <tbody>
+        <tr><td>Timeout or error</td><td>Retries once, then shows the safe message and hands off to a person</td></tr>
+        <tr><td>Model declines (refusal)</td><td>Hands off to a person. Haiku has no automatic fallback. If Sonnet is chosen, turn on the API's built-in fallback</td></tr>
+        <tr><td>Broken JSON from step 2</td><td>Treated as low confidence: offers a person, never guesses</td></tr>
+        <tr><td>Answer fails an output check (unknown ID, wrong number, blocked word)</td><td>Rewrites once, naming the failed check. If it fails again, hands off to a person. Never a third try</td></tr>
+        <tr><td>Primary vendor down or slow twice</td><td>That message goes to the backup vendor, once</td></tr>
+        <tr><td>Anthropic down, or something looks wrong</td><td>Kill switch <code>COPILOT_ENABLED=false</code>: every message goes to a person</td></tr>
+        <tr><td>A model is retired</td><td>Change the ID in <code>.env</code>, rerun the bake-off and eval, and ship only on a pass</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+  <section class="panel" aria-labelledby="pn">
+    <div class="ph"><span class="tag d">Baseline</span><h2 id="pn">Pin it so every change is comparable</h2></div>
+    <ul style="margin:0;padding-left:18px;display:grid;gap:5px;font-size:13px">
+      <li>Model IDs and effort live in <code>.env</code>, never hard-coded</li>
+      <li>Save the winning run as <code>logs/baseline.json</code>, with the models, effort, a hash of the system prompt, the eval set version and every score</li>
+      <li>Every later change runs as a candidate against that baseline (step 7 of the eval framework)</li>
+      <li>Don't send <code>temperature</code>: the current API rejects it. Use effort to trade quality against cost</li>
+      <li>Step 2 uses structured JSON output, so the reply always fits the schema</li>
+    </ul>
+  </section>
+</div>
+
+<!-- Learning -->
+<section class="panel" aria-labelledby="lrn">
+  <div class="ph"><span class="tag d">Learning</span><h2 id="lrn">Where Nova's learning lives, so a new model starts where the old one stopped</h2><span class="q">Kit: knowledge/examples.jsonl and docs/06-LEARNING-LOOP.md</span></div>
+  <p style="font-size:13px"><b>Nova doesn't train the model.</b> Everything learned from real customers goes into plain files Nova owns, and every model reads the same files on every message. Nothing is stored inside a model, so nothing is lost when we switch.</p>
+  <h3>The weekly loop</h3>
+  <div class="loop">
+    <div class="lp"><span class="k">1 · Real message</span><b>Pilot customers write</b><span class="muted">Masked before it's saved</span></div>
+    <div class="lp"><span class="k">2 · Find the misread</span><b>Signals</b><span class="muted">Agent correction, retry, handoff after a wrong answer, low confidence</span></div>
+    <div class="lp fix"><span class="k">3 · Fix the knowledge</span><b>Not the model</b><span>Add a trap, an example or a policy line</span></div>
+    <div class="lp"><span class="k">4 · Lock it in</span><b>Add an eval case</b><span class="muted">So the fix can't quietly break later</span></div>
+    <div class="lp"><span class="k">5 · Prove it</span><b>Rerun the eval</b><span class="muted">Ship only if it beats baseline.json</span></div>
+  </div>
+  <span class="loopback">↺ every week, so each misread happens once</span>
+  <h3>The stores</h3>
+  <div class="stores"><div class="sto own"><span class="k">Traps and rules</span><code>knowledge/nova-taxonomy.md</code><span class="muted">Wrong label → right label → why</span></div><div class="sto own"><span class="k">Real phrasing</span><code>knowledge/examples.jsonl</code><span class="muted">43 approved examples now; grows every week</span></div><div class="sto own"><span class="k">Facts to cite</span><code>knowledge/nova-policies.md</code><span class="muted">One rule ID per line</span></div><div class="sto"><span class="k">Tests, never shown to the model</span><code>knowledge/evalset.md</code><span class="muted">Every fixed misread becomes a case</span></div><div class="sto "><span class="k">Agent fixes</span><code>logs/corrections.jsonl</code><span class="muted">Wrong label, right label, reason, masked</span></div><div class="sto "><span class="k">Every message</span><code>logs/messages.jsonl</code><span class="muted">Label, confidence, attempts, cost, masked</span></div><div class="sto "><span class="k">The bar to beat</span><code>logs/baseline.json</code><span class="muted">Provider, models, prompt hash, every score</span></div><div class="sto "><span class="k">Training set, if ever needed</span><code>tickets-labelled.csv</code><span>plus examples and corrections</span><span class="muted">Plain format any vendor accepts</span></div></div>
+  <p class="small muted">Teal edge: read by the model on every message, cached, so each costs almost nothing. The rest are written by the app or by people, and the model never reads them directly. Never copy an eval or hold-out case into examples.jsonl, or the test stops meaning anything. The kit's checks enforce this.</p>
+  <h3>Switching models</h3>
+  <div class="swap">
+    <div class="side"><b>Haiku 5.5 today</b><span class="muted">Reads taxonomy, examples and policies</span></div>
+    <div class="mid" aria-hidden="true">&rarr;</div>
+    <div class="side"><b>GPT-6 Luna or Gemini tomorrow</b><span class="muted">Change PROVIDER and the model in .env, run the eval set, compare with baseline.json. It reads the same files, so it starts with every fix already in place.</span></div>
+  </div>
+</section>
+
+<!-- Gate -->
+<p class="small"><b>Carried into the other pages on 30 Oct:</b> <a href="https://claude.ai/artifact/J2VN3tCvYrmVYch7YoZgz6" target="_blank" rel="noopener">Model Router</a> (how the system picks, switches and falls back), <a href="https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R" target="_blank" rel="noopener">MVP Architecture v4</a>, <a href="https://claude.ai/artifact/FvT86SqEcuLC6KVfzQ6BNy" target="_blank" rel="noopener">Stage 1</a>, <a href="https://claude.ai/artifact/FBBRS3vAxXKeoyuHYAvfmV" target="_blank" rel="noopener">Stage 2</a> and the <a href="https://claude.ai/artifact/EBrZY2HKgRuvSn2qruGPkh" target="_blank" rel="noopener">Lifecycle Plan</a>.</p>
+<section class="panel" aria-labelledby="gt">
+  <div class="ph"><span class="tag">Gate</span><h2 id="gt">Stage 3 is done when</h2><span class="q">Decision approved 30 Oct. The open items close when the bake-off runs at build step 14</span></div>
+  <ul class="gate">
+    <li><span>Build steps 1 to 14 run with the real AI</span><span class="sev no">not run</span></li>
+    <li><span>Build vs buy decided: buy</span><span class="sev y">7 / 7</span></li>
+    <li><span>Selection rule written down before any score</span><span class="sev y">done</span></li>
+    <li><span>Examples bank started, none copied from the eval set</span><span class="sev y">43, checked</span></li>
+    <li><span>Vendor shortlist scored on the requirements</span><span class="sev y">done, provisional</span></li>
+    <li><span>Model check run on Claude, GPT and Gemini (60 cases)</span><span class="sev p">script ready</span></li>
+    <li><span>Bake-off runs A to H finished and saved</span><span class="sev no">not run</span></li>
+    <li><span>Primary vendor and a backup from another vendor chosen</span><span class="sev no">open</span></li>
+    <li><span>Vendor questions answered by the top two</span><span class="sev no">open</span></li>
+    <li><span>The selection rule picked one model for each step</span><span class="sev no">open</span></li>
+    <li><span>Cost measured per message and per language, with caching on, and at or under the target (or the target changed, with a reason)</span><span class="sev no">open</span></li>
+    <li><span>p95 reply under 4 seconds</span><span class="sev no">open</span></li>
+    <li><span>Fallbacks tested: timeout, refusal, bad JSON, failed output check, backup vendor, kill switch</span><span class="sev no">open</span></li>
+    <li><span>Retry rate measured, under 10%, never more than 4 model calls a message</span><span class="sev no">open</span></li>
+    <li><span>Provider, models and backup pinned in .env, and baseline.json saved</span><span class="sev p">.env ready</span></li>
+    <li><span>Bake-off cost stayed under US$5</span><span class="sev no">open</span></li>
+  </ul>
+</section>
+
+<footer>Nova Bank is fictional. Prices as of October 2026: Anthropic's list prices; OpenAI's GPT-6.1 Terra announcement and the aipricing.guru and Finout price tables for GPT-6 Luna; benchlm.ai and justinmckelvey.com, quoting Google's rate card, for Gemini. Hosting in the UAE is from Microsoft and AWS docs as summarised by INVISOM. Arabic scores are from IFM's Jais 3 page and the Nile-Chat paper (arXiv 2507.04569). Check every price on the vendor's own page before a real contract. Token counts are estimated from the kit's knowledge files and will be replaced by measured usage from the bake-off. The exchange rate is an assumption. All data is synthetic.</footer>
+</div>
+<script>
+(() => {
+  const G = ["Fraud", "Harmless", "Red-team", "Honesty", "Intent", "Grounded", "Citations", "p95"];
+  const HARD = 4;
+  const V = { a: ["Anthropic", "v1", 1], o: ["OpenAI", "v2", 2], g: ["Google", "v3", 1] }; // [name, colour, UAE processing score]
+  const R = [["A","a","Haiku 5.5 · low",0.04],["B","a","Haiku 5.5 · medium",0.05],["C","a","Sonnet 5.5 · low",0.32],["D","a","Opus 5.5 · medium",0.61],
+             ["E","o","GPT-6 Luna · low",0.04],["F","o","GPT-6.1 Terra · low",0.17],["G","g","Flash-Lite 2.5 · low",0.03],["H","g","Gemini 3.8 Flash · low",0.28]];
+  const st = {}; R.forEach(r => st[r[0]] = G.map(() => 0));
+  const tb = document.querySelector("#board tbody"), th = document.querySelector("#board thead tr");
+  th.innerHTML += G.map((g, i) => `<th style="text-align:center"${i < HARD ? ' class="hard"' : ""}>${g}</th>`).join("") + '<th class="n">EGP</th><th>Status</th>';
+  const sym = ["–", "✓", "×"], word = ["not run", "pass", "fail"];
+  tb.innerHTML = R.map(([L, v, m, c]) => `<tr data-r="${L}"><td style="white-space:nowrap"><span class="L ${V[v][1]}">${L}</span>${m}</td>` +
+    G.map((g, i) => `<td class="c"><button type="button" class="t" data-r="${L}" data-g="${i}" data-v="0" aria-label="Run ${L} ${g}: not run">–</button></td>`).join("") +
+    `<td class="est${c > 0.10 ? " over" : ""}">${c.toFixed(2)}</td><td class="st"></td></tr>`).join("");
+  const egp = c => "EGP " + c.toFixed(2);
+  function render() {
+    tb.querySelectorAll("button.t").forEach(b => { const v = st[b.dataset.r][b.dataset.g]; b.dataset.v = v; b.textContent = sym[v]; b.setAttribute("aria-label", `Run ${b.dataset.r} ${G[b.dataset.g]}: ${word[v]}`); });
+    const pass = [], out = [];
+    R.forEach(r => { const x = st[r[0]]; if (x.includes(2)) out.push(r[0]); else if (x.every(v => v === 1)) pass.push(r); });
+    // cheapest first; same cost -> processing nearer Egypt (UAE score) wins
+    pass.sort((p, q) => p[3] - q[3] || V[q[1]][2] - V[p[1]][2]);
+    const pri = pass[0], bak = pri && pass.find(r => r[1] !== pri[1]);
+    tb.querySelectorAll("tr").forEach(tr => {
+      const L = tr.dataset.r, x = st[L], cell = tr.querySelector(".st");
+      tr.className = out.includes(L) ? "out" : pri && L === pri[0] ? "pri" : bak && L === bak[0] ? "bak" : "";
+      const hardMiss = x.slice(0, HARD).includes(2);
+      cell.textContent = hardMiss ? "out · hard gate" : x.includes(2) ? "out" : pri && L === pri[0] ? "primary" : bak && L === bak[0] ? "backup" : x.every(v => v === 1) ? "passed" : x.some(v => v) ? "in progress" : "";
+    });
+    const $ = id => document.getElementById(id);
+    const done = R.every(r => st[r[0]].includes(2) || st[r[0]].every(v => v === 1));
+    if (pri) {
+      $("o-pri").textContent = `${pri[0]} · ${pri[2]}`; $("o-pri-d").textContent = `${V[pri[1]][0]}, ${egp(pri[3])} a conversation`;
+      $("o-bak").textContent = bak ? `${bak[0]} · ${bak[2]}` : "none yet"; $("o-bak-d").textContent = bak ? `${V[bak[1]][0]}, ${egp(bak[3])}` : "No passing run from another vendor";
+      const tie = pass.filter(r => r[3] === pri[3] && r[1] !== pri[1]);
+      let why = `${out.length} run${out.length === 1 ? "" : "s"} out, ${pass.length} passed. ${pri[0]} is the cheapest that passed.`;
+      if (tie.length) why += ` It ties on cost with ${tie.map(r => r[0]).join(", ")}, and ${V[pri[1]][0]} wins the tie-break: processing nearer Egypt.`;
+      if (pri[3] > 0.10) why += " Only a step-up tier passed, so write down which cases the cheap tiers failed and reset the EGP 0.10 target with that reason.";
+      $("o-why").textContent = why;
+    } else {
+      $("o-pri").textContent = "–"; $("o-bak").textContent = "–"; $("o-bak-d").textContent = "";
+      $("o-pri-d").textContent = done ? "Nothing passed" : "Mark the cells to see who wins";
+      $("o-why").textContent = done ? "Nothing passes, so the model isn't the problem. Fix the prompt, rules or data, and rerun from the worst failing case." : "Runs with any red cell are out. Of the runs with every cell green, the cheapest wins.";
+    }
+  }
+  tb.addEventListener("click", e => { const b = e.target.closest("button.t"); if (!b) return; const x = st[b.dataset.r]; x[b.dataset.g] = (x[b.dataset.g] + 1) % 3; press(null); render(); });
+  const set = (runs, gate, v) => runs.forEach(L => st[L][gate] = v);
+  const all = v => R.forEach(r => st[r[0]] = G.map(() => v));
+  const S = {
+    all: () => all(1),
+    franco: () => { all(1); set(["G"], 4, 2); },
+    stepup: () => { all(1); set(["A", "B", "E", "G"], 4, 2); set(["A"], 5, 2); },
+    none: () => { all(1); set(["A","B","C","D","E","F","G","H"], 4, 2); set(["E"], 0, 2); },
+    clear: () => all(0),
+  };
+  const btns = document.querySelectorAll(".scen button");
+  function press(k) { btns.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.s === k && k !== "clear"))); }
+  btns.forEach(b => b.addEventListener("click", () => { S[b.dataset.s](); press(b.dataset.s); render(); }));
+  render();
+})();
+</script>
+
+
+</body></html>

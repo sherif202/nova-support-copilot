@@ -54,6 +54,7 @@ Stopped on 30 Oct 2026, before the internal beta. Version 1.0.11 is the locked b
 | `public/` | Three screens: customer chat, agent inbox, and the **PM control panel** (Key Results, cost per model ID, bottlenecks, iterations, auto-updated recommendations). Nova Bank logo in `public/logo.svg`. |
 | `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
 | `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` · `tools/build_linked_tickets.mjs` | Step 14 eval with SHIP/DO NOT SHIP (asked at a fixed date), red team, the one-time hold-out run, the stage 7 shadow run on 200 labelled tickets, and the script that links those tickets to the customer records. |
+| `docs/lifecycle/` | The lifecycle plan and the stage 1 to 4 pages, as published. |
 | `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |
 | `docs/stages/` | Visual stage reports 5 to 9 (open `docs/stages/index.html`). |
 | `docs/telos/critique-card.html` | The screens critiqued against Nova's Key Results with the Telos method. |
