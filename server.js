@@ -25,7 +25,7 @@ loadEnv();
 
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
 const { prompts, reply, answerUserTurn, retryNote } = require("./lib/prompts");
-const { runChecks } = require("./lib/checks");
+const { runChecks, SECURITY_CHECKS } = require("./lib/checks");
 const { lookup, liveNotices } = require("./lib/lookup");
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
@@ -73,7 +73,9 @@ function readBody(req) {
 
 // The AI client. The key comes from .env and is never printed or sent to the browser.
 const Anthropic = require("@anthropic-ai/sdk");
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 15000, maxRetries: 1 });
+// Every call: 15 second timeout, max_tokens set in callModel, and no hidden SDK retries, so one message never
+// makes more than 3 model calls (understand once, answer at most twice). Step 15, "denial of wallet".
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 15000, maxRetries: 0 });
 const UNDERSTAND_MODEL = process.env.UNDERSTAND_MODEL || "claude-haiku-5-5";
 
 // The JSON shape the understand prompt asks for (prompts/understand.md, section 8).
@@ -241,6 +243,10 @@ async function answer(customerId, message, label, testNow) {
       console.log(`[answer] sources=${json.sources.join(",") || "none"} checks passed=${checked.passed.join(",")}${checked.failed ? ` FAILED=${checked.failed.check}` : ""}`);
       if (!checked.failed) return { ...meta, status: "ok", json, attempts: attempt, checks_passed: checked.passed };
       failed = checked.failed;
+      // A reply that asks for a secret, quotes the prompt or contains a link is never retried (step 15).
+      if (SECURITY_CHECKS.has(failed.check)) {
+        return { ...meta, status: "check_failed", json: null, attempts: attempt, checks_passed: checked.passed, failed_check: failed.check };
+      }
     }
     messages.push({ role: "assistant", content: result.text || "{}" });
   }
@@ -407,6 +413,20 @@ function newTicket(customerId, message, result, queue, note) {
   return ticket;
 }
 
+// ---- Step 15: at most 20 messages a minute per customer (docs/03-SECURITY-AND-FRAUD.md, C) ----
+
+const RATE_LIMIT = 20;
+const recentMessages = new Map(); // customerId -> times of the last minute's messages
+
+function rateLimited(customerId) {
+  const now = Date.now();
+  const times = (recentMessages.get(customerId) || []).filter((t) => now - t < 60000);
+  const limited = times.length >= RATE_LIMIT;
+  if (!limited) times.push(now);
+  recentMessages.set(customerId, times);
+  return limited;
+}
+
 // ---- Step 13: the turn log (logs/messages.jsonl, masked, never committed) ----
 
 const LOGS = path.join(ROOT, "logs");
@@ -555,7 +575,24 @@ const server = http.createServer(async (req, res) => {
       // Step 9: junk, length and masking checks in code, before anything is sent anywhere or saved.
       const checked = guard(message);
       let result;
-      if (checked.stop) {
+      if (rateLimited(customerId)) {
+        // Step 15: over 20 messages a minute from one customer gets R-WAIT, with no model call (red-team R9).
+        console.log(`[rate limit] ${customerId} over ${RATE_LIMIT} messages a minute, no model call`);
+        const language = scriptLanguage(checked.masked) === "english" ? "english" : "arabic";
+        result = {
+          input_language: language,
+          reply_language: language,
+          category: "General",
+          intent: "general.unknown",
+          priority: "P4",
+          confidence: 0,
+          answer_text: reply("R-WAIT", language),
+          sources: [],
+          action: "answer",
+          ticket_status: "resolved_pending_confirmation",
+          reply_id: "R-WAIT",
+        };
+      } else if (checked.stop) {
         console.log(`[guard] ${checked.stop}, no model call`);
         result = {
           input_language: checked.language,

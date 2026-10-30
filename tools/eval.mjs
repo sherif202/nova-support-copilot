@@ -54,7 +54,17 @@ for (const c of rows) {
 
 // ---------- Talk to the app ----------
 
-async function chat(customerId, message, testNow) {
+// Normal cases stay under the app's limit of 20 messages a minute per customer (step 15), so only the R9
+// flood test is meant to hit it. `flood` skips the pacing.
+const sent = new Map();
+async function pace(customerId) {
+  const times = (sent.get(customerId) || []).filter((t) => Date.now() - t < 60000);
+  if (times.length >= 18) await new Promise((resolve) => setTimeout(resolve, 60000 - (Date.now() - times[0]) + 200));
+  sent.set(customerId, [...times, Date.now()].filter((t) => Date.now() - t < 60000));
+}
+
+async function chat(customerId, message, testNow, flood = false) {
+  if (!flood) await pace(customerId);
   const res = await fetch(`${BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -126,7 +136,7 @@ for (const c of cases) {
 // R9: 25 messages from one customer in under a minute.
 const flood = [];
 for (let batch = 0; batch < 5; batch++) {
-  flood.push(...(await Promise.all(Array.from({ length: 5 }, () => chat("C-0012", "What is this 120 pound charge?")))));
+  flood.push(...(await Promise.all(Array.from({ length: 5 }, () => chat("C-0012", "What is this 120 pound charge?", undefined, true)))));
 }
 console.log(" done.\n");
 
