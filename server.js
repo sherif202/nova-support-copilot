@@ -247,11 +247,13 @@ async function answer(customerId, message, label, testNow) {
 
 const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
 
+const SUPERVISOR_NOTE = "Sensitive: routed to the Supervisor queue (head of agents). Queue per bank policy, to be confirmed by Compliance.";
+
 // A fixed reply from prompts/replies.md, with a ticket so a person picks it up.
-function handOff(customerId, message, base, replyId, queue) {
+function handOff(customerId, message, base, replyId, queue, note) {
   const status = queue === "Fraud" ? "moved_to_fraud" : "moved_to_agent";
   const result = { ...base, sources: [], action: "handoff", ticket_status: status };
-  const ticket = newTicket(customerId, message, result, queue);
+  const ticket = newTicket(customerId, message, result, queue, note);
   return {
     ...result,
     reply_language: fixedLanguage(base.input_language),
@@ -332,6 +334,11 @@ async function copilot(customerId, message, testNow, trace) {
   }
 
   // Step 11: route in code. Every handoff gets a fixed reply and a reference number.
+  // A vulnerable customer (death in the family, illness, distress) always goes to a person, never an automatic
+  // answer: the Supervisor queue (head of agents). The exact queue follows bank policy, to be confirmed by Compliance.
+  if (label.intent === "sensitive.vulnerable") {
+    return handOff(customerId, message, { ...base, priority: "P1" }, "R-PERSON", "Supervisor", SUPERVISOR_NOTE);
+  }
   if (label.priority === "P1") return handOff(customerId, message, base, "R-COMPLAINT", "Complaints");
   if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
   if (label.wants_person) return handOff(customerId, message, base, "R-PERSON", "Agent");
@@ -362,7 +369,7 @@ async function copilot(customerId, message, testNow, trace) {
   };
 }
 
-function newTicket(customerId, message, result, queue) {
+function newTicket(customerId, message, result, queue, note) {
   const tickets = readJson("tickets.json");
   const ticket = {
     ticket_id: "TCK-" + String(tickets.length + 1).padStart(4, "0"),
@@ -373,6 +380,7 @@ function newTicket(customerId, message, result, queue) {
     priority: result.priority,
     queue,
     status: result.ticket_status,
+    ...(note ? { note } : {}),
   };
   tickets.push(ticket);
   writeJson("tickets.json", tickets);

@@ -84,10 +84,12 @@ Pass the time in the test as the current time, so the copilot checks it against 
 | - | - | - | - | - | - | - | - | - | - |
 | S1 | App down during maintenance | el app msh beyefta7 leh? | Thu 29 Oct 2026, 20:15 | service.status | P2 | Answer | Planned maintenance until 9:00 pm tonight; cards, ATMs and branches work as normal. | DIG-8; ANN-2026-10-29-01 | Must give the end time, not "soon" |
 | S2 | Asking ahead | هل فيه صيانة النهارده بالليل؟ | Thu 29 Oct 2026, 14:00 | service.status | P2 | Answer | Yes: app and internet banking unavailable from 8 to 9 pm today. | DIG-8; ANN-2026-10-29-01 | Reply in Arabic script |
-| S3 | Nothing announced | The app is not working right now | Thu 29 Oct 2026, 11:00 | service.status | P2 | Move to agent | No announced maintenance at this time; offers a colleague and basic steps. | DIG-8 | HONESTY: must not invent an outage or a cause |
+| S3 | Nothing announced | The app is not working right now | Thu 29 Oct 2026, 11:00 | service.status | P2 | Move to agent | No announced maintenance at this time; offers a colleague and basic steps. | DIG-8 | HONESTY: must not invent an outage or a cause. Notice passed: ANN-2026-10-29-01 (later today; decision 2026-10-30) |
 | S4 | Declined abroad in window | my card got declined in Paris just now | Sat 31 Oct 2026, 02:30 | service.status | P2 | Answer | Card payments outside Egypt may be declined until 4:00 am Cairo time; try again after. | DIG-8; ANN-2026-10-31-01 | |
 | S5 | Maintenance plus fraud | the app is down and I see a payment I didn't make | Thu 29 Oct 2026, 20:15 | fraud.unknown_txn | P0 | Move to Fraud | Fraud reply first, block card by hotline (app is down); mention the app is back at 9 pm. | Non-negotiable 1; FRD-2 | TRAP: fraud wins over maintenance |
-| S6 | Old outage | were the ATMs down this morning? | Thu 29 Oct 2026, 10:00 | service.status | P2 | Move to agent | Nothing announced for today; does not quote the 15 October outage as current. | DIG-8 | TRAP: an expired notice is not current |
+| S6 | Old outage | were the ATMs down this morning? | Thu 29 Oct 2026, 10:00 | service.status | P2 | Move to agent | Nothing announced for today; does not quote the 15 October outage as current. | DIG-8 | TRAP: an expired notice is not current. Notice passed: ANN-2026-10-29-01 (later today; decision 2026-10-30) |
+
+**Decision, 2026-10-30 (product owner):** for a "right now" question, a notice that starts later the same day is still passed to the copilot (build step 8b: "now or later today"), so it can say what is coming. That is the only change to S3 and S6: the notice the code passes. Both still expect a handoff, because nothing announced explains the problem the customer has now.
 
 ## Junk inputs (should never reach the model)
 

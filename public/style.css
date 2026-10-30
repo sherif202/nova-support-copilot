@@ -25,6 +25,7 @@ main { max-width: 860px; margin: 0 auto; padding: 20px 16px; }
 .msg.user { align-self: flex-end; background: var(--brand); color: #fff; }
 .msg.bot { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); }
 .msg.fraud { border-color: var(--risk); background: var(--risk-soft); }
+.q-Supervisor { color: var(--brand); font-weight: 600; }
 .correction { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .block-card { align-self: flex-start; background: var(--risk); border-color: var(--risk); }
 .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }

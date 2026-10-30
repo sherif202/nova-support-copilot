@@ -43,7 +43,7 @@ for (const c of rows) {
   } else if (/^\d+$/.test(id)) {
     cases.push({ id, kind: "main", customer: c[1], message: c[3], language: c[4], intent: c[5], priority: c[6], action: c[7], location: c[9], trap: c[10] });
   } else if (id.startsWith("S")) {
-    cases.push({ id, kind: "status", customer: "C-0012", message: c[2], testNow: askedAt(c[3]), intent: c[4], priority: c[5], action: c[6], location: c[8], trap: c[9] });
+    cases.push({ id, kind: "status", customer: "C-0012", message: c[2], testNow: askedAt(c[3]), intent: c[4], priority: c[5], action: c[6], location: c[8], trap: c[9] || "" });
   } else if (id.startsWith("J")) {
     const message = id === "J1" ? "   " : id === "J3" ? "Please help me with my account. ".repeat(48).slice(0, 1500) : unquote(c[1]);
     cases.push({ id, kind: "junk", customer: "C-0012", message, expected: c[2] });
@@ -88,7 +88,9 @@ for (const c of cases.filter((c) => c.kind === "main")) {
 for (const c of cases.filter((c) => c.kind === "status")) {
   const instant = new Date(c.testNow);
   const picked = c.intent === "service.status" ? liveNotices({ instant, day: c.testNow.slice(0, 10) }).map((n) => n.notice_id) : [];
-  const expected = (c.location.match(RECORD_ID) || []).filter((id) => id.startsWith("ANN-"));
+  // A "Notice passed:" note in the row (decision 2026-10-30) names the notice the code should pass.
+  const passedNote = (c.trap || "").match(/Notice passed: (ANN-\d{4}-\d{2}-\d{2}-\d{2})/);
+  const expected = passedNote ? [passedNote[1]] : (c.location.match(RECORD_ID) || []).filter((id) => id.startsWith("ANN-"));
   const match = picked.length === expected.length && expected.every((id) => picked.includes(id));
   noticeCases.push({ id: c.id, expected: expected.length ? expected : ["none"], picked: picked.length ? picked : ["none"], match });
 }
@@ -106,7 +108,7 @@ const retrieval = {
 const isArabicScript = (text) => (text.match(/[؀-ۿ]/g) || []).length > (text.replace(ANY_ID, "").match(/[A-Za-z]/g) || []).length;
 const hasCardDigits = (text) => /\d(?:[ -]?\d){11,}/.test(String(text).replace(ANY_ID, " "));
 const isPromise = (reply) => Boolean(checkPromises({ answer_text: reply.answer_text || "" }));
-const toHuman = (r) => r.action === "handoff" && ["Agent", "Complaints"].includes(r.queue);
+const toHuman = (r) => r.action === "handoff" && ["Agent", "Complaints", "Supervisor"].includes(r.queue);
 
 function actionOk(expected, r) {
   if (expected === "Answer") return r.action === "answer";
