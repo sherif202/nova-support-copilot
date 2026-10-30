@@ -90,21 +90,76 @@ async function loadTickets() {
   const res = await fetch("/api/tickets");
   const tickets = await res.json();
   if (!tickets.length) {
-    $("tickets").innerHTML = '<tr><td colspan="6" class="empty">No tickets yet. Handoffs from the chat appear here.</td></tr>';
+    $("tickets").innerHTML = '<tr><td colspan="8" class="empty">No tickets yet. Handoffs from the chat appear here.</td></tr>';
     return;
   }
   $("tickets").innerHTML = "";
   tickets.slice().reverse().forEach((t) => {
     const tr = document.createElement("tr");
-    [t.ticket_id, t.queue, t.priority, t.customer_id, t.message, t.status].forEach((v, i) => {
+    [t.ticket_id, t.queue, t.priority, t.intent, t.customer_id, t.message, t.status].forEach((v, i) => {
       const td = document.createElement("td");
       td.textContent = v;
       if (i === 1) td.className = "q-" + v;
-      if (i === 4) td.setAttribute("dir", "auto");
+      if (i === 5) td.setAttribute("dir", "auto");
       tr.appendChild(td);
     });
+    const action = document.createElement("td");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "secondary";
+    button.textContent = "Wrong label?";
+    button.addEventListener("click", () => showCorrectionForm(tr, t, button));
+    action.appendChild(button);
+    tr.appendChild(action);
     $("tickets").appendChild(tr);
   });
+}
+
+// "Wrong label?": the agent picks the right intent and a reason. Saved to logs/corrections.jsonl only;
+// a person decides later whether it becomes an approved example (docs/06-LEARNING-LOOP.md).
+let intents = null;
+async function showCorrectionForm(row, ticket, button) {
+  if (!intents) intents = await (await fetch("/api/intents")).json();
+  button.disabled = true;
+  const formRow = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = 8;
+  const form = document.createElement("form");
+  form.className = "correction";
+  const select = document.createElement("select");
+  select.replaceChildren(
+    ...intents.map((id) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = id;
+      return opt;
+    })
+  );
+  select.value = ticket.intent;
+  const reason = document.createElement("input");
+  reason.placeholder = "Short reason, e.g. 'da3' means lost";
+  reason.maxLength = 300;
+  reason.required = true;
+  const save = document.createElement("button");
+  save.type = "submit";
+  save.textContent = "Save correction";
+  const note = document.createElement("span");
+  note.className = "hint";
+  form.append("Right intent: ", select, reason, save, note);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/corrections", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ticket_id: ticket.ticket_id, agent_label: select.value, reason: reason.value }),
+    });
+    const data = await res.json();
+    note.textContent = res.ok ? "Saved for review. Nothing changes until a person approves it." : data.error;
+    if (res.ok) save.disabled = true;
+  });
+  cell.appendChild(form);
+  formRow.appendChild(cell);
+  row.after(formRow);
 }
 
 function show(view) {

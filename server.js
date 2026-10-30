@@ -210,7 +210,7 @@ async function answer(customerId, message, label, testNow) {
     notices,
     noticeIds: notices.map((n) => n.notice_id),
   };
-  const meta = { retrieved_ids: found.retrieved_ids, notice_ids: ctx.noticeIds, usages: [] };
+  const meta = { retrieved_ids: found.retrieved_ids, notice_ids: ctx.noticeIds, calls: [] };
   console.log(`[answer] now=${now.text} notices=${ctx.noticeIds.join(",") || "none"} retrieved=${found.retrieved_ids.join(",") || "none"}`);
 
   const messages = [{ role: "user", content: user }];
@@ -227,7 +227,7 @@ async function answer(customerId, message, label, testNow) {
       messages,
       schema: ANSWER_SCHEMA,
     });
-    meta.usages.push(result.usage);
+    meta.calls.push({ usage: result.usage, ms: result.ms });
     const json = parseJson(result.text, ANSWER_SCHEMA);
     if (!json) {
       failed = { check: "broken_json", detail: {} };
@@ -256,6 +256,24 @@ function handOff(customerId, message, base, replyId, queue) {
     ...result,
     reply_language: fixedLanguage(base.input_language),
     answer_text: reply(replyId, base.input_language, { REF: ticket.ticket_id }),
+    reply_id: replyId,
+    ticket_id: ticket.ticket_id,
+    queue,
+  };
+}
+
+// Token use of one step, added up over its attempts, for the log.
+function stepTrace(step, model, calls) {
+  const sum = (field) => calls.reduce((total, call) => total + (call.usage[field] || 0), 0);
+  return {
+    step,
+    model,
+    attempts: calls.length,
+    ms: calls.reduce((total, call) => total + call.ms, 0),
+    input_tokens: sum("input_tokens"),
+    output_tokens: sum("output_tokens"),
+    cache_read_tokens: sum("cache_read_input_tokens"),
+    cache_write_tokens: sum("cache_creation_input_tokens"),
   };
 }
 
@@ -274,7 +292,8 @@ function fraudHandOff(customerId, message, base) {
 
 // The copilot: fraud words first (no model), then understand, then route P1, P3, low confidence and
 // "talk to a person" to people, and answer only P2 and P4 from sources.
-async function copilot(customerId, message, testNow) {
+// `trace` collects what the log needs (steps, retrieved IDs, checks); it is never sent to the browser.
+async function copilot(customerId, message, testNow, trace) {
   const signal = fraudSignal(message);
   if (signal) {
     console.log(`[fraud] word list matched (${signal.signal}), no model call`);
@@ -288,10 +307,14 @@ async function copilot(customerId, message, testNow) {
 
   let label;
   try {
-    ({ label } = await understand(message));
+    const understood = await understand(message);
+    label = understood.label;
+    trace.steps.push(stepTrace("understand", UNDERSTAND_MODEL, [understood]));
+    trace.injection_suspected = label.injection_suspected;
   } catch (err) {
     // A failed or broken model reply never reaches the customer as an error: a person takes over.
     console.error(`[understand] failed: ${err.message}`);
+    trace.error = `understand: ${err.message}`;
     const base = { input_language: "english", category: "General", intent: "general.unknown", priority: "P4", confidence: 0 };
     return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
@@ -319,8 +342,14 @@ async function copilot(customerId, message, testNow) {
     answered = await answer(customerId, message, label, testNow);
   } catch (err) {
     console.error(`[answer] failed: ${err.message}`);
+    trace.error = `answer: ${err.message}`;
     return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
+  trace.steps.push(stepTrace("answer", ANSWER_MODEL, answered.calls));
+  trace.retrieved_ids = answered.retrieved_ids;
+  trace.notice_ids = answered.notice_ids;
+  trace.checks_passed = answered.checks_passed;
+  trace.failed_check = answered.failed_check || null;
   if (answered.status === "handoff") return handOff(customerId, message, base, "R-NO-SOURCE", "Agent");
   if (answered.status === "check_failed") return handOff(customerId, message, base, "R-CHECK-FAILED", "Agent");
   return {
@@ -349,6 +378,103 @@ function newTicket(customerId, message, result, queue) {
   writeJson("tickets.json", tickets);
   return ticket;
 }
+
+// ---- Step 13: the turn log (logs/messages.jsonl, masked, never committed) ----
+
+const LOGS = path.join(ROOT, "logs");
+
+function appendLog(file, entry) {
+  fs.mkdirSync(LOGS, { recursive: true });
+  fs.appendFileSync(path.join(LOGS, file), JSON.stringify(entry) + "\n");
+}
+
+let messageCounter = 0;
+function newMessageId() {
+  messageCounter += 1;
+  return `M-${Date.now().toString(36)}-${messageCounter}`;
+}
+
+// US$ per million tokens (Anthropic price list, October 2026). Cache reads and writes are priced separately.
+const PRICES = {
+  "claude-haiku-5-5": { input: 0.1, output: 0.5, cache_read: 0.01, cache_write: 0.125 },
+  "claude-sonnet-5-5": { input: 2, output: 10, cache_read: 0.2, cache_write: 2.5 },
+  "claude-opus-5-5": { input: 4, output: 20, cache_read: 0.2, cache_write: 5 },
+};
+
+function stepCost(step) {
+  const price = PRICES[step.model];
+  if (!price) return null;
+  return (
+    (step.input_tokens * price.input +
+      step.output_tokens * price.output +
+      step.cache_read_tokens * price.cache_read +
+      step.cache_write_tokens * price.cache_write) / 1e6
+  );
+}
+
+function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms }) {
+  const costs = trace.steps.map(stepCost);
+  const entry = {
+    time: new Date().toISOString(),
+    message_id: trace.message_id,
+    customerId,
+    message: masked,
+    input_language: result.input_language,
+    intent: result.intent,
+    priority: result.priority,
+    confidence: result.confidence,
+    injection_flagged: Boolean(injection_flagged || trace.injection_suspected),
+    action: result.action,
+    reply_id: result.reply_id || null,
+    queue: result.queue || null,
+    ticket_id: result.ticket_id || null,
+    sources: result.sources || [],
+    retrieved_ids: trace.retrieved_ids || [],
+    notice_ids: trace.notice_ids || [],
+    checks_passed: trace.checks_passed || [],
+    failed_check: trace.failed_check || null,
+    model: trace.steps.map((s) => s.model).join("+") || "none",
+    steps: trace.steps,
+    attempts: Object.fromEntries(trace.steps.map((s) => [s.step, s.attempts])),
+    tokens: trace.steps.reduce(
+      (t, s) => ({
+        input: t.input + s.input_tokens,
+        output: t.output + s.output_tokens,
+        cache_read: t.cache_read + s.cache_read_tokens,
+        cache_write: t.cache_write + s.cache_write_tokens,
+      }),
+      { input: 0, output: 0, cache_read: 0, cache_write: 0 }
+    ),
+    cost_usd: costs.some((c) => c === null) ? null : Number(costs.reduce((a, b) => a + b, 0).toFixed(6)),
+    ms,
+    prompts: {
+      understand: `${prompts.understand.version}#${prompts.understand.hash}`,
+      answer: `${prompts.answer.version}#${prompts.answer.hash}`,
+      replies: `${prompts.replies.version}#${prompts.replies.hash}`,
+    },
+    error: trace.error || null,
+  };
+  appendLog("messages.jsonl", entry);
+}
+
+// The turn that created a ticket, for the model name and message ID in a correction.
+function findTurnByTicket(ticketId) {
+  const file = path.join(LOGS, "messages.jsonl");
+  if (!fs.existsSync(file)) return null;
+  const lines = fs.readFileSync(file, "utf8").split("\n").filter(Boolean);
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const turn = JSON.parse(lines[i]);
+    if (turn.ticket_id === ticketId) return turn;
+  }
+  return null;
+}
+
+// Every intent ID in the taxonomy, for the "Wrong label?" picker.
+const INTENTS = [
+  ...new Set(
+    [...fs.readFileSync(path.join(ROOT, "knowledge", "nova-taxonomy.md"), "utf8").matchAll(/^- `([a-z]+\.[a-z_]+)`/gm)].map((m) => m[1])
+  ),
+];
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -396,11 +522,14 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const customerId = String(body.customerId || "");
       const message = String(body.message || "");
+      const started = Date.now();
+      const trace = { message_id: newMessageId(), steps: [] };
       // Step 9: junk, length and masking checks in code, before anything is sent anywhere or saved.
       const checked = guard(message);
+      let result;
       if (checked.stop) {
         console.log(`[guard] ${checked.stop}, no model call`);
-        return sendJson(res, 200, {
+        result = {
           input_language: checked.language,
           reply_language: checked.language,
           category: "General",
@@ -411,11 +540,50 @@ const server = http.createServer(async (req, res) => {
           sources: [],
           action: "answer",
           ticket_status: "resolved_pending_confirmation",
-        });
+          reply_id: checked.stop,
+        };
+      } else if (process.env.COPILOT_ENABLED === "false") {
+        // Step 13 kill switch: no model call at all. The fraud word list is plain code, so fraud still goes to Fraud.
+        console.log("[kill switch] COPILOT_ENABLED=false, straight to a person");
+        const base = { input_language: scriptLanguage(checked.masked), category: "General", intent: "general.unknown", priority: "P4", confidence: 0 };
+        const signal = fraudSignal(checked.masked);
+        result = signal
+          ? fraudHandOff(customerId, checked.masked, { ...base, category: "Fraud and security", intent: signal.intent, confidence: 1 })
+          : handOff(customerId, checked.masked, base, "R-OFF", "Agent");
+      } else {
+        if (checked.injection_flagged) console.log("[guard] injection phrase flagged");
+        result = await copilot(customerId, checked.masked, body.testNow, trace);
       }
-      if (checked.injection_flagged) console.log("[guard] injection phrase flagged");
-      const result = await copilot(customerId, checked.masked, body.testNow);
-      return sendJson(res, 200, result);
+      writeTurnLog({ customerId, masked: checked.masked, injection_flagged: checked.injection_flagged, result, trace, ms: Date.now() - started });
+      const { reply_id, ...forBrowser } = result;
+      return sendJson(res, 200, forBrowser);
+    }
+
+    // The intents an agent can pick in "Wrong label?", from the taxonomy
+    if (req.method === "GET" && req.url === "/api/intents") {
+      return sendJson(res, 200, INTENTS);
+    }
+
+    // "Wrong label?" in the agent inbox: one masked line in logs/corrections.jsonl. Never changes knowledge/.
+    if (req.method === "POST" && req.url === "/api/corrections") {
+      const body = await readBody(req);
+      const ticket = readJson("tickets.json").find((t) => t.ticket_id === String(body.ticket_id || ""));
+      const agentLabel = String(body.agent_label || "");
+      if (!ticket) return sendJson(res, 400, { error: "Unknown ticket." });
+      if (!INTENTS.includes(agentLabel)) return sendJson(res, 400, { error: "Pick an intent from the list." });
+      const turn = findTurnByTicket(ticket.ticket_id) || {};
+      const correction = {
+        time: new Date().toISOString(),
+        message_id: turn.message_id || ticket.ticket_id,
+        message: ticket.message,
+        model_label: ticket.intent,
+        agent_label: agentLabel,
+        agent: mask(String(body.agent || "A-01")).slice(0, 20),
+        reason: mask(String(body.reason || "")).slice(0, 300),
+        model: turn.model || "none",
+      };
+      appendLog("corrections.jsonl", correction);
+      return sendJson(res, 200, { saved: true });
     }
 
     // "Talk to a person" button
