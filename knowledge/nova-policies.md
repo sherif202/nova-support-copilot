@@ -11,6 +11,7 @@ Nova Bank is fictional. All fees and timelines are invented for this project. Am
 - **FEE-1.2** Business Account monthly fee: EGP 75 a month.
 - **FEE-1.3** Closing an account within 6 months of opening: EGP 100. Free after 6 months.
 - **FEE-1.4** Printed statement: EGP 5 a page. E-statements are free.
+- **FEE-1.5** Cheque book of 25 cheques: EGP 40, ordered in the app or at a branch, ready to collect at the branch in 5 business days. (Synthetic fact, added 30 Oct 2026.)
 
 ### Cash and ATMs
 - **FEE-2.1** Withdrawal at a Nova ATM: free.
@@ -34,7 +35,7 @@ Nova Bank is fictional. All fees and timelines are invented for this project. Am
 - **FEE-7.1** Transfer between Nova accounts: free.
 - **FEE-7.3** ACH transfer in Egypt: EGP 10.
 
-Not in the fee schedule (the copilot must not invent a price): cheque books, safe deposit boxes, certificates of balance. These go to a colleague.
+Not in the fee schedule (the copilot must not invent a price): safe deposit boxes, certificates of balance. These go to a colleague.
 
 ## DSP · Disputes
 
@@ -63,6 +64,11 @@ A dispute is a transaction the customer made but believes is wrong: charged twic
 - **FRD-3** The Fraud team calls back within 2 hours in working hours, 8 hours outside working hours.
 - **FRD-4** Nova never asks for a full card number, CVV, PIN, OTP or password, by phone, SMS, email or chat.
 - **FRD-5** After the customer reports fraud, they are not liable for later transactions.
+
+## GEN · Branches
+
+- **GEN-1** Branch hours: every Nova branch is open Sunday to Thursday, 8:30 am to 3:00 pm Cairo time, and closed on Friday and Saturday. (Synthetic fact, added 30 Oct 2026.)
+- **GEN-2** Hours on public holidays, during Ramadan and on bank holidays are announced separately and are not in this file. For those days the copilot gives no hours, not even the normal ones, and offers a colleague. (Added 30 Oct 2026.)
 
 ## DIG · The copilot itself
 
