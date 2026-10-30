@@ -25,7 +25,7 @@ loadEnv();
 
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
 const { prompts, reply, answerUserTurn } = require("./lib/prompts");
-const { lookup } = require("./lib/lookup");
+const { lookup, liveNotices } = require("./lib/lookup");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -146,20 +146,43 @@ async function understand(message) {
   return { ...result, label };
 }
 
-function cairoNow() {
-  return new Date().toLocaleString("en-GB", {
+// The current time in Cairo: { instant, day: "YYYY-MM-DD", text }.
+// For tests only, when ALLOW_TEST_NOW=true, a request may say what "now" is, as an ISO time with its offset
+// (for example 2026-10-29T20:15:00+02:00). Otherwise the real clock is always used.
+function cairoNow(testNow) {
+  if (testNow && process.env.ALLOW_TEST_NOW === "true") {
+    const match = String(testNow).match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?([+-]\d{2}:\d{2})$/);
+    if (match) {
+      const instant = new Date(testNow);
+      const [year, month, day] = match[1].split("-").map(Number);
+      const label = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", {
+        weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
+      });
+      return { instant, day: match[1], text: `${label}, ${match[2]} (Cairo)` };
+    }
+  }
+  const instant = new Date();
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo", year: "numeric", month: "2-digit", day: "2-digit" })
+      .formatToParts(instant).map((p) => [p.type, p.value])
+  );
+  const text = instant.toLocaleString("en-GB", {
     timeZone: "Africa/Cairo",
     weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
   }) + " (Cairo)";
+  return { instant, day: `${parts.year}-${parts.month}-${parts.day}`, text };
 }
 
 // Step 2: write the answer from this customer's own top 3 records and the cached policies.
-async function answer(customerId, message, label) {
+// Maintenance questions also get the notices that are live now or later today, never expired ones.
+async function answer(customerId, message, label, testNow) {
+  const now = cairoNow(testNow);
   const found = lookup(customerId, message, label.intent);
+  const notices = label.intent === "service.status" ? liveNotices(now) : [];
   const user = answerUserTurn({
-    NOW_CAIRO: cairoNow(),
+    NOW_CAIRO: now.text,
     TOP_3_RECORDS: found.records.length ? found.records.map((r) => JSON.stringify(r)).join("\n") : "none",
-    LIVE_NOTICES_OR_NONE: "none",
+    LIVE_NOTICES_OR_NONE: notices.length ? notices.map((n) => JSON.stringify(n)).join("\n") : "none",
     LAST_TURNS_MASKED: "none",
     INPUT_LANGUAGE: label.input_language,
     INTENT: label.intent,
@@ -173,8 +196,9 @@ async function answer(customerId, message, label) {
     user,
     schema: ANSWER_SCHEMA,
   });
+  console.log(`[answer] now=${now.text} notices=${notices.map((n) => n.notice_id).join(",") || "none"}`);
   console.log(`[answer] retrieved=${found.retrieved_ids.join(",") || "none"} sources=${result.json.sources.join(",") || "none"} action=${result.json.action}`);
-  return { ...result, retrieved_ids: found.retrieved_ids };
+  return { ...result, retrieved_ids: found.retrieved_ids, notice_ids: notices.map((n) => n.notice_id) };
 }
 
 const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
@@ -191,7 +215,7 @@ function handOff(customerId, message, base, replyId, queue) {
 }
 
 // The copilot: understand, then answer P2 and P4 from sources. P0, P1 and P3 are routed in steps 10 and 11.
-async function copilot(customerId, message) {
+async function copilot(customerId, message, testNow) {
   let label;
   try {
     ({ label } = await understand(message));
@@ -222,13 +246,17 @@ async function copilot(customerId, message) {
 
   let answered;
   try {
-    answered = await answer(customerId, message, label);
+    answered = await answer(customerId, message, label, testNow);
   } catch (err) {
     console.error(`[answer] failed: ${err.message}`);
     return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
   if (answered.json.action === "handoff") {
     return handOff(customerId, message, base, "R-NO-SOURCE", "Agent");
+  }
+  // A maintenance answer always rests on DIG-8, the rule for sharing notices (build step 8b).
+  if (answered.json.sources.some((id) => id.startsWith("ANN-")) && !answered.json.sources.includes("DIG-8")) {
+    answered.json.sources.push("DIG-8");
   }
   return {
     ...base,
@@ -303,7 +331,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const customerId = String(body.customerId || "");
       const message = String(body.message || "");
-      const result = await copilot(customerId, message);
+      const result = await copilot(customerId, message, body.testNow);
       return sendJson(res, 200, result);
     }
 
