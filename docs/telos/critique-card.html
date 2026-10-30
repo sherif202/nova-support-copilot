@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telos Critique Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../stages/stages.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="../../public/logo.svg" alt="">Nova Bank · support copilot</div>
+    <nav class="crumbs" aria-label="Stage reports">
+      <a href="../stages/index.html">All stages</a><a href="../stages/stage-5-evaluation.html">5</a><a href="../stages/stage-6-integration-ux.html">6</a><a href="../stages/stage-7-staged-launch.html">7</a><a href="../stages/stage-8-monitoring.html">8</a><a href="../stages/stage-9-iteration.html">9</a><a href="critique-card.html" aria-current="page">Telos critique</a>
+    </nav>
+  </div>
+
+  <header class="stage">
+    <p class="eyebrow">Critique card · method: Telos (ProductVoyagers, Apache-2.0)</p>
+    <h1>Does each screen serve Nova's goals?</h1>
+    <p class="lede">Telos critiques a flow against a Key Result, not against generic UX rules: an alignment score, what already serves the goal, what to reconsider ranked by impact, numbered suggestions, and the sub-metric each one moves. Then the critique itself is scored before anyone trusts it. Applied here by hand to Nova's own screens and goals; the plugin itself was not installed.</p>
+  </header>
+
+  <section class="panel">
+    <h2>The Key Results</h2>
+    <div class="kpis">
+      <div class="kpi"><span class="l">KR1 · North Star</span><span class="v">Verified resolution</span><span class="l">40% of in-scope chats closed by the copilot, no repeat contact in 7 days</span></div>
+      <div class="kpi"><span class="l">KR2 · Must never slip</span><span class="v">Fraud recall 100%</span><span class="l">one miss stops the release</span></div>
+      <div class="kpi"><span class="l">KR3</span><span class="v">Cost under EGP 1</span><span class="l">per conversation</span></div>
+      <div class="kpi"><span class="l">KR4</span><span class="v">p95 under 6 s</span><span class="l">launch gate</span></div>
+    </div>
+    <p class="note">Flow critiqued: customer chat (welcome → question → answer or handoff → feedback), the agent inbox, and the PM control panel. Screens: <code>docs/screenshots/01</code> to <code>11</code>.</p>
+  </section>
+
+  <section class="panel">
+    <div class="top"><h2>KR alignment</h2><span class="verdict">3 / 5 → 4 / 5 after applying</span></div>
+    <p>Before: the flow was safe and explained itself well, but it didn't <i>measure</i> the North Star ("Was this helpful?" is not "Did it solve it?") and agents had to re-read the customer's words. After applying recommendations 1 and 2, every answer measures KR1 directly and every handoff carries a summary. It is not 5/5 until KR1 is measured on real pilot chats and repeat contacts can be seen.</p>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>What serves the Key Results</h2>
+      <ul class="clean">
+        <li><b>Fraud reply first, in red, with block card and hotline</b> (chat, fraud reply) <span class="tag">KR2 · Safety</span></li>
+        <li><b>"Talk to a person" always visible, no AI</b> (chat) <span class="tag">KR1 · Trust</span></li>
+        <li><b>"Why this answer?" with sources in plain words</b> (chat, answer) builds trust so customers accept the answer instead of calling <span class="tag">KR1 · Resolution</span></li>
+        <li><b>"Did you mean…" with 2 safe options</b> (chat, low confidence) turns a handoff into a resolution <span class="tag">KR1 · Resolution</span></li>
+        <li><b>Cached prompts, one small model</b> (behind every answer) <span class="tag">KR3 · Cost</span> <span class="tag">KR4 · Speed</span></li>
+      </ul>
+    </section>
+    <section class="panel">
+      <h2>What to reconsider</h2>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Impact</th><th>Recommendation</th><th>Moves</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="st fail">HIGH</span></td><td>Ask "Did this solve your question?" (Yes/No) instead of "Was this helpful?": it is the exact signal KR1 counts</td><td>KR1 · Resolution</td><td><span class="st done">Applied</span></td></tr>
+          <tr><td>2</td><td><span class="st fail">HIGH</span></td><td>Give every handoff a one-line summary in Nova's terms, so the agent never makes the customer repeat (a repeat contact breaks KR1)</td><td>KR1 · Resolution</td><td><span class="st done">Applied</span></td></tr>
+          <tr><td>3</td><td><span class="st fail">HIGH</span></td><td>Show the PM the Key Results live, with costs per model ID, bottlenecks and iterations, and recompute the recommendations on every refresh</td><td>KR1–KR4</td><td><span class="st done">Applied: PM control panel</span></td></tr>
+          <tr><td>4</td><td><span class="st part">MEDIUM</span></td><td>After a solved answer, offer one related next step ("Anything else about this charge?") to cut repeat contacts</td><td>KR1 · Resolution</td><td><span class="st todo">Planned</span></td></tr>
+          <tr><td>5</td><td><span class="st part">MEDIUM</span></td><td>Remember this conversation (short-term memory) so a follow-up doesn't restart from zero</td><td>KR1 · Resolution</td><td><span class="st todo">Planned</span></td></tr>
+          <tr><td>6</td><td><span class="st part">MEDIUM</span></td><td>Hand off after 6 s instead of 15 s, so a slow model never leaves the customer waiting</td><td>KR4 · Speed</td><td><span class="st todo">Planned after the pilot</span></td></tr>
+          <tr><td>7</td><td><span class="st part">MEDIUM</span></td><td>Recognise Nova's product names (صندوق سنابل، ودائع البركة…) so they are labelled right, without inventing their rates</td><td>KR1 · Trust</td><td><span class="st done">Applied: names only</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Recommendations that keep updating</h2>
+    <p>The Telos idea is turned into a feature: the <b>PM control panel</b> recomputes its recommendations from live numbers every time it is opened, each tied to a Key Result, ranked HIGH or MEDIUM, and tagged with its sub-metric. For example: fraud tickets waiting (KR2), "not sure" handoffs over 10% (KR1), cost over EGP 1 (KR3), p95 over 4 s (KR4), the busiest queue as the bottleneck (KR1). This card is the one-off critique; the panel is the critique that never goes stale.</p>
+  </section>
+
+  <section class="panel">
+    <div class="top"><h2>How far to trust this critique</h2><span class="verdict">26 / 30 · pass mark 24</span></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Dimension (Telos judge)</th><th>Score</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>KR relevance</td><td>5</td><td>Every point is tied to a named Key Result</td></tr>
+        <tr><td>Blind-spot detection</td><td>4</td><td>Catches the unmeasured North Star and the repeat-contact risk; doesn't cover accessibility in depth</td></tr>
+        <tr><td>Screen reference accuracy</td><td>5</td><td>Each point names the screen and state</td></tr>
+        <tr><td>Actionability</td><td>5</td><td>Each recommendation is a concrete change; three were applied</td></tr>
+        <tr><td>Impact calibration</td><td>4</td><td>HIGH items move the North Star; the speed item may deserve HIGH if the pilot shows slow replies</td></tr>
+        <tr><td>Sub-metric accuracy</td><td>3</td><td>Tags are reasonable but not yet checked against pilot data</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>Caveat:</b> Telos says a critic shouldn't score its own critique. These scores were given by the same author, so treat them as a self-check; a separate judge (another model or a teammate) should re-score before this card goes to leadership.</div>
+  </section>
+
+  <footer>Method: Telos by ProductVoyagers (github.com/ProductVoyagers/telos), Apache-2.0. No Telos code was copied; the approach was applied by hand to Nova's screens and Key Results. Nova Bank is fictional; all data is synthetic.</footer>
+</div>
+</body>
+</html>

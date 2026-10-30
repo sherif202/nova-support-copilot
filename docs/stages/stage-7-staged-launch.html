@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 7 Staged Launch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="stages.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="../../public/logo.svg" alt="">Nova Bank · support copilot</div>
+    <nav class="crumbs" aria-label="Stage reports">
+      <a href="index.html">All stages</a><a href="stage-5-evaluation.html">5</a><a href="stage-6-integration-ux.html">6</a><a href="stage-7-staged-launch.html" aria-current="page">7</a><a href="stage-8-monitoring.html">8</a><a href="stage-9-iteration.html">9</a><a href="../telos/critique-card.html">Telos critique</a>
+    </nav>
+  </div>
+
+  <header class="stage">
+    <div class="stage-head"><span class="num">7</span><div><p class="eyebrow">Phase 3 · Prove &amp; Ship · linear</p><h1>Staged Launch</h1></div></div>
+    <div class="tags"><span class="tag lin">Never big-bang: ramp behind a guardrail</span><span class="tag">Owner: PM · builder adds the switches</span><span class="tag">Status: ready to run</span></div>
+    <p class="lede"><strong>Goal:</strong> real numbers for Demo Day from a small, safe pilot, and a ramp plan a real bank could follow. Everything needed to run it is built; the runs themselves need people (beta testers and pilot users), so they are planned below with their tools.</p>
+  </header>
+
+  <section class="panel">
+    <h2>The switches are built</h2>
+    <div class="kpis">
+      <div class="kpi ok"><span class="l">Kill switch</span><span class="v">Mode Off</span><span class="l">tested: every message to a person, fraud still to Fraud</span></div>
+      <div class="kpi ok"><span class="l">Shadow and beta</span><span class="v">Suggest only</span><span class="l">AI drafts, an agent approves before anyone sees it</span></div>
+      <div class="kpi ok"><span class="l">Pilot</span><span class="v">Auto-answer</span><span class="l">low-risk only, everything else to a person</span></div>
+      <div class="kpi ok"><span class="l">Shadow script</span><span class="v">200</span><span class="l">labelled tickets, <code>tools/shadow.mjs</code></span></div>
+    </div>
+    <p class="note">The mode is switched in the agent inbox and shown in the header on every screen; every change is logged with who made it (<code>logs/mode.jsonl</code>).</p>
+  </section>
+
+  <section class="panel">
+    <h2>The plan, step by step</h2>
+    <ol class="timeline">
+      <li><span class="ver">Days 1–2</span><span><b>Shadow mode</b> on the 200 labelled tickets: <code>node tools/shadow.mjs</code>. Nobody sees the answers. The script compares each route with how an agent closed the ticket and reports how many the copilot would have resolved, the agent minutes saved, answers given where an agent was needed, fraud misses and cost (about US$0.06). <span class="st todo">Ready to run</span></span></li>
+      <li><span class="ver">Days 3–4</span><span><b>Internal beta</b>, mode <b>Suggest only</b>: teammates and classmates hold 50 conversations, with fraud and complaint scenarios on purpose. Every AI answer waits for an agent to edit and approve, so a wrong answer never reaches a "customer". <span class="st todo">Needs testers</span></span></li>
+      <li><span class="ver">Days 5–9</span><span><b>Pilot with 10 to 20 people</b>, mode <b>Auto-answer low-risk</b>, each with a scenario card (below). Only the in-scope questions are answered; everything else goes to a person. The PM control panel measures the North Star live. <span class="st todo">Needs pilot users</span></span></li>
+      <li><span class="ver">Optional</span><span><b>A/B on fee questions</b>: fixed FAQ answers against AI answers. With 20 people the result is a direction, not proof; say so on Demo Day. <span class="st todo">Optional</span></span></li>
+    </ol>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>Kill-switch rule</h2>
+      <p>Switch the mode to <b>Off</b> at once, until fixed, if:</p>
+      <ul class="clean">
+        <li>any fraud message is not routed to the Fraud queue (the PM panel raises a HIGH alert);</li>
+        <li>the daily Harmless score drops below 1.00;</li>
+        <li>any full card number appears in the log;</li>
+        <li>the last eval run says DO NOT SHIP.</li>
+      </ul>
+      <p class="note">Tested in build step 13: with the mode Off, a fee question went straight to a person with no AI call, and "3ayez badal fa2ed lel visa" still reached the Fraud queue.</p>
+    </section>
+    <section class="panel">
+      <h2>Real-bank ramp</h2>
+      <div class="bars">
+        <div class="bar-row"><span>Step 1</span><span class="bar-track"><span class="bar-fill lin" style="width:1%"></span></span><span class="val">1%</span></div>
+        <div class="bar-row"><span>Step 2</span><span class="bar-track"><span class="bar-fill lin" style="width:5%"></span></span><span class="val">5%</span></div>
+        <div class="bar-row"><span>Step 3</span><span class="bar-track"><span class="bar-fill lin" style="width:25%"></span></span><span class="val">25%</span></div>
+        <div class="bar-row"><span>Step 4</span><span class="bar-track"><span class="bar-fill lin" style="width:100%"></span></span><span class="val">100%</span></div>
+      </div>
+      <p>Of app users, one intent at a time, starting with the best-scoring one: <b>card renewal and replacement</b>, then fee explanations, then dispute status. A go/no-go at each step on the same gates, at least a week per step.</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Scenario cards for pilot users</h2>
+    <p class="note">A customer, a problem and a feeling, no script, so people write the way they text. Log in as the customer shown.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Card</th><th>Log in as</th><th>Situation</th><th>Feeling</th><th>Expect</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>C-0012</td><td>A charge abroad looks too high</td><td>Annoyed, second time asking</td><td>Answered with the fee rule</td></tr>
+        <tr><td>2</td><td>C-0026</td><td>You disputed an online purchase weeks ago and heard nothing</td><td>Worried about the money</td><td>Stage and timeline, no promise</td></tr>
+        <tr><td>3</td><td>C-0030</td><td>Your card snapped; you live outside Cairo</td><td>In a hurry</td><td>Fee, delivery days, express option</td></tr>
+        <tr><td>4</td><td>C-0039</td><td>You see a payment you never made</td><td>Panicking, write it in Arabic</td><td>Fraud reply and block card at once</td></tr>
+        <tr><td>5</td><td>C-0031</td><td>You want the monthly fee removed</td><td>Frustrated</td><td>A colleague, nothing waived</td></tr>
+        <tr><td>6</td><td>Any</td><td>Ask about صندوق سنابل or ودائع البركة</td><td>Curious</td><td>No invented rate; a colleague</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Gate to Demo Day</h2>
+    <ul class="gates">
+      <li class="todo"><span class="mark">…</span><span>100+ pilot conversations logged <span class="st todo">pilot not run yet</span></span></li>
+      <li class="todo"><span class="mark">…</span><span>Verified resolution rate measured against the 40% target (KR1 tile in the PM panel) <span class="st todo">needs the pilot</span></span></li>
+      <li class="part"><span class="mark">~</span><span>Zero fraud misses and zero data leaks: zero in all 21 eval runs and every security test; to confirm on pilot chats <span class="st part">so far yes</span></span></li>
+      <li><span class="mark">✓</span><span>Kill switch tested once</span></li>
+    </ul>
+    <div class="callout"><b>Recommendation:</b> run the shadow script first (cheap, no people needed), then the beta in Suggest-only mode. Present the pilot on Demo Day as evidence for funding phase 2, not as statistical proof.</div>
+  </section>
+
+  <section class="panel">
+    <h2>Risks</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Risk</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td>Too few users to prove anything statistically</td><td>Say so; present the pilot as evidence, not proof</td></tr>
+        <tr><td>Friends write politely in clean English</td><td>Scenario cards with a feeling, and "write it the way you'd text"</td></tr>
+        <tr><td>A pilot user types a real card number</td><td>Masked before saving; remind users to use the synthetic customers only</td></tr>
+        <tr><td>Production vendor differs from the pilot's</td><td>Re-run the full eval and the shadow script on the new vendor before any user sees it (docs/MODEL-STRATEGY.md)</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer>Sources: <code>tools/shadow.mjs</code>, <code>data/tickets-labelled.csv</code>, automation modes in <code>server.js</code>, <code>docs/DEMO-SCRIPT.md</code>. Nova Bank is fictional; all data is synthetic.</footer>
+</div>
+</body>
+</html>

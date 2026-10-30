@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Stage Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="stages.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="../../public/logo.svg" alt="">Nova Bank · support copilot</div>
+    <nav class="crumbs" aria-label="Stage reports">
+      <a href="index.html" aria-current="page">All stages</a><a href="stage-5-evaluation.html">5</a><a href="stage-6-integration-ux.html">6</a><a href="stage-7-staged-launch.html">7</a><a href="stage-8-monitoring.html">8</a><a href="stage-9-iteration.html">9</a><a href="../telos/critique-card.html">Telos critique</a>
+    </nav>
+  </div>
+
+  <header class="stage">
+    <p class="eyebrow">Stage reports · 30 Oct 2026</p>
+    <h1>From the build to the pilot: stages 5 to 9</h1>
+    <p class="lede">The Nova lifecycle plan has 9 stages in 4 phases. Stages 1 to 4 were delivered as the planning pages and the build itself. These reports cover stages 5 to 9: what was done, the evidence, the gate, and what is still open. Every number comes from the repository (<code>github.com/sherif202/nova-support-copilot</code>), the eval runs and the app's own log. Synthetic data only.</p>
+  </header>
+
+  <section class="panel">
+    <h2>Where the project stands</h2>
+    <div class="kpis">
+      <div class="kpi ok"><span class="l">Release decision</span><span class="v">SHIP</span><span class="l">main eval, version 1.0.9</span></div>
+      <div class="kpi ok"><span class="l">Fraud recall</span><span class="v">13/13</span><span class="l">must be 100%</span></div>
+      <div class="kpi ok"><span class="l">Red team</span><span class="v">18/18</span><span class="l">attacks blocked</span></div>
+      <div class="kpi ok"><span class="l">Grounded answers</span><span class="v">93.1%</span><span class="l">27 of 29, target 90%</span></div>
+      <div class="kpi warn"><span class="l">Hold-out (once)</span><span class="v">6/7</span><span class="l">grounded; one safe handoff</span></div>
+      <div class="kpi ok"><span class="l">Cost per answer</span><span class="v">EGP 0.02</span><span class="l">US$0.00035, target under EGP 1</span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>The 9 stages</h2>
+    <div class="hub">
+      <div class="card"><div class="row"><span class="num">1</span><b>Problem Framing</b></div><span class="note">Planning pages: problem framing, PRD, strategy. The scope, North Star and fraud gate used everywhere below.</span><span class="st done">Delivered</span></div>
+      <div class="card"><div class="row"><span class="num">2</span><b>Data Collection &amp; Prep</b></div><span class="note">Synthetic customers, transactions, disputes, 200 labelled tickets, policies by rule ID, golden record of 60 + 15 hold-out.</span><span class="st done">Delivered</span></div>
+      <div class="card"><div class="row"><span class="num">3</span><b>Model Selection</b></div><span class="note">Bake-off A to D, T, U. Claude Haiku 5.5 for both steps; vendor-neutral adapter; OpenAI and Gemini runs waiting for keys.</span><span class="st done">Delivered</span></div>
+      <div class="card"><div class="row"><span class="num">4</span><b>Prompt &amp; System Design</b></div><span class="note">8-section prompts, fixed replies, retry note, versioned changelog 1.0.0 to 1.0.9.</span><span class="st done">Delivered</span></div>
+      <a class="card" href="stage-5-evaluation.html"><div class="row"><span class="num c">5</span><b>Evaluation</b></div><span class="note">88 cases, 7 hard gates, SHIP on 1.0.9, hold-out opened once.</span><span class="st done">Report ›</span></a>
+      <a class="card" href="stage-6-integration-ux.html"><div class="row"><span class="num">6</span><b>Integration &amp; UX</b></div><span class="note">Chat, agent inbox, PM control panel, 3 UX pillars, Telos critique applied.</span><span class="st done">Report ›</span></a>
+      <a class="card" href="stage-7-staged-launch.html"><div class="row"><span class="num">7</span><b>Staged Launch</b></div><span class="note">Shadow, beta and pilot plan; the switches to run it are built.</span><span class="st part">Ready to run ›</span></a>
+      <a class="card" href="stage-8-monitoring.html"><div class="row"><span class="num c">8</span><b>Monitoring &amp; Feedback</b></div><span class="note">The PM control panel is the dashboard; alerts become auto recommendations.</span><span class="st part">Built, waits for real chats ›</span></a>
+      <a class="card" href="stage-9-iteration.html"><div class="row"><span class="num c">9</span><b>Iteration &amp; Retraining</b></div><span class="note">10 versions with scores, the weekly fix cycle, phase-2 case.</span><span class="st part">Running ›</span></a>
+    </div>
+    <p class="note">Violet: linear stages (finish, pass the gate, move on). Teal: continuous stages. Once the pilot starts, stages 8 → 9 → 5 run every week.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Decisions I took, and why</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Decision</th><th>Chosen</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Model for both steps</td><td><code>claude-haiku-5-5</code>, low effort</td><td>Cheapest and fastest; Sonnet 5.5 and Opus 5.5 cost 10 to 50 times more and scored no better (stage 3 bake-off).</td></tr>
+        <tr><td>Handoff threshold</td><td>Keep 0.7</td><td>Labels at 0.60 to 0.69 were right only 13 of 32 times; at 0.6 a declined card abroad would get card-replacement advice.</td></tr>
+        <tr><td>Vendor</td><td>Vendor-neutral adapter, Anthropic for the pilot only</td><td>Production depends on data residency, CBE rules and the bank's contracts. Switching is a settings change (docs/MODEL-STRATEGY.md).</td></tr>
+        <tr><td>Automation</td><td>Auto-answer low-risk, with Off and Suggest-only modes</td><td>Low-risk questions only; Suggest-only is the shadow and beta mode for stage 7.</td></tr>
+        <tr><td>Product names</td><td>A product catalogue plus taxonomy rows, names only</td><td>Customers ask by product name; no product facts exist in the policies, so the copilot hands off instead of inventing rates.</td></tr>
+        <tr><td>UX feedback signal</td><td>"Did this solve your question?"</td><td>It measures the North Star directly (Telos critique, recommendation 1).</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <footer>Nova Bank is fictional; all data is synthetic. Reports generated from commit history up to 30 Oct 2026. Telos method by ProductVoyagers (Apache-2.0), applied by hand to Nova's screens and Key Results.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 6 Integration and UX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="stages.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="../../public/logo.svg" alt="">Nova Bank · support copilot</div>
+    <nav class="crumbs" aria-label="Stage reports">
+      <a href="index.html">All stages</a><a href="stage-5-evaluation.html">5</a><a href="stage-6-integration-ux.html" aria-current="page">6</a><a href="stage-7-staged-launch.html">7</a><a href="stage-8-monitoring.html">8</a><a href="stage-9-iteration.html">9</a><a href="../telos/critique-card.html">Telos critique</a>
+    </nav>
+  </div>
+
+  <header class="stage">
+    <div class="stage-head"><span class="num">6</span><div><p class="eyebrow">Phase 3 · Prove &amp; Ship · linear</p><h1>Integration &amp; UX</h1></div></div>
+    <div class="tags"><span class="tag lin">Design for the model being wrong</span><span class="tag">Owner: designer + builder, PM writes the handoff spec</span></div>
+    <p class="lede"><strong>Goal:</strong> a working MVP inside a mock Nova app where every wrong or risky moment lands safely with a person, and every conversation is logged for measurement.</p>
+  </header>
+
+  <section class="panel">
+    <h2>What was built</h2>
+    <div class="kpis">
+      <div class="kpi ok"><span class="l">Screens</span><span class="v">3</span><span class="l">customer chat · agent inbox · PM control panel</span></div>
+      <div class="kpi ok"><span class="l">Ticket states</span><span class="v">7</span><span class="l">all reachable in the demo</span></div>
+      <div class="kpi ok"><span class="l">To reach a person</span><span class="v">1 tap</span><span class="l">no AI used for it</span></div>
+      <div class="kpi ok"><span class="l">Card digits in the log</span><span class="v">0</span><span class="l">masked before saving</span></div>
+      <div class="kpi ok"><span class="l">Automation modes</span><span class="v">3</span><span class="l">Off · Suggest only · Auto-answer</span></div>
+    </div>
+    <div class="shots">
+      <figure><img src="../screenshots/01-chat-welcome-calibration.jpg" alt="Welcome card in Arabic"><figcaption>Calibration card in the customer's language</figcaption></figure>
+      <figure><img src="../screenshots/02-chat-answer-why-this-answer.jpg" alt="Answer with Why this answer open"><figcaption>"Why this answer?" in 3 layers</figcaption></figure>
+      <figure><img src="../screenshots/03-chat-franco-answer-and-fraud.jpg" alt="Franco answer and fraud reply"><figcaption>Franco answered in Arabic; fraud to the Fraud team</figcaption></figure>
+      <figure><img src="../screenshots/05-chat-did-you-mean.jpg" alt="Did you mean options"><figcaption>"Did you mean…" when not sure</figcaption></figure>
+      <figure><img src="../screenshots/07-inbox-why-routed-here.jpg" alt="Agent inbox"><figcaption>Agent inbox: confidence and "Why routed here?"</figcaption></figure>
+      <figure><img src="../screenshots/10-pm-panel-key-results-and-recommendations.jpg" alt="PM control panel"><figcaption>PM control panel</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Every fallback, designed</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Moment</th><th>What the customer sees</th><th>Where it goes</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Fraud signal (word list or AI)</td><td>Red reply at once: block card (with confirm), 24/7 hotline 19999, never share a code; reference number</td><td>Fraud queue, P0, no AI for word-list matches</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>Complaint or sensitive</td><td>Apology and a reference number at once; vulnerable customers to the head of agents</td><td>Complaints or Supervisor queue</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>Low confidence</td><td>"I wasn't sure enough…", up to 2 safe options and a person; ticket created anyway</td><td>Agent queue; resolved if the customer picks an option</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>Broken output or a failed check</td><td>"I couldn't answer that safely…" after one retry; never a broken screen</td><td>Agent queue</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>No source in the rules</td><td>"Nova's rules and your records don't cover this, and I won't guess"</td><td>Agent queue</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>Slow reply</td><td>Hands off after the 15-second limit ("assistant is busy")</td><td>Agent queue</td><td><span class="st part">Plan asks 6 s; today 15 s</span></td></tr>
+        <tr><td>Too many messages</td><td>"Please wait a moment", no AI; fraud still goes first</td><td>None, or Fraud</td><td><span class="st done">Done</span></td></tr>
+        <tr><td>Network error</td><td>"Nothing was lost", Try again or a person</td><td>None</td><td><span class="st done">Done</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>The 7 ticket states</h2>
+      <ul class="clean">
+        <li><code>resolved_pending_confirmation</code> answered by the AI, waiting for "Did this solve it?"</li>
+        <li><code>moved_to_agent</code> waiting for an agent</li>
+        <li><code>moved_to_fraud</code> with the Fraud team</li>
+        <li><code>draft_pending_approval</code> Suggest-only: an AI draft waiting for review</li>
+        <li><code>approved</code> reviewed and sent to the customer</li>
+        <li><code>resolved_by_customer_choice</code> the customer picked an option and got an answer</li>
+        <li><code>closed</code> closed by an agent (undo within 10 seconds)</li>
+      </ul>
+      <p class="note">Mapping to the blueprint's state names: to confirm with the blueprint owner.</p>
+    </section>
+    <section class="panel">
+      <h2>The log, one line per message</h2>
+      <p class="note"><code>logs/messages.jsonl</code>, masked, never committed.</p>
+      <p>time · message ID · customer ID · masked message · language · intent · priority · confidence · injection flag · action · fixed-reply ID · queue · ticket · sources · records looked up · notices · checks passed · failed check · model ID and provider · tokens per step (input, output, cache read, cache write) · attempts · milliseconds · cost in US$ · prompt versions · automation mode.</p>
+      <p class="note">Plus <code>feedback.jsonl</code> ("Did this solve it?"), <code>corrections.jsonl</code> (agent label fixes) and <code>mode.jsonl</code> (automation changes).</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>The three UX pillars and the Telos critique</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Pillar</th><th>Built</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Trust &amp; reliability</td><td>Calibration card in the customer's language; plain-words confidence badge on every reply; an honest one-line reason and a person on every handoff</td></tr>
+        <tr><td>2 · Explainability</td><td>"Why this answer?": general → sources in plain words with icons → decision; codes kept out of the answer; readable labels in the inbox</td></tr>
+        <tr><td>3 · Human agency</td><td>"Did you mean…", block-card confirm, "Did this solve your question?", automation modes, agent edit-and-approve, relabel and close with undo</td></tr>
+      </tbody>
+    </table></div>
+    <p>The screens were then critiqued against Nova's Key Results with the Telos method. Its two top recommendations are applied: the feedback question is now <b>"Did this solve your question?"</b>, the exact signal the North Star counts, and every handoff carries a <b>one-line summary</b> so the agent never asks the customer to repeat. <a href="../telos/critique-card.html">Read the critique card ›</a></p>
+  </section>
+
+  <section class="panel">
+    <h2>Gate to stage 7</h2>
+    <ul class="gates">
+      <li><span class="mark">✓</span><span>All 7 ticket states can be reached in the demo</span></li>
+      <li><span class="mark">✓</span><span>Handoff takes 1 tap and carries the summary, the intent and the message</span></li>
+      <li class="todo"><span class="mark">…</span><span>4 of 5 testers finish each task alone: usability test with 5 Arabic or Franco speakers still to run <span class="st todo">To do</span></span></li>
+      <li><span class="mark">✓</span><span>No full card number appears in the log (searched after every security test)</span></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Open items</h2>
+    <ul class="clean">
+      <li><b>Usability test</b>: 5 people, 3 tasks each (a fee, a dispute, a lost card), on a phone, right-to-left checked.</li>
+      <li><b>Short-term memory</b>: each message is answered on its own today. The plan wants the copilot to remember this conversation (not past ones). The prompt already has the slot (<code>LAST_TURNS_MASKED</code>).</li>
+      <li><b>6-second fallback</b>: lower the model timeout from 15 s to 6 s once the pilot shows p95 stays under 4 s.</li>
+      <li><b>Compliance sign-off</b> for the new fixed wording (handoff reasons, the Suggest-only message) before it goes into <code>prompts/replies.md</code>.</li>
+      <li><b>Product names</b>: <code>knowledge/nova-products.md</code> was added (صندوق سنابل، ودائع البركة…). It is not yet covered by eval cases; add a "what is", a "which is better" and a fraud case per product.</li>
+    </ul>
+  </section>
+
+  <footer>Sources: <code>public/</code>, <code>server.js</code>, <code>lib/explain.js</code>, <code>lib/pm.js</code>, <code>docs/UX-PRINCIPLES.md</code>, <code>docs/screenshots/</code>. Nova Bank is fictional; all data is synthetic.</footer>
+</div>
+</body>
+</html>

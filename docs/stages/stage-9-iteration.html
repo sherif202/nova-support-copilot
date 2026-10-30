@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 9 Iteration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="stages.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><img src="../../public/logo.svg" alt="">Nova Bank · support copilot</div>
+    <nav class="crumbs" aria-label="Stage reports">
+      <a href="index.html">All stages</a><a href="stage-5-evaluation.html">5</a><a href="stage-6-integration-ux.html">6</a><a href="stage-7-staged-launch.html">7</a><a href="stage-8-monitoring.html">8</a><a href="stage-9-iteration.html" aria-current="page">9</a><a href="../telos/critique-card.html">Telos critique</a>
+    </nav>
+  </div>
+
+  <header class="stage">
+    <div class="stage-head"><span class="num c">9</span><div><p class="eyebrow">Phase 4 · Run &amp; Improve · continuous</p><h1>Iteration &amp; Retraining</h1></div></div>
+    <div class="tags"><span class="tag cont">Weekly, after Demo Day too</span><span class="tag">Owner: PM</span></div>
+    <p class="lede"><strong>Goal:</strong> a safe weekly improvement cycle, and the evidence to get phase 2 funded. For Nova, "retraining" means updating the prompt, knowledge base, taxonomy and golden record, never the model's weights.</p>
+  </header>
+
+  <section class="panel">
+    <h2>The cycle has already run 10 times</h2>
+    <p class="note">Every change: one thing at a time, the full eval, a CHANGELOG line with the scores, a commit. A version that broke a hard gate would have been reverted; none did.</p>
+    <ol class="timeline">
+      <li><span class="ver">1.0.0</span><span>First prompts: 8 sections, fixed replies, retry note. Intent 91.7%, grounded 75.9%. <span class="st fail">DO NOT SHIP</span></span></li>
+      <li><span class="ver">1.0.1</span><span>Owner decisions: reworded examples that copied test cases, Supervisor queue for sensitive cases, the notice rule. Grounded 65.5% (noise, checked case by case).</span></li>
+      <li><span class="ver">1.0.2</span><span>5 trap rows ("et2sar" is not fraud, an unexplained EGP 50 is overdraft…). Intent 96.7%, grounded 79.3%.</span></li>
+      <li><span class="ver">1.0.3</span><span>A card sent with no delivery recorded goes to a person. Grounded 86.2%.</span></li>
+      <li><span class="ver">1.0.4</span><span>Cite only the rules used; DSP-2 for dispute stages. Grounded 86.2%.</span></li>
+      <li><span class="ver">1.0.5</span><span>Dispute answers always give the timeline. Grounded 89.7%.</span></li>
+      <li><span class="ver">1.0.6</span><span>No live notice for a problem now means a person. Honesty 5/5.</span></li>
+      <li><span class="ver">1.0.7</span><span>Security hardening: rate limit, no hidden retries, secret, prompt and link checks. Security 12/12.</span></li>
+      <li><span class="ver">1.0.8</span><span>Fraud goes first even over the rate limit (found by a test collision). Security 18/18. <span class="st done">SHIP</span></span></li>
+      <li><span class="ver">1.0.9</span><span>Learning loop: 3 reworded approved examples. Intent 98.3%, grounded 93.1%. <span class="st done">SHIP</span></span></li>
+    </ol>
+    <div class="bars">
+      <div class="bar-row"><span>Intent 1.0.0 → 1.0.9</span><span class="bar-track"><span class="bar-fill lin" style="width:98.3%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+6.6 pts</span></div>
+      <div class="bar-row"><span>Grounded 1.0.0 → 1.0.9</span><span class="bar-track"><span class="bar-fill" style="width:93.1%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+17.2 pts</span></div>
+    </div>
+    <p class="note">Total cost of all eval and bake-off runs: about US$1.80. The PM control panel lists every version and run with its cost.</p>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <h2>The weekly fix cycle</h2>
+      <ol class="clean">
+        <li>Take the top 3 failures from the PM panel and the weekly quality report.</li>
+        <li>Add each real chat to the golden record (reworded, never copied from the hold-out).</li>
+        <li>Fix the prompt, the knowledge base, a trap row or a rule, one change at a time.</li>
+        <li>Run the full eval (<code>tools/eval.mjs</code>, about US$0.02).</li>
+        <li>Ship only if nothing else got worse and every hard gate passes; log it in the CHANGELOG.</li>
+      </ol>
+      <p class="note">Agents' "Wrong label?" corrections and customers' "No, not solved" answers feed step 1; a person approves each new example before the copilot learns from it.</p>
+    </section>
+    <section class="panel">
+      <h2>Triggers</h2>
+      <ul class="gates">
+        <li><span class="mark">✓</span><span><b>Fine-tune trigger: not fired.</b> Fine-tune only the classifier if intent accuracy stays under 90%. Today it is 96.7 to 98.3%, so prompting stays.</span></li>
+        <li class="part"><span class="mark">~</span><span><b>New model or vendor:</b> rerun the bake-off and switch only if it passes the gates and costs no more. OpenAI and Gemini runs are scripted and waiting for keys.</span></li>
+        <li class="part"><span class="mark">~</span><span><b>Policy change:</b> update the knowledge-base entry and its eval case together, the same day.</span></li>
+        <li class="todo"><span class="mark">…</span><span><b>Monthly taxonomy review:</b> if a handed-off topic keeps growing (the PM panel's intents table), frame it with evidence before it joins the scope.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>What phase 2 must prove</h2>
+    <ul class="gates">
+      <li class="todo"><span class="mark">…</span><span>Verified resolution rate met its 40% target in the pilot <span class="st todo">needs the pilot</span></span></li>
+      <li class="part"><span class="mark">~</span><span>Zero fraud misses and zero data leaks: true in every eval and security test so far <span class="st part">confirm in the pilot</span></span></li>
+      <li><span class="mark">✓</span><span>Cost per conversation far below an agent contact: about EGP 0.02 per AI answer</span></li>
+      <li class="todo"><span class="mark">…</span><span>Customers rate it no worse than a person <span class="st todo">needs the pilot</span></span></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Phase-2 candidates, each unlocked by evidence</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Candidate</th><th>Unlocked when</th><th>Where we are</th></tr></thead>
+      <tbody>
+        <tr><td>WhatsApp channel</td><td>Callers don't use the app, and identity on WhatsApp is agreed</td><td><span class="st todo">Needs the interview and pilot</span></td></tr>
+        <tr><td>Block a card from the chat</td><td>Fraud recall at 100% for 4 weeks, with a confirm step and a person reviewing</td><td><span class="st part">The confirm step is built (demo only)</span></td></tr>
+        <tr><td>Open a dispute from the chat</td><td>Dispute status reliably answered; the Disputes team agrees the form</td><td><span class="st part">Dispute answers pass the eval</span></td></tr>
+        <tr><td>Agent-assist mode</td><td>Agents say the handoff summaries save them time</td><td><span class="st part">Summaries and Suggest-only drafts are built</span></td></tr>
+        <tr><td>Product questions (صندوق سنابل، ودائع البركة…)</td><td>The policy owner publishes product facts with rule IDs</td><td><span class="st part">Names recognised; facts still to come</span></td></tr>
+        <tr><td>Search the whole handbook (hybrid retrieval)</td><td>The edge-case log shows other policy areas asked often</td><td><span class="st todo">Watch the log</span></td></tr>
+        <tr><td>A production vendor near Egypt</td><td>Passes the same gates; data residency and CBE approval agreed</td><td><span class="st part">Adapter ready; see docs/MODEL-STRATEGY.md</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2>The 2-page case study (outline)</h2>
+    <div class="grid2">
+      <div>
+        <h3>Page 1</h3>
+        <ul class="clean">
+          <li><b>Problem:</b> 45,000 contacts a month; 27,000 are fee, dispute and card questions answerable with information.</li>
+          <li><b>Research:</b> the interview, the AI-fit scorecard, the cost-of-being-wrong matrix (stage 1).</li>
+          <li><b>Decisions and trade-offs:</b> 3 intents in, money moves and advice out; a workflow, not an agent; fraud in code before any AI; policies in the prompt, no vector database; Haiku over larger models.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Page 2</h3>
+        <ul class="clean">
+          <li><b>Metric and result:</b> North Star = verified resolution rate; the eval went from DO NOT SHIP to SHIP in 10 versions with fraud recall at 100% throughout; cost EGP 0.02 per answer.</li>
+          <li><b>One failure caught and fixed:</b> a rate-limited customer reporting fraud got "please wait"; now fraud always goes first (1.0.8).</li>
+          <li><b>What I'd do differently:</b> write the hold-out with a second person from day one; add the LLM judge earlier; test with real phrasing before tuning.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>Sources: <code>prompts/CHANGELOG.md</code>, <code>knowledge/</code>, <code>docs/baseline.json</code>, <code>docs/MODEL-STRATEGY.md</code>. Nova Bank is fictional; all data is synthetic.</footer>
+</div>
+</body>
+</html>

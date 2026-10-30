@@ -42,6 +42,18 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 | `tools/model-check.mjs` | Stage 3: runs the 60 eval cases through Claude, GPT or Gemini and reports accuracy, speed and cost per language. |
 | `.env.example` | Copy to `.env` and add your Anthropic API key in step 5. OpenAI, Google and OpenRouter keys are optional, for the model check. |
 
+## Built on top of the starter
+
+| Path | What it is |
+| - | - |
+| `lib/` | The copilot: prompt loader, lookup, guard (masking, junk, injection flags), fraud word list, output checks, model adapter (vendor-neutral), explanations, PM metrics, prices. |
+| `public/` | Three screens: customer chat, agent inbox, and the **PM control panel** (Key Results, cost per model ID, bottlenecks, iterations, auto-updated recommendations). Nova Bank logo in `public/logo.svg`. |
+| `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
+| `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` | Step 14 eval with SHIP/DO NOT SHIP, red team, the one-time hold-out run, and the stage 7 shadow run on 200 labelled tickets. |
+| `docs/stages/` | Visual stage reports 5 to 9 (open `docs/stages/index.html`). |
+| `docs/telos/critique-card.html` | The screens critiqued against Nova's Key Results with the Telos method. |
+| `docs/MODEL-STRATEGY.md` · `docs/UX-PRINCIPLES.md` · `docs/DEMO-SCRIPT.md` · `docs/baseline.json` | Vendor-neutral model strategy, the 3 UX pillars, the live demo script, and the locked SHIP baseline. |
+
 ## The API
 
 | Call | What it does |
