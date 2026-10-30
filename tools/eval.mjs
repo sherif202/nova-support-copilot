@@ -35,7 +35,12 @@ function askedAt(text) {
   return `${m[3]}-${MONTH[m[2]]}-${m[1].padStart(2, "0")}T${m[4]}:${m[5]}:00+02:00`;
 }
 
-const cases = [];
+// Bake-off (step 14b): EVAL_RUN names the run and saves logs/bakeoff-<run>.json; EVAL_ONLY=p2answer runs only
+// the P2 "Answer" cases (run D).
+const RUN = process.env.EVAL_RUN || "";
+const ONLY_P2_ANSWER = process.env.EVAL_ONLY === "p2answer";
+
+let cases = [];
 for (const c of rows) {
   const id = c[0];
   if (/^\d+$/.test(id) && +id <= 22) {
@@ -51,6 +56,8 @@ for (const c of rows) {
     cases.push({ id, kind: "redteam", customer: id === "R6" ? "C-0018" : "C-0012", message: unquote(c[2]), expected: c[3], failsIf: c[4] });
   }
 }
+
+if (ONLY_P2_ANSWER) cases = cases.filter((c) => c.kind === "main" && c.priority === "P2" && c.action === "Answer");
 
 // ---------- Talk to the app ----------
 
@@ -143,7 +150,7 @@ for (const c of cases) {
 // R9: 25 messages from one customer in under a minute.
 const byIdEarly = Object.fromEntries(cases.map((c) => [c.id, c]));
 const flood = [];
-for (let batch = 0; batch < 5; batch++) {
+for (let batch = 0; batch < (ONLY_P2_ANSWER ? 0 : 5); batch++) {
   flood.push(...(await Promise.all(Array.from({ length: 5 }, () => chat("C-0012", "What is this 120 pound charge?", undefined, true)))));
 }
 // R18: the same customer, still over the limit, reports fraud. Fraud must still go first.
@@ -176,6 +183,58 @@ for (const c of cases.filter((c) => c.kind === "main" || c.kind === "status")) {
     if (r.action === "answer" && missing.length) fail(c, `sources missing ${missing.join(", ")}`);
     c.citation = { expected: expectedIds, cited: r.sources || [] };
   }
+}
+
+// Speed, cost per message by language and retry rate for this run, from the app's own log (step 14b).
+// Rate-limit replies (the R9 flood) are left out: they make no model call.
+function bakeoffStats() {
+  const text = fs.existsSync(path.join(ROOT, "logs", "messages.jsonl")) ? fs.readFileSync(path.join(ROOT, "logs", "messages.jsonl"), "utf8") : "";
+  const turns = text.split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((t) => new Date(t.time) >= started && t.reply_id !== "R-WAIT");
+  const modelTurns = turns.filter((t) => t.model !== "none");
+  const secs = modelTurns.map((t) => t.ms / 1000).sort((a, b) => a - b);
+  const pctile = (p) => (secs.length ? secs[Math.min(secs.length - 1, Math.ceil(p * secs.length) - 1)] : 0);
+  const byLanguage = {};
+  for (const lang of ["english", "arabic", "franco"]) {
+    const list = turns.filter((t) => t.input_language === lang);
+    byLanguage[lang] = { messages: list.length, usd_per_message: list.reduce((a, t) => a + (t.cost_usd || 0), 0) / Math.max(1, list.length) };
+  }
+  const answerTurns = turns.filter((t) => t.attempts && t.attempts.answer);
+  return {
+    p50_seconds: pctile(0.5),
+    p95_seconds: pctile(0.95),
+    usd_per_message_by_language: byLanguage,
+    retry_rate: answerTurns.filter((t) => t.attempts.answer > 1).length / Math.max(1, answerTurns.length),
+    total_usd: turns.reduce((a, t) => a + (t.cost_usd || 0), 0),
+    models: [...new Set(modelTurns.map((t) => t.model))],
+  };
+}
+
+const CONFIG = ["PROVIDER", "UNDERSTAND_MODEL", "ANSWER_MODEL", "ANSWER_EFFORT", "HANDOFF_CONFIDENCE"].map((k) => `${k}=${process.env[k] || "(server default)"}`).join(" ");
+
+function saveBakeoff(summary) {
+  if (!RUN) return;
+  const file = path.join(ROOT, "logs", `bakeoff-${RUN}.json`);
+  fs.writeFileSync(file, JSON.stringify({ run: RUN, time: started.toISOString(), config: CONFIG, ...summary, replies: cases.map((c) => ({ id: c.id, reply: c.reply, fail: c.fail || [] })) }, null, 2));
+  console.log(`Saved ${path.relative(ROOT, file)}`);
+}
+
+// Run D: only the P2 "Answer" cases, so only grounded answers and citations are scored.
+if (ONLY_P2_ANSWER) {
+  const grounded = cases.filter((c) => c.grounded).length;
+  const cited = cases.filter((c) => c.reply.action === "answer");
+  const exp = cited.reduce((a, c) => a + c.citation.expected.length, 0);
+  const got = cited.reduce((a, c) => a + c.citation.cited.length, 0);
+  const recall = cited.reduce((a, c) => a + c.citation.expected.filter((id) => c.citation.cited.includes(id)).length, 0) / Math.max(1, exp);
+  const precision = cited.reduce((a, c) => a + c.citation.cited.filter((id) => c.citation.expected.includes(id)).length, 0) / Math.max(1, got);
+  const stats = bakeoffStats();
+  console.log(`P2 ANSWER CASES ONLY (${cases.length})`);
+  console.log(`  Grounded answers ${grounded}/${cases.length} = ${((grounded / cases.length) * 100).toFixed(1)}%`);
+  console.log(`  Citation recall ${(recall * 100).toFixed(1)}%, precision ${(precision * 100).toFixed(1)}%`);
+  console.log(`  p50 ${stats.p50_seconds.toFixed(1)} s, p95 ${stats.p95_seconds.toFixed(1)} s, retry rate ${(stats.retry_rate * 100).toFixed(0)}%, total US$${stats.total_usd.toFixed(4)}`);
+  console.log(`  US$ per message: ${Object.entries(stats.usd_per_message_by_language).map(([l, v]) => `${l} ${v.usd_per_message.toFixed(5)} (${v.messages})`).join(", ")}`);
+  for (const c of cases.filter((c) => c.fail)) console.log(`  ${c.id.padEnd(3)} | ${c.fail.join("; ")}`);
+  saveBakeoff({ only: "P2 Answer cases", scores: { grounded: `${grounded}/${cases.length}`, citation_recall: recall, citation_precision: precision }, stats });
+  process.exit(0);
 }
 
 // Fraud recall: 13 cases must reach the Fraud queue.
@@ -334,3 +393,8 @@ console.log(`\nVERDICT: ${verdict}`);
 const out = path.join(ROOT, "logs", `eval-${started.toISOString().replace(/[:.]/g, "-")}.json`);
 fs.writeFileSync(out, JSON.stringify({ time: started.toISOString(), verdict, gates, scores, retrieval, honesty, cost, cases: cases.map(({ id, message, intent, priority, action, reply, fail: f }) => ({ id, message, expected: { intent, priority, action }, reply, fail: f || [] })) }, null, 2));
 console.log(`Saved ${path.relative(ROOT, out)}`);
+
+const stats = bakeoffStats();
+console.log(`\nBAKE-OFF  p50 ${stats.p50_seconds.toFixed(1)} s, p95 ${stats.p95_seconds.toFixed(1)} s, retry rate ${(stats.retry_rate * 100).toFixed(0)}%, models ${stats.models.join(", ")}`);
+console.log(`  US$ per message: ${Object.entries(stats.usd_per_message_by_language).map(([l, v]) => `${l} ${v.usd_per_message.toFixed(5)} (${v.messages})`).join(", ")}`);
+saveBakeoff({ verdict, gates, scores, grounded: `${p2Answer.filter((c) => c.grounded).length}/${p2Answer.length}`, stats });

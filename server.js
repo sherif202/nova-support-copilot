@@ -71,12 +71,12 @@ function readBody(req) {
   });
 }
 
-// The AI client. The key comes from .env and is never printed or sent to the browser.
-const Anthropic = require("@anthropic-ai/sdk");
-// Every call: 15 second timeout, max_tokens set in callModel, and no hidden SDK retries, so one message never
-// makes more than 3 model calls (understand once, answer at most twice). Step 15, "denial of wallet".
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 15000, maxRetries: 0 });
-const UNDERSTAND_MODEL = process.env.UNDERSTAND_MODEL || "claude-haiku-5-5";
+// The model adapter: which vendor and model run each step lives in lib/model.js and .env, not here.
+// Keys never reach this file. 15 s timeout, max_tokens, at most 4 model calls per message.
+const { callStep, newBudget } = require("./lib/model");
+
+// Below this understand confidence, a person takes over (R-UNSURE). Step 11 sets 0.7.
+const HANDOFF_CONFIDENCE = Number(process.env.HANDOFF_CONFIDENCE || 0.7);
 
 // The JSON shape the understand prompt asks for (prompts/understand.md, section 8).
 const UNDERSTAND_SCHEMA = {
@@ -109,28 +109,16 @@ const ANSWER_SCHEMA = {
   additionalProperties: false,
 };
 
-const ANSWER_MODEL = process.env.ANSWER_MODEL || "claude-haiku-5-5";
-const ANSWER_EFFORT = process.env.ANSWER_EFFORT || "low";
-
-// One model call. The system prompt is cached; only the messages change. Never sends temperature.
-// Throws only when the call itself fails (network, timeout, API error).
-async function callModel(step, { model, effort, system, messages, schema }) {
-  const started = Date.now();
-  const response = await anthropic.messages.create({
-    model,
-    max_tokens: 4096,
-    output_config: { effort, format: { type: "json_schema", schema } },
-    system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-    messages,
-  });
-  const text = response.content.filter((block) => block.type === "text").map((block) => block.text).join("");
-  const usage = response.usage;
-  const ms = Date.now() - started;
+// One model call through the adapter. The system prompt is cached; only the messages change.
+// Throws only when the call itself fails (network, timeout, API error) after the adapter's one retry.
+async function callModel(step, { system, messages, schema }, budget) {
+  const result = await callStep(step, { system, messages, schema }, budget);
+  const usage = result.usage;
   console.log(
-    `[${step}] ${model} | in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens || 0} ` +
-      `cache_write=${usage.cache_creation_input_tokens || 0} out=${usage.output_tokens} | ${ms} ms`
+    `[${step}] ${result.provider}:${result.model} | in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens || 0} ` +
+      `cache_write=${usage.cache_creation_input_tokens || 0} out=${usage.output_tokens} | ${result.ms} ms`
   );
-  return { text, usage, ms, model };
+  return result;
 }
 
 // The model's JSON, or null when it is broken or missing a field.
@@ -144,14 +132,12 @@ function parseJson(text, schema) {
 }
 
 // Step 1 of the copilot: label the message. The customer's message is the whole user turn.
-async function understand(message) {
+async function understand(message, budget) {
   const result = await callModel("understand", {
-    model: UNDERSTAND_MODEL,
-    effort: "low",
     system: prompts.understand.system,
     messages: [{ role: "user", content: message }],
     schema: UNDERSTAND_SCHEMA,
-  });
+  }, budget);
   const label = parseJson(result.text, UNDERSTAND_SCHEMA);
   if (!label) throw new Error("understand returned broken JSON");
   console.log(`[understand] ${label.intent} ${label.priority} conf=${label.confidence}`);
@@ -190,7 +176,7 @@ function cairoNow(testNow) {
 // Step 12: every answer is checked in code. One retry with prompts/retry.md if a check fails or the JSON
 // is broken; if the retry fails too, status is "check_failed". Never a third try.
 // Returns { status: "ok" | "handoff" | "check_failed", json, attempts, checks_passed, failed_check, ... }.
-async function answer(customerId, message, label, testNow) {
+async function answer(customerId, message, label, testNow, budget) {
   const now = cairoNow(testNow);
   const found = lookup(customerId, message, label.intent);
   const notices = label.intent === "service.status" ? liveNotices(now) : [];
@@ -223,13 +209,12 @@ async function answer(customerId, message, label, testNow) {
       console.log(`[answer] retry once: ${failed.check}`);
     }
     const result = await callModel("answer", {
-      model: ANSWER_MODEL,
-      effort: ANSWER_EFFORT,
       system: prompts.answer.system,
       messages,
       schema: ANSWER_SCHEMA,
-    });
+    }, budget);
     meta.calls.push({ usage: result.usage, ms: result.ms });
+    meta.model = result.model;
     const json = parseJson(result.text, ANSWER_SCHEMA);
     if (!json) {
       failed = { check: "broken_json", detail: {} };
@@ -326,11 +311,12 @@ async function copilot(customerId, message, testNow, trace) {
     });
   }
 
+  const budget = newBudget();
   let label;
   try {
-    const understood = await understand(message);
+    const understood = await understand(message, budget);
     label = understood.label;
-    trace.steps.push(stepTrace("understand", UNDERSTAND_MODEL, [understood]));
+    trace.steps.push(stepTrace("understand", understood.model, [understood]));
     trace.injection_suspected = label.injection_suspected;
   } catch (err) {
     // A failed or broken model reply never reaches the customer as an error: a person takes over.
@@ -361,7 +347,7 @@ async function copilot(customerId, message, testNow, trace) {
   if (label.priority === "P1") return handOff(customerId, message, base, "R-COMPLAINT", "Complaints");
   if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
   if (label.wants_person) return handOff(customerId, message, base, "R-PERSON", "Agent");
-  if (!(label.confidence >= 0.7)) return handOff(customerId, message, base, "R-UNSURE", "Agent");
+  if (!(label.confidence >= HANDOFF_CONFIDENCE)) return handOff(customerId, message, base, "R-UNSURE", "Agent");
 
   // A card that was sent but has no delivery recorded (and isn't still on its way) needs a person to check the
   // delivery; the copilot can't know where it is (evalset case 41).
@@ -372,13 +358,13 @@ async function copilot(customerId, message, testNow, trace) {
 
   let answered;
   try {
-    answered = await answer(customerId, message, label, testNow);
+    answered = await answer(customerId, message, label, testNow, budget);
   } catch (err) {
     console.error(`[answer] failed: ${err.message}`);
     trace.error = `answer: ${err.message}`;
     return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
-  trace.steps.push(stepTrace("answer", ANSWER_MODEL, answered.calls));
+  trace.steps.push(stepTrace("answer", answered.model, answered.calls));
   trace.retrieved_ids = answered.retrieved_ids;
   trace.notice_ids = answered.notice_ids;
   trace.checks_passed = answered.checks_passed;
