@@ -7,8 +7,23 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
+
+// Load settings and secrets from .env (never committed, see .gitignore).
+// Values already set in the environment win. Keys are never printed.
+function loadEnv() {
+  const file = path.join(ROOT, ".env");
+  if (!fs.existsSync(file)) return;
+  for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+    const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+    if (!match || line.trim().startsWith("#")) continue;
+    const value = match[2].replace(/^(['"])(.*)\1$/, "$2");
+    if (process.env[match[1]] === undefined) process.env[match[1]] = value;
+  }
+}
+loadEnv();
+
+const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
 
 function readJson(file) {
@@ -154,4 +169,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Nova support copilot (starter, fake AI) running at http://localhost:${PORT}`);
+  console.log(`Anthropic API key: ${process.env.ANTHROPIC_API_KEY ? "found in .env" : "MISSING, paste it into .env"}`);
 });
