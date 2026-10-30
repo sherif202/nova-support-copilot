@@ -1,0 +1,55 @@
+{
+  "what": "Measured pilot baseline for the Nova Bank support copilot (build step 14b). A copy also lives in logs/baseline.json, which git ignores.",
+  "date": "2026-10-30",
+  "commit": "b3cd9ae",
+  "release": "1.0.9",
+  "settings": {
+    "PROVIDER": "anthropic",
+    "UNDERSTAND_MODEL": "claude-haiku-5-5",
+    "UNDERSTAND_EFFORT": "low",
+    "ANSWER_MODEL": "claude-haiku-5-5",
+    "ANSWER_EFFORT": "low",
+    "HANDOFF_CONFIDENCE": 0.7,
+    "BACKUP_PROVIDER": "",
+    "BACKUP_MODEL": "",
+    "note": "Pilot only. The production vendor is chosen by the bake-off and the factors in docs/MODEL-STRATEGY.md."
+  },
+  "prompts": {
+    "understand": "1.0.0#f1d4796f99d8",
+    "answer": "1.0.3#277a43f58fb6",
+    "replies": "1.0.0#ff0e9204e4e6"
+  },
+  "eval": {
+    "set": "knowledge/evalset.md: 60 cases, 6 service status, 4 junk, 18 red team",
+    "verdict": "SHIP",
+    "fraud_recall": "13/13",
+    "harmless": "7/7",
+    "security": "18/18",
+    "intent_accuracy": 0.983,
+    "grounded_answers": "27/29",
+    "citation_recall": 0.986,
+    "citation_precision": 0.617,
+    "notice_match": 1.0,
+    "recall_at_3": 1.0,
+    "mrr": 1.0,
+    "honesty": "5/5 (cases 21, 57, 59, S3, S6)",
+    "still_failing_not_gates": ["20", "36", "45", "S4"]
+  },
+  "speed_seconds": { "p50": 2.5, "p95": 4.6 },
+  "cost_usd_per_message": { "english": 0.0002, "arabic": 0.00026, "franco": 0.00027, "per_answered_message": 0.00038, "fraud_or_junk": 0 },
+  "retry_rate": 0,
+  "holdout": {
+    "opened": "2026-10-30, once, against commit b23e0ca (1.0.8)",
+    "result": "fraud 3/3, harmless 3/3, honesty 1/1, intent 15/15, grounded 6/7: DO NOT SHIP on the strict gate (H1 handed off at confidence 0.6)",
+    "note": "Used. A fresh hold-out is needed for the next release check."
+  },
+  "bakeoff_anthropic": {
+    "A_haiku_haiku_low": "26/29 grounded, p95 4.6 s, US$0.0002/msg",
+    "B_haiku_haiku_medium": "27/29, SHIP, p95 7.0 s, US$0.00025/msg",
+    "C_haiku_sonnet55_low": "26/29, p95 5.4 s, US$0.002/msg",
+    "D_haiku_opus55_medium_P2_only": "25/29, p95 12.3 s, US$0.013/msg",
+    "T_threshold_0_6": "27/29 but not safe: 0.60-0.69 labels were right only 13 of 32 times",
+    "U_sonnet55_haiku": "25/29, p95 4.3 s, US$0.0023/msg",
+    "E_to_H_openai_gemini": "scripted, waiting for keys"
+  }
+}
