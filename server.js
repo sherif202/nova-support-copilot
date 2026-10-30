@@ -29,6 +29,7 @@ const { runChecks, SECURITY_CHECKS } = require("./lib/checks");
 const { lookup, liveNotices } = require("./lib/lookup");
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
+const { explainAnswer, HANDOFF_WHY, choicesFor, SAFE_CHOICES } = require("./lib/explain");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -198,7 +199,7 @@ async function answer(customerId, message, label, testNow, budget) {
     notices,
     noticeIds: notices.map((n) => n.notice_id),
   };
-  const meta = { retrieved_ids: found.retrieved_ids, notice_ids: ctx.noticeIds, calls: [] };
+  const meta = { retrieved_ids: found.retrieved_ids, notice_ids: ctx.noticeIds, records: found.records, notices, calls: [] };
   console.log(`[answer] now=${now.text} notices=${ctx.noticeIds.join(",") || "none"} retrieved=${found.retrieved_ids.join(",") || "none"}`);
 
   const messages = [{ role: "user", content: user }];
@@ -256,15 +257,16 @@ const SUPERVISOR_NOTE = "Sensitive: routed to the Supervisor queue (head of agen
 // A fixed reply from prompts/replies.md, with a ticket so a person picks it up.
 function handOff(customerId, message, base, replyId, queue, note) {
   const status = queue === "Fraud" ? "moved_to_fraud" : "moved_to_agent";
-  const result = { ...base, sources: [], action: "handoff", ticket_status: status };
+  const result = { ...base, sources: [], action: "handoff", ticket_status: status, reply_id: replyId };
   const ticket = newTicket(customerId, message, result, queue, note);
+  const why = HANDOFF_WHY[replyId] || {};
   return {
     ...result,
     reply_language: fixedLanguage(base.input_language),
     answer_text: reply(replyId, base.input_language, { REF: ticket.ticket_id }),
-    reply_id: replyId,
     ticket_id: ticket.ticket_id,
     queue,
+    why: { en: why.en, ar: why.ar },
   };
 }
 
@@ -299,7 +301,10 @@ function fraudHandOff(customerId, message, base) {
 // The copilot: fraud words first (no model), then understand, then route P1, P3, low confidence and
 // "talk to a person" to people, and answer only P2 and P4 from sources.
 // `trace` collects what the log needs (steps, retrieved IDs, checks); it is never sent to the browser.
-async function copilot(customerId, message, testNow, trace) {
+// `chosenIntent` (Stage 6, "Did you mean…"): the customer picked one of the safe options the copilot offered.
+// It is used only when the understand step still sees a low-risk P2 or P4 question; fraud, complaints,
+// sensitive and out-of-scope routes always win.
+async function copilot(customerId, message, testNow, trace, chosenIntent) {
   const signal = fraudSignal(message);
   if (signal) {
     console.log(`[fraud] word list matched (${signal.signal}), no model call`);
@@ -347,7 +352,18 @@ async function copilot(customerId, message, testNow, trace) {
   if (label.priority === "P1") return handOff(customerId, message, base, "R-COMPLAINT", "Complaints");
   if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
   if (label.wants_person) return handOff(customerId, message, base, "R-PERSON", "Agent");
-  if (!(label.confidence >= HANDOFF_CONFIDENCE)) return handOff(customerId, message, base, "R-UNSURE", "Agent");
+
+  const choice = chosenIntent && SAFE_CHOICES.includes(chosenIntent) && ["P2", "P4"].includes(label.priority) ? chosenIntent : null;
+  if (choice) {
+    console.log(`[choice] customer picked ${choice} (model said ${label.intent} at ${label.confidence})`);
+    trace.customer_choice = choice;
+    label = { ...label, intent: choice, priority: "P2" };
+    base.intent = choice;
+    base.priority = "P2";
+  } else if (!(label.confidence >= HANDOFF_CONFIDENCE)) {
+    // Not sure, but if the guess is a low-risk question, offer the customer up to 2 options as well.
+    return { ...handOff(customerId, message, base, "R-UNSURE", "Agent"), choices: label.priority === "P2" ? choicesFor(label.intent) : [] };
+  }
 
   // A card that was sent but has no delivery recorded (and isn't still on its way) needs a person to check the
   // delivery; the copilot can't know where it is (evalset case 41).
@@ -378,6 +394,8 @@ async function copilot(customerId, message, testNow, trace) {
     sources: answered.json.sources,
     action: "answer",
     ticket_status: "resolved_pending_confirmation",
+    explain: explainAnswer(label, answered.json.sources, answered.records, answered.notices, answered.checks_passed),
+    customer_choice: Boolean(choice),
   };
 }
 
@@ -392,11 +410,46 @@ function newTicket(customerId, message, result, queue, note) {
     priority: result.priority,
     queue,
     status: result.ticket_status,
+    // For the agent inbox (Stage 6): confidence and the rule that routed it here.
+    confidence: typeof result.confidence === "number" ? result.confidence : null,
+    reply_id: result.reply_id || null,
+    routing_rule: (HANDOFF_WHY[result.reply_id] || {}).rule || null,
     ...(note ? { note } : {}),
   };
   tickets.push(ticket);
   writeJson("tickets.json", tickets);
   return ticket;
+}
+
+// Change one ticket in data/tickets.json. `change` returns the new ticket, or null to leave it as it is.
+function updateTicket(ticketId, change) {
+  const tickets = readJson("tickets.json");
+  const i = tickets.findIndex((t) => t.ticket_id === ticketId);
+  if (i === -1) return null;
+  const next = change(tickets[i]);
+  if (!next) return null;
+  tickets[i] = next;
+  writeJson("tickets.json", tickets);
+  return next;
+}
+
+// ---- Stage 6: progressive automation (docs/UX-PRINCIPLES.md) ----
+// off     = the kill switch: every message to a person, no model call (also COPILOT_ENABLED=false).
+// suggest = the AI drafts; an agent edits and approves before the customer sees it.
+// auto    = today's behaviour and the default: low-risk questions are answered automatically.
+const MODES = ["off", "suggest", "auto"];
+let copilotMode = process.env.COPILOT_ENABLED === "false" ? "off" : MODES.includes(process.env.COPILOT_MODE) ? process.env.COPILOT_MODE : "auto";
+const UNDO_MS = 10000;
+
+function draftForApproval(customerId, maskedMessage, result) {
+  const draft = { ...result, action: "handoff", ticket_status: "draft_pending_approval", reply_id: "R-DRAFT" };
+  const ticket = newTicket(customerId, maskedMessage, draft, "Agent", "Suggest only: an AI draft waiting for an agent to edit and approve.");
+  updateTicket(ticket.ticket_id, (t) => ({ ...t, draft: result.answer_text, draft_sources: result.sources }));
+  const why = HANDOFF_WHY["R-DRAFT"];
+  const arabic = result.reply_language === "arabic";
+  // Written by a person for the Stage 6 demo; to be added to prompts/replies.md with Compliance sign-off.
+  const text = arabic ? `${why.ar} رقم طلبك ${ticket.ticket_id}.` : `${why.en} Your reference is ${ticket.ticket_id}.`;
+  return { ...draft, answer_text: text, sources: [], explain: undefined, ticket_id: ticket.ticket_id, queue: "Agent", why: { en: why.en, ar: why.ar } };
 }
 
 // ---- Step 15: at most 20 messages a minute per customer (docs/03-SECURITY-AND-FRAUD.md, C) ----
@@ -491,6 +544,20 @@ function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms
   appendLog("messages.jsonl", entry);
 }
 
+// All lines of one log file in logs/, parsed.
+function readLog(file) {
+  const full = path.join(LOGS, file);
+  if (!fs.existsSync(full)) return [];
+  return fs.readFileSync(full, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+}
+
+// ticket_id -> the turn that created it, for the inbox's "Why routed here?".
+function turnsByTicket() {
+  const map = {};
+  for (const turn of readLog("messages.jsonl")) if (turn.ticket_id) map[turn.ticket_id] = turn;
+  return map;
+}
+
 // The turn that created a ticket, for the model name and message ID in a correction.
 function findTurnByTicket(ticketId) {
   const file = path.join(LOGS, "messages.jsonl");
@@ -542,13 +609,89 @@ const server = http.createServer(async (req, res) => {
         customer_id: c.customer_id,
         name: c.name,
         plan: c.plan,
+        preferred_language: c.preferred_language,
       }));
       return sendJson(res, 200, customers);
     }
 
-    // The agent inbox reads the tickets
+    // The agent inbox reads the tickets, with what the turn log knows about each (Stage 6, "Why routed here?")
     if (req.method === "GET" && req.url === "/api/tickets") {
-      return sendJson(res, 200, readJson("tickets.json"));
+      const turns = turnsByTicket();
+      return sendJson(res, 200, readJson("tickets.json").map((t) => {
+        const turn = turns[t.ticket_id] || {};
+        return { ...t, retrieved_ids: turn.retrieved_ids || [], cited: turn.sources || [], injection_flagged: Boolean(turn.injection_flagged) };
+      }));
+    }
+
+    // Stage 6, progressive automation: the mode the copilot runs in (Off, Suggest only, Auto-answer low-risk)
+    if (req.method === "GET" && req.url === "/api/mode") {
+      return sendJson(res, 200, { mode: copilotMode });
+    }
+    if (req.method === "POST" && req.url === "/api/mode") {
+      const body = await readBody(req);
+      const mode = String(body.mode || "");
+      if (!MODES.includes(mode)) return sendJson(res, 400, { error: "Mode must be off, suggest or auto." });
+      appendLog("mode.jsonl", { time: new Date().toISOString(), from: copilotMode, to: mode, by: mask(String(body.agent || "A-01")).slice(0, 20) });
+      console.log(`[mode] ${copilotMode} -> ${mode}`);
+      copilotMode = mode;
+      return sendJson(res, 200, { mode: copilotMode });
+    }
+
+    // Stage 6, feedback loop: thumbs up or down on an answer, with an optional one-tap reason. Never changes knowledge/.
+    if (req.method === "POST" && req.url === "/api/feedback") {
+      const body = await readBody(req);
+      const rating = body.rating === "up" ? "up" : body.rating === "down" ? "down" : null;
+      if (!rating) return sendJson(res, 400, { error: "Rating must be up or down." });
+      const reason = ["wrong", "unclear", "not_what_i_asked"].includes(body.reason) ? body.reason : null;
+      appendLog("feedback.jsonl", { time: new Date().toISOString(), message_id: String(body.message_id || "").slice(0, 40), customerId: String(body.customerId || "").slice(0, 10), rating, reason });
+      return sendJson(res, 200, { saved: true });
+    }
+    if (req.method === "GET" && req.url === "/api/feedback") {
+      const lines = readLog("feedback.jsonl");
+      const counts = { up: 0, down: 0, reasons: { wrong: 0, unclear: 0, not_what_i_asked: 0 } };
+      for (const f of lines) {
+        counts[f.rating] += 1;
+        if (f.reason) counts.reasons[f.reason] += 1;
+      }
+      return sendJson(res, 200, counts);
+    }
+
+    // Stage 6, Suggest only: the agent edits and approves a drafted reply; the customer's chat then picks it up.
+    if (req.method === "POST" && req.url === "/api/tickets/approve") {
+      const body = await readBody(req);
+      const text = mask(String(body.text || "")).trim().slice(0, 1000);
+      if (!text) return sendJson(res, 400, { error: "The reply is empty." });
+      const updated = updateTicket(String(body.ticket_id || ""), (t) => {
+        if (t.status !== "draft_pending_approval") return null;
+        return { ...t, status: "approved", reply_text: text, edited: text !== t.draft, approved_at: new Date().toISOString(), delivered: false };
+      });
+      return updated ? sendJson(res, 200, { ticket: updated }) : sendJson(res, 400, { error: "Only a draft waiting for approval can be approved." });
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/replies?")) {
+      const customerId = new URL(req.url, "http://localhost").searchParams.get("customerId") || "";
+      const tickets = readJson("tickets.json");
+      const ready = tickets.filter((t) => t.customer_id === customerId && t.status === "approved" && !t.delivered);
+      if (ready.length) {
+        writeJson("tickets.json", tickets.map((t) => (ready.includes(t) ? { ...t, delivered: true } : t)));
+      }
+      return sendJson(res, 200, ready.map((t) => ({ ticket_id: t.ticket_id, text: t.reply_text })));
+    }
+
+    // Stage 6, override and undo: close a ticket, and undo a close or a label change within 10 seconds.
+    if (req.method === "POST" && req.url === "/api/tickets/close") {
+      const body = await readBody(req);
+      const updated = updateTicket(String(body.ticket_id || ""), (t) => ({ ...t, undo: { field: "status", value: t.status, until: Date.now() + UNDO_MS }, status: "closed" }));
+      return updated ? sendJson(res, 200, { ticket: updated, undo_seconds: UNDO_MS / 1000 }) : sendJson(res, 400, { error: "Unknown ticket." });
+    }
+    if (req.method === "POST" && req.url === "/api/tickets/undo") {
+      const body = await readBody(req);
+      const updated = updateTicket(String(body.ticket_id || ""), (t) => {
+        if (!t.undo || Date.now() > t.undo.until) return null;
+        const { undo, ...rest } = t;
+        if (undo.field === "intent") appendLog("corrections.jsonl", { time: new Date().toISOString(), ticket_id: t.ticket_id, undone: true, restored_label: undo.value });
+        return { ...rest, [undo.field]: undo.value };
+      });
+      return updated ? sendJson(res, 200, { ticket: updated }) : sendJson(res, 400, { error: "Nothing to undo, or the 10 seconds have passed." });
     }
 
     // One customer message in, one copilot reply out
@@ -604,9 +747,9 @@ const server = http.createServer(async (req, res) => {
           ticket_status: "resolved_pending_confirmation",
           reply_id: checked.stop,
         };
-      } else if (process.env.COPILOT_ENABLED === "false") {
-        // Step 13 kill switch: no model call at all. The fraud word list is plain code, so fraud still goes to Fraud.
-        console.log("[kill switch] COPILOT_ENABLED=false, straight to a person");
+      } else if (copilotMode === "off") {
+        // Step 13 kill switch (mode Off): no model call at all. The fraud word list is plain code, so fraud still goes to Fraud.
+        console.log("[kill switch] mode off, straight to a person");
         const base = { input_language: scriptLanguage(checked.masked), category: "General", intent: "general.unknown", priority: "P4", confidence: 0 };
         const signal = fraudSignal(checked.masked);
         result = signal
@@ -614,11 +757,18 @@ const server = http.createServer(async (req, res) => {
           : handOff(customerId, checked.masked, base, "R-OFF", "Agent");
       } else {
         if (checked.injection_flagged) console.log("[guard] injection phrase flagged");
-        result = await copilot(customerId, checked.masked, body.testNow, trace);
+        result = await copilot(customerId, checked.masked, body.testNow, trace, String(body.chosenIntent || ""));
+        // The customer resolved an earlier "not sure" ticket by picking an option.
+        if (result.customer_choice && body.ticketId) {
+          updateTicket(String(body.ticketId), (t) => (t.customer_id === customerId ? { ...t, status: "resolved_by_customer_choice" } : null));
+        }
+        // Mode Suggest only: an AI answer becomes a draft an agent edits and approves before the customer sees it.
+        if (copilotMode === "suggest" && result.action === "answer" && !result.reply_id) {
+          result = draftForApproval(customerId, checked.masked, result);
+        }
       }
       writeTurnLog({ customerId, masked: checked.masked, injection_flagged: checked.injection_flagged, result, trace, ms: Date.now() - started });
-      const { reply_id, ...forBrowser } = result;
-      return sendJson(res, 200, forBrowser);
+      return sendJson(res, 200, { ...result, message_id: trace.message_id, mode: copilotMode });
     }
 
     // The intents an agent can pick in "Wrong label?", from the taxonomy
@@ -633,6 +783,8 @@ const server = http.createServer(async (req, res) => {
       const agentLabel = String(body.agent_label || "");
       if (!ticket) return sendJson(res, 400, { error: "Unknown ticket." });
       if (!INTENTS.includes(agentLabel)) return sendJson(res, 400, { error: "Pick an intent from the list." });
+      // The ticket shows the agent's label, with 10 seconds to undo it.
+      updateTicket(ticket.ticket_id, (t) => ({ ...t, undo: { field: "intent", value: t.intent, until: Date.now() + UNDO_MS }, intent: agentLabel, relabelled: true }));
       const turn = findTurnByTicket(ticket.ticket_id) || {};
       const correction = {
         time: new Date().toISOString(),
@@ -645,7 +797,7 @@ const server = http.createServer(async (req, res) => {
         model: turn.model || "none",
       };
       appendLog("corrections.jsonl", correction);
-      return sendJson(res, 200, { saved: true });
+      return sendJson(res, 200, { saved: true, undo_seconds: UNDO_MS / 1000 });
     }
 
     // "Talk to a person" button

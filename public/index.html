@@ -8,43 +8,75 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo">N</span> Nova Bank <span class="tag">Help · starter, fake AI</span></div>
-  <nav>
-    <button id="tab-chat" class="tab active" type="button">Customer chat</button>
-    <button id="tab-inbox" class="tab" type="button">Agent inbox</button>
-  </nav>
+  <div class="brand">
+    <span class="logo" aria-hidden="true">N</span>
+    <span>Nova Bank</span>
+    <span class="tag">AI assistant · answers checked by Nova's rules</span>
+  </div>
+  <div class="top-right">
+    <span id="mode-pill" class="mode-pill" title="How much the assistant does on its own">Mode: Auto-answer low-risk</span>
+    <nav aria-label="Views">
+      <button id="tab-chat" class="tab active" type="button">Customer chat</button>
+      <button id="tab-inbox" class="tab" type="button">Agent inbox</button>
+    </nav>
+  </div>
 </header>
 
 <main>
-  <section id="view-chat" class="view">
+  <section id="view-chat" class="view" aria-label="Customer chat">
     <div class="login">
       <label for="customer">Log in as</label>
       <select id="customer"></select>
       <span class="hint">Synthetic customers only. This stands in for the bank's real login.</span>
     </div>
 
-    <div id="messages" class="messages" aria-live="polite">
-      <div class="msg bot">Hi, I'm Nova's assistant. I can explain a fee, tell you where your dispute is, or help with a card replacement. You can talk to a person at any time.</div>
-    </div>
+    <div id="messages" class="messages" aria-live="polite"></div>
 
     <form id="composer" class="composer">
+      <label for="text" class="sr-only">Your message</label>
       <input id="text" dir="auto" autocomplete="off" placeholder="Type in Arabic, English or Franco, e.g. 3ayez a3raf el 25 geneh dol eh" maxlength="1000">
       <button type="submit">Send</button>
     </form>
     <div class="actions">
-      <button id="person" type="button" class="secondary">Talk to a person</button>
+      <button id="person" type="button" class="secondary">🙋 Talk to a person</button>
+      <span class="hint">Always available. No AI is used for this.</span>
     </div>
   </section>
 
-  <section id="view-inbox" class="view" hidden>
+  <section id="view-inbox" class="view" aria-label="Agent inbox" hidden>
     <div class="inbox-head">
       <h2>Agent inbox</h2>
       <button id="refresh" type="button" class="secondary">Refresh</button>
     </div>
-    <table>
-      <thead><tr><th>Ticket</th><th>Queue</th><th>Priority</th><th>Intent</th><th>Customer</th><th>Message</th><th>Status</th><th></th></tr></thead>
-      <tbody id="tickets"><tr><td colspan="8" class="empty">No tickets yet. Handoffs from the chat appear here.</td></tr></tbody>
-    </table>
+
+    <fieldset class="mode-switch">
+      <legend>Automation mode</legend>
+      <label><input type="radio" name="mode" value="off"> <strong>Off</strong> <span class="hint">Every message goes to a person. No AI.</span></label>
+      <label><input type="radio" name="mode" value="suggest"> <strong>Suggest only</strong> <span class="hint">The AI drafts; you edit and approve before the customer sees it.</span></label>
+      <label><input type="radio" name="mode" value="auto"> <strong>Auto-answer low-risk</strong> <span class="hint">Fees, disputes, cards and maintenance are answered automatically and checked. Everything else comes here.</span></label>
+    </fieldset>
+
+    <div class="inbox-tools">
+      <label>Queue
+        <select id="queue-filter">
+          <option value="">All</option>
+          <option>Fraud</option>
+          <option>Supervisor</option>
+          <option>Complaints</option>
+          <option>Agent</option>
+        </select>
+      </label>
+      <span id="feedback-counts" class="feedback-counts" aria-live="polite">Feedback: none yet</span>
+    </div>
+
+    <div id="undo-bar" class="undo-bar" role="status" hidden></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ticket</th><th>Queue</th><th>Priority</th><th>Intent</th><th>Confidence</th><th>Customer</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="tickets"><tr><td colspan="9" class="empty">No tickets yet. Handoffs from the chat appear here.</td></tr></tbody>
+      </table>
+    </div>
   </section>
 </main>
 

@@ -1,4 +1,4 @@
-# Demo script, Nova Bank support copilot (2 to 3 minutes)
+# Demo script, Nova Bank support copilot (3 to 4 minutes)
 
 Typed live in the browser, logged in as **C-0012 Karim Samir**. All data is synthetic.
 
@@ -7,7 +7,7 @@ Typed live in the browser, logged in as **C-0012 Karim Samir**. All data is synt
 1. Demo reset: replace the contents of `data/tickets.json` with `[]` and delete the files in `logs/`.
 2. Start the app: `node server.js`. The window must say `Anthropic API key: found in .env` and list the three prompt versions.
 3. Open http://localhost:3000. Check "Log in as" shows **C-0012 Karim Samir**.
-4. In `.env`: `COPILOT_ENABLED=true`, and `ALLOW_TEST_NOW` is `false` or missing.
+4. In `.env`: `COPILOT_ENABLED=true`, and `ALLOW_TEST_NOW` is `false` or missing. The header pill must read **Mode: Auto-answer low-risk** (restarting the app always starts in that mode).
 5. Have `lib/model.js`, `.env.example` and `docs/MODEL-STRATEGY.md` open in an editor for the last part. Never show `.env` itself: it holds the key.
 
 ## 1. A fee, answered from its source (30 s)
@@ -58,7 +58,22 @@ Click **Agent inbox**, then **Refresh**.
 The panel sees: the fraud ticket in the red **Fraud** queue at P0, the handed-off message in the **Agent** queue, each with its intent. Click **Wrong label?** on a row: the agent picks the right intent and types a reason.
 Say: "Corrections are saved for review. A person approves each new example before the copilot learns from it."
 
-## 6. Model strategy: vendor-neutral by design (30 s)
+## 6. UX: trust, explanation, human control (60 s)
+
+The three pillars in `docs/UX-PRINCIPLES.md`.
+
+1. **Calibration.** Point at the welcome card at the top of the chat: what the assistant is and isn't, in the customer's language (Arabic for Karim, right-to-left). "It sets expectations before the first question."
+2. **Why this answer?** Under the Dubai answer from part 1, open **Why this answer?**: the general line, then each source in plain words (the fee rule and the two transactions), then how it decided and how many safety checks passed. "No codes in the answer; the detail is there when you want it."
+3. **Did you mean…** Type:
+   ```
+   my card got declined in Paris just now
+   ```
+   When the assistant isn't sure, it says so, gives the reason, offers two safe options and a person, and a colleague already has the ticket. (If it happens to be confident this time, say: "here it was sure; when it isn't, it asks.")
+4. **👍 / 👎.** Click 👎 under an answer, then **Unclear**. "Feedback goes to the team; nothing changes the bank's rules until a person approves it."
+5. **Inbox.** Open **Agent inbox**: the confidence chips (High, Medium, Low, as words and colour), and the 👎 count at the top. Open **Why routed here?** on a ticket.
+6. **Mode switch.** Show the three modes. "Today it auto-answers only low-risk questions. The bank can switch to **Suggest only**, where every AI answer waits for an agent to edit and approve, or **Off**, where people answer everything. Every change is logged." Leave it on **Auto-answer low-risk**.
+
+## 7. Model strategy: vendor-neutral by design (30 s)
 
 Open `lib/model.js`, then `.env.example`.
 Say: "This one file is the only place that knows the AI vendor. Switching vendor is a settings change, not a code change:"
