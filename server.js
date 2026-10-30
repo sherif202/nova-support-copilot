@@ -23,6 +23,9 @@ function loadEnv() {
 }
 loadEnv();
 
+// Nova's prompts and fixed replies, filled from knowledge/ once at start.
+const { prompts } = require("./lib/prompts");
+
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
 
@@ -170,4 +173,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Nova support copilot (starter, fake AI) running at http://localhost:${PORT}`);
   console.log(`Anthropic API key: ${process.env.ANTHROPIC_API_KEY ? "found in .env" : "MISSING, paste it into .env"}`);
+  console.log(`Prompt understand v${prompts.understand.version} #${prompts.understand.hash} (${prompts.understand.system.length} chars)`);
+  console.log(`Prompt answer     v${prompts.answer.version} #${prompts.answer.hash} (${prompts.answer.system.length} chars)`);
+  console.log(`Fixed replies     v${prompts.replies.version} #${prompts.replies.hash} (${Object.keys(prompts.replies.byId).length} replies)`);
 });
