@@ -24,7 +24,8 @@ function loadEnv() {
 loadEnv();
 
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
-const { prompts, reply } = require("./lib/prompts");
+const { prompts, reply, answerUserTurn } = require("./lib/prompts");
+const { lookup } = require("./lib/lookup");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -89,32 +90,107 @@ const UNDERSTAND_SCHEMA = {
   additionalProperties: false,
 };
 
-// Step 1 of the copilot: label the message. The whole understand prompt is the cached system block;
-// the customer's message is the only thing that changes per call.
-async function understand(message) {
+// The JSON shape the answer prompt asks for (prompts/answer.md, section 8).
+const ANSWER_SCHEMA = {
+  type: "object",
+  properties: {
+    reply_language: { type: "string", enum: ["arabic", "english"] },
+    answer_text: { type: "string" },
+    sources: { type: "array", items: { type: "string" } },
+    action: { type: "string", enum: ["answer", "handoff"] },
+    ticket_status: { type: "string", enum: ["resolved_pending_confirmation", "handed_off"] },
+  },
+  required: ["reply_language", "answer_text", "sources", "action", "ticket_status"],
+  additionalProperties: false,
+};
+
+const ANSWER_MODEL = process.env.ANSWER_MODEL || "claude-haiku-5-5";
+const ANSWER_EFFORT = process.env.ANSWER_EFFORT || "low";
+
+// One model call that must return one JSON object. The system prompt is cached; only `user` changes.
+// Never sends temperature. Throws on a failed call or broken JSON, so the caller can hand off.
+async function callJson(step, { model, effort, system, user, schema }) {
   const started = Date.now();
   const response = await anthropic.messages.create({
-    model: UNDERSTAND_MODEL,
-    max_tokens: 2048,
-    output_config: { effort: "low", format: { type: "json_schema", schema: UNDERSTAND_SCHEMA } },
-    system: [{ type: "text", text: prompts.understand.system, cache_control: { type: "ephemeral" } }],
-    messages: [{ role: "user", content: message }],
+    model,
+    max_tokens: 4096,
+    output_config: { effort, format: { type: "json_schema", schema } },
+    system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
+    messages: [{ role: "user", content: user }],
   });
   const text = response.content.filter((block) => block.type === "text").map((block) => block.text).join("");
-  const label = JSON.parse(text);
-  for (const field of UNDERSTAND_SCHEMA.required) {
-    if (!(field in label)) throw new Error(`Understand reply is missing ${field}`);
+  const json = JSON.parse(text);
+  for (const field of schema.required) {
+    if (!(field in json)) throw new Error(`${step} reply is missing ${field}`);
   }
   const usage = response.usage;
+  const ms = Date.now() - started;
   console.log(
-    `[understand] ${label.intent} ${label.priority} conf=${label.confidence} | in=${usage.input_tokens} ` +
-      `cache_read=${usage.cache_read_input_tokens || 0} cache_write=${usage.cache_creation_input_tokens || 0} ` +
-      `out=${usage.output_tokens} | ${Date.now() - started} ms`
+    `[${step}] ${model} | in=${usage.input_tokens} cache_read=${usage.cache_read_input_tokens || 0} ` +
+      `cache_write=${usage.cache_creation_input_tokens || 0} out=${usage.output_tokens} | ${ms} ms`
   );
-  return { label, usage, model: UNDERSTAND_MODEL };
+  return { json, usage, ms, model };
 }
 
-// The copilot. Step 6: the labels are real; the answer text stays a placeholder until step 8.
+// Step 1 of the copilot: label the message. The customer's message is the whole user turn.
+async function understand(message) {
+  const result = await callJson("understand", {
+    model: UNDERSTAND_MODEL,
+    effort: "low",
+    system: prompts.understand.system,
+    user: message,
+    schema: UNDERSTAND_SCHEMA,
+  });
+  const label = result.json;
+  console.log(`[understand] ${label.intent} ${label.priority} conf=${label.confidence}`);
+  return { ...result, label };
+}
+
+function cairoNow() {
+  return new Date().toLocaleString("en-GB", {
+    timeZone: "Africa/Cairo",
+    weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+  }) + " (Cairo)";
+}
+
+// Step 2: write the answer from this customer's own top 3 records and the cached policies.
+async function answer(customerId, message, label) {
+  const found = lookup(customerId, message, label.intent);
+  const user = answerUserTurn({
+    NOW_CAIRO: cairoNow(),
+    TOP_3_RECORDS: found.records.length ? found.records.map((r) => JSON.stringify(r)).join("\n") : "none",
+    LIVE_NOTICES_OR_NONE: "none",
+    LAST_TURNS_MASKED: "none",
+    INPUT_LANGUAGE: label.input_language,
+    INTENT: label.intent,
+    REWRITE: label.rewrite,
+    MASKED_MESSAGE: message,
+  });
+  const result = await callJson("answer", {
+    model: ANSWER_MODEL,
+    effort: ANSWER_EFFORT,
+    system: prompts.answer.system,
+    user,
+    schema: ANSWER_SCHEMA,
+  });
+  console.log(`[answer] retrieved=${found.retrieved_ids.join(",") || "none"} sources=${result.json.sources.join(",") || "none"} action=${result.json.action}`);
+  return { ...result, retrieved_ids: found.retrieved_ids };
+}
+
+const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
+
+// A fixed reply from prompts/replies.md, with a ticket so a person picks it up.
+function handOff(customerId, message, base, replyId, queue) {
+  const result = { ...base, sources: [], action: "handoff", ticket_status: "moved_to_agent" };
+  const ticket = newTicket(customerId, message, result, queue);
+  return {
+    ...result,
+    reply_language: fixedLanguage(base.input_language),
+    answer_text: reply(replyId, base.input_language, { REF: ticket.ticket_id }),
+  };
+}
+
+// The copilot: understand, then answer P2 and P4 from sources. P0, P1 and P3 are routed in steps 10 and 11.
 async function copilot(customerId, message) {
   let label;
   try {
@@ -122,29 +198,43 @@ async function copilot(customerId, message) {
   } catch (err) {
     // A failed or broken model reply never reaches the customer as an error: a person takes over.
     console.error(`[understand] failed: ${err.message}`);
-    const result = {
-      input_language: "unknown",
-      reply_language: "english",
-      category: "General",
-      intent: "general.unknown",
-      priority: "P4",
-      confidence: 0,
-      sources: [],
-      action: "handoff",
-      ticket_status: "moved_to_agent",
-    };
-    const ticket = newTicket(customerId, message, result, "Agent");
-    return { ...result, answer_text: reply("R-MODEL-DOWN", "english", { REF: ticket.ticket_id }) };
+    const base = { input_language: "english", category: "General", intent: "general.unknown", priority: "P4", confidence: 0 };
+    return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
   }
-  return {
+  const base = {
     input_language: label.input_language,
-    reply_language: label.input_language === "english" ? "english" : "arabic",
     category: label.category,
     intent: label.intent,
     priority: label.priority,
     confidence: label.confidence,
-    answer_text: "Thanks for your message! Your request has been received and we will get back to you soon.",
-    sources: [],
+  };
+
+  if (label.priority !== "P2" && label.priority !== "P4") {
+    return {
+      ...base,
+      reply_language: fixedLanguage(label.input_language),
+      answer_text: "Thanks for your message! Your request has been received and we will get back to you soon.",
+      sources: [],
+      action: "answer",
+      ticket_status: "resolved_pending_confirmation",
+    };
+  }
+
+  let answered;
+  try {
+    answered = await answer(customerId, message, label);
+  } catch (err) {
+    console.error(`[answer] failed: ${err.message}`);
+    return handOff(customerId, message, base, "R-MODEL-DOWN", "Agent");
+  }
+  if (answered.json.action === "handoff") {
+    return handOff(customerId, message, base, "R-NO-SOURCE", "Agent");
+  }
+  return {
+    ...base,
+    reply_language: answered.json.reply_language,
+    answer_text: answered.json.answer_text,
+    sources: answered.json.sources,
     action: "answer",
     ticket_status: "resolved_pending_confirmation",
   };
