@@ -245,6 +245,17 @@ async function answer(customerId, message, label, testNow) {
   return { ...meta, status: "check_failed", json: null, attempts: 2, checks_passed: [], failed_check: failed.check };
 }
 
+// The customer's card whose renewal or replacement was dispatched on or before today, with no delivery date
+// and no expected date still to come. `today` is "YYYY-MM-DD" in Cairo.
+function undeliveredCard(customerId, message, intent, today) {
+  const { records } = lookup(customerId, message, intent);
+  return records.find((r) => {
+    const sent = r.card_id && r.renewal;
+    if (!sent || !sent.dispatch_date || sent.dispatch_date > today || sent.delivered) return false;
+    return !(sent.expected_by && sent.expected_by >= today);
+  }) || null;
+}
+
 const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
 
 const SUPERVISOR_NOTE = "Sensitive: routed to the Supervisor queue (head of agents). Queue per bank policy, to be confirmed by Compliance.";
@@ -343,6 +354,13 @@ async function copilot(customerId, message, testNow, trace) {
   if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
   if (label.wants_person) return handOff(customerId, message, base, "R-PERSON", "Agent");
   if (!(label.confidence >= 0.7)) return handOff(customerId, message, base, "R-UNSURE", "Agent");
+
+  // A card that was sent but has no delivery recorded (and isn't still on its way) needs a person to check the
+  // delivery; the copilot can't know where it is (evalset case 41).
+  if (label.intent.startsWith("card.")) {
+    const lost = undeliveredCard(customerId, message, label.intent, cairoNow(testNow).day);
+    if (lost) return handOff(customerId, message, base, "R-UNSURE", "Agent", `Card ${lost.card_id} sent ${lost.renewal.dispatch_date}, no delivery recorded: check the delivery.`);
+  }
 
   let answered;
   try {
