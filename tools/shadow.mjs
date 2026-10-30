@@ -3,7 +3,7 @@
 // handled the ticket and reports how many the copilot would have resolved, where it went wrong, the agent
 // minutes it would have saved, and what it cost.
 //
-//   Start the app first:  node server.js
+//   Start the app first:  ALLOW_TEST_NOW=true node server.js   (so each ticket is asked at its asked_at time)
 //   Then:                 node tools/shadow.mjs [--limit 50]
 // Costs about US$0.0003 per ticket on Claude Haiku 5.5 (about US$0.06 for all 200).
 // The app's rate limit is 20 messages a minute per customer; the script paces each customer under it.
@@ -41,7 +41,7 @@ function parseCsv(text) {
   return body.map((r) => Object.fromEntries(head.map((h, i) => [h, r[i]])));
 }
 
-const tickets = parseCsv(fs.readFileSync(path.join(ROOT, "data", "tickets-labelled.csv"), "utf8")).slice(0, LIMIT);
+const tickets = parseCsv(fs.readFileSync(path.join(ROOT, "data", "tickets-labelled.csv"), "utf8").replace(/^﻿/, "")).slice(0, LIMIT);
 const sent = new Map();
 async function pace(customerId) {
   const times = (sent.get(customerId) || []).filter((t) => Date.now() - t < 60000);
@@ -54,12 +54,12 @@ const results = [];
 console.log(`Shadow run: ${tickets.length} labelled tickets against ${BASE} ...`);
 for (const t of tickets) {
   await pace(t.customer_id);
-  const res = await fetch(`${BASE}/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerId: t.customer_id, message: t.message }) });
+  const res = await fetch(`${BASE}/api/chat`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerId: t.customer_id, message: t.message, testNow: t.asked_at || undefined }) });
   const r = await res.json();
   const copilotAnswered = r.action === "answer" && !r.reply_id;
   const agentSaysCopilot = t.queue === "Copilot";
   results.push({
-    ticket: t.ticket_id, language: t.language, expected_intent: t.intent, expected_priority: t.priority, expected_queue: t.queue,
+    ticket: t.ticket_id, asked_at: t.asked_at, reason: r.reply_id || null, language: t.language, expected_intent: t.intent, expected_priority: t.priority, expected_queue: t.queue,
     intent: r.intent, priority: r.priority, action: r.action, queue: r.queue || (copilotAnswered ? "Copilot" : null),
     intent_ok: r.intent === t.intent, priority_ok: r.priority === t.priority,
     would_resolve: copilotAnswered && agentSaysCopilot && r.intent === t.intent,

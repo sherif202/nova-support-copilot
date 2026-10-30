@@ -29,7 +29,7 @@
       <div class="kpi ok"><span class="l">Kill switch</span><span class="v">Mode Off</span><span class="l">tested: every message to a person, fraud still to Fraud</span></div>
       <div class="kpi ok"><span class="l">Shadow and beta</span><span class="v">Suggest only</span><span class="l">AI drafts, an agent approves before anyone sees it</span></div>
       <div class="kpi ok"><span class="l">Pilot</span><span class="v">Auto-answer</span><span class="l">low-risk only, everything else to a person</span></div>
-      <div class="kpi ok"><span class="l">Shadow script</span><span class="v">200</span><span class="l">labelled tickets, <code>tools/shadow.mjs</code></span></div>
+      <div class="kpi ok"><span class="l">Shadow script</span><span class="v">59%</span><span class="l">would resolve, 200 linked tickets, <code>tools/shadow.mjs</code></span></div>
     </div>
     <p class="note">The mode is switched in the agent inbox and shown in the header on every screen; every change is logged with who made it (<code>logs/mode.jsonl</code>).</p>
   </section>
@@ -37,7 +37,7 @@
   <section class="panel">
     <h2>The plan, step by step</h2>
     <ol class="timeline">
-      <li><span class="ver">Days 1–2</span><span><b>Shadow mode</b> on the 200 labelled tickets: <code>node tools/shadow.mjs</code>. Nobody sees the answers. The script compares each route with how an agent closed the ticket and reports how many the copilot would have resolved, the agent minutes saved, answers given where an agent was needed, fraud misses and cost (about US$0.06). <span class="st done">Run 30 Oct</span> 200 tickets, 0 of 16 fraud missed, intent 98%, priority 100%, 0 answers where an agent was needed, EGP 0.018 per answer, p95 5.7 s. Would have resolved 23%, a lower bound: most handoffs were "no source" because the Stage 2 tickets aren't linked to the customer records. <a href="shadow-run-results.md">Results ›</a></span></li>
+      <li><span class="ver">Days 1–2</span><span><b>Shadow mode</b> on the 200 labelled tickets: <code>node tools/shadow.mjs</code>. Nobody sees the answers. The script compares each route with how an agent closed the ticket and reports how many the copilot would have resolved, the agent minutes saved, answers given where an agent was needed, fraud misses and cost (about US$0.06). <span class="st done">Run 30 Oct, twice</span> On 200 tickets regenerated from the customer records, each asked at a pinned time: <b>would have resolved 59%</b> (118/200, was 23% on the unlinked Stage 2 tickets), 1,138 agent minutes saved, 0 of 16 fraud missed, intent 99.5%, priority 100%, 0 answers where an agent was needed, EGP 0.025 per answer, p95 5.2 s. <a href="shadow-run-results.md">Results ›</a></span></li>
       <li><span class="ver">Days 3–4</span><span><b>Internal beta</b>, mode <b>Suggest only</b>: teammates and classmates hold 50 conversations, with fraud and complaint scenarios on purpose. Every AI answer waits for an agent to edit and approve, so a wrong answer never reaches a "customer". <span class="st todo">Needs testers</span></span></li>
       <li><span class="ver">Days 5–9</span><span><b>Pilot with 10 to 20 people</b>, mode <b>Auto-answer low-risk</b>, each with a scenario card (below). Only the in-scope questions are answered; everything else goes to a person. The PM control panel measures the North Star live. <span class="st todo">Needs pilot users</span></span></li>
       <li><span class="ver">Optional</span><span><b>A/B on fee questions</b>: fixed FAQ answers against AI answers. With 20 people the result is a direction, not proof; say so on Demo Day. <span class="st todo">Optional</span></span></li>
@@ -88,11 +88,11 @@
     <h2>Gate to Demo Day</h2>
     <ul class="gates">
       <li class="todo"><span class="mark">…</span><span>100+ pilot conversations logged <span class="st todo">pilot not run yet</span></span></li>
-      <li class="todo"><span class="mark">…</span><span>Verified resolution rate measured against the 40% target (KR1 tile in the PM panel) <span class="st todo">needs the pilot</span></span></li>
+      <li class="part"><span class="mark">~</span><span>Verified resolution rate measured against the 40% target (KR1 tile in the PM panel): shadow says 59% on synthetic tickets <span class="st part">pilot must confirm</span></span></li>
       <li class="part"><span class="mark">~</span><span>Zero fraud misses and zero data leaks: zero in all 21 eval runs and every security test; to confirm on pilot chats <span class="st part">so far yes</span></span></li>
       <li><span class="mark">✓</span><span>Kill switch tested once</span></li>
     </ul>
-    <div class="callout"><b>Recommendation:</b> run the shadow script first (cheap, no people needed), then the beta in Suggest-only mode. Present the pilot on Demo Day as evidence for funding phase 2, not as statistical proof.</div>
+    <div class="callout"><b>Recommendation:</b> the shadow run is done (59% would resolve, 0 fraud missed); next is the beta in Suggest-only mode. Present the pilot on Demo Day as evidence for funding phase 2, not as statistical proof.</div>
   </section>
 
   <section class="panel">

@@ -1,70 +1,91 @@
 # Stage 7 shadow run results
 
-**Run:** 30 Oct 2026, 21:46 UTC, `node tools/shadow.mjs`, against the app at commit `854e08f`.
-**Settings:** Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7, mode Auto-answer low-risk.
-**Input:** all 200 labelled contact-center tickets in `data/tickets-labelled.csv` (synthetic, Stage 2). Nobody saw the copilot's answers; each route was compared with how an agent handled the ticket.
-**Raw results:** `logs/shadow-2026-10-30T21-46-42-854Z.json` (local, not committed).
+Two runs of `node tools/shadow.mjs` on 30 Oct 2026, both with Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7, mode Auto-answer low-risk. Nobody saw the copilot's answers; each route was compared with how an agent handled the ticket.
 
-## Summary
+- **Run 1 (before), 21:46 UTC, commit `854e08f`:** the Stage 2 tickets as generated, asked at the real time.
+- **Run 2 (after), 22:01 UTC:** the same 200 tickets regenerated from the customer records (`tools/build_linked_tickets.mjs`), each asked at a pinned time (`asked_at`).
 
-| Measure | Result |
-| - | - |
-| Tickets processed | 200 (84 English, 65 Arabic, 51 Franco-Arabic) |
-| Intent accuracy | 98.0% (196/200) |
-| Priority accuracy | 100% |
-| **Fraud tickets missed** | **0 of 16** (all reached the Fraud queue) |
-| Answered where an agent was needed | 0 |
-| Would have resolved | 46/200 (23.0%) |
-| Agent minutes saved | 455 minutes (about 7.6 hours) on 200 tickets |
-| Total cost | US$0.0591 |
-| Cost per answered message | US$0.000365, **EGP 0.018** (at EGP 50 per US$) |
-| Latency | p50 2.6 s, **p95 5.7 s** (gate 6 s) |
-| Answer retries | 1 |
+Raw results: `logs/shadow-2026-10-30T21-46-42-854Z.json` and `logs/shadow-2026-10-30T22-01-36-379Z.json` (local, not committed). The old tickets file stays in git history (commit `c7d86ed`).
+
+## What changed in the tickets
+
+`tools/build_linked_tickets.mjs` keeps every ticket's id, intent, language, priority, queue, resolution minutes and double labels exactly as they were. It finds the Stage 2 template (`build_tickets.py`) each message came from and refills it from one customer's real records:
+
+| Ticket type | Before | After |
+| - | - | - |
+| Fee questions | Random amount and day | A fee that customer was charged, with its amount and day. EGP 50 (the overdraft fee) only in `fee.overdraft` tickets |
+| Dispute questions | Random customer and merchant | A customer with a dispute, and that dispute's merchant |
+| Unknown payment, open a dispute | Random merchant | A real purchase of that customer |
+| Card questions | Random customer | A customer with a working card |
+| Maintenance questions | Asked at the real time (no notice live) | Asked during the notice they are about (29 Oct 20:15, 29 Oct 14:00 for "tonight", 31 Oct 02:30 for cards abroad) |
+| Everything else | | Asked on 30 Oct 2026 between 08:00 and 18:00 |
+
+62 messages were refilled; 138 needed no record details and kept their wording. Same 200 tickets, same mix (84 English, 65 Arabic, 51 Franco-Arabic), same queue labels (142 Copilot, 31 Agent, 16 Fraud, 11 Complaints). The injection test record in the transactions is never used as a ticket.
+
+## Before and after
+
+| Measure | Before | After |
+| - | - | - |
+| Tickets processed | 200 | 200 |
+| Intent accuracy | 98.0% (196/200) | **99.5%** (199/200) |
+| Priority accuracy | 100% | 100% |
+| **Fraud tickets missed** | **0 of 16** | **0 of 16** |
+| Answered where an agent was needed | 0 | 0 |
+| **Would have resolved** | 46/200 (23.0%) | **118/200 (59.0%)**, 83% of the 142 tickets an agent marked "Copilot" |
+| Agent minutes saved | 455 (7.6 hours) | **1,138 (19 hours)** |
+| Total cost | US$0.0591 | US$0.0585 |
+| Cost per answered message | US$0.000365, EGP 0.018 | US$0.000492, **EGP 0.025** (target under EGP 0.035) |
+| Latency | p50 2.6 s, p95 5.7 s | p50 2.4 s, **p95 5.2 s** (gate 6 s) |
+| Copilot → Agent | 96 | 23 |
+| Complaints → Supervisor | 2 | 2 (by design: `sensitive.vulnerable` goes to the head of agents) |
+| Any → Fraud wrongly | 0 | 0 |
+
+An answer costs a little more now because more tickets get a full answer from the records (dispute timelines, fee explanations) instead of a short handoff.
 
 By language:
 
-| Language | Tickets | Intent accuracy | Would have resolved |
+| Language | Tickets | Intent before → after | Resolved before → after |
 | - | - | - | - |
-| English | 84 | 98.8% | 17 |
-| Arabic | 65 | 96.9% | 16 |
-| Franco-Arabic | 51 | 98.0% | 13 |
+| English | 84 | 98.8% → 100% | 17 → 43 |
+| Arabic | 65 | 96.9% → 100% | 16 → 42 |
+| Franco-Arabic | 51 | 98.0% → 98.0% | 13 → 33 |
 
-## Wrong routes, by category
+## Why the 24 remaining "Copilot" tickets didn't resolve
 
-| Expected → got | Count | Why |
+| Reason | Count | Comment |
 | - | - | - |
-| Copilot → Agent | 96 | See below: mostly "no source" |
-| Complaints → Supervisor | 2 | `sensitive.vulnerable` cases go to the head of agents by design (owner decision, Round 0). Still a person; not an error |
-| Any → Fraud wrongly | 0 | |
-| Fraud → anything else | 0 | |
+| No source: branch hours, nearest branch, cheque book price | 10 | Nova's knowledge base has no branch or cheque-book facts. Add them, or move `general.info` out of scope |
+| Customer asked for a person | 5 | Correct by design |
+| No source: dispute details | 4 | For example, a police report question on a dispute at the Decision stage. A safe handoff |
+| No source: card not reading | 2 | "The card doesn't read" isn't clearly damage. A safe handoff |
+| No source: "charged 50 twice" when the records show one overdraft fee | 1 | The copilot was right not to agree with the customer |
+| Answer failed its checks twice | 1 | Handed off (R-CHECK-FAILED) |
+| Wrong intent | 1 | "50 taken twice this month, why" read as `fee.explain`, not `fee.overdraft`. Answered from the record anyway; not counted as resolved |
 
-Wrong intents: 4, all in the **fee** category, all `fee.explain` read as `fee.overdraft` (1 English, 1 Franco-Arabic, 2 Arabic). Side effect of the 1.0.2 trap row "an unexplained EGP 50 is overdraft". Low risk: they were handed off, not answered wrongly.
+Before the data fix, 87 handoffs were "no source"; after, 17. **The 23% was a data problem, not a copilot problem.**
 
-## Why 96 answerable tickets went to a person
+## The EGP 50 trap row (fix 2)
 
-| Reason | Count |
-| - | - |
-| No source: Nova's rules and the customer's records don't cover it | 87 |
-| Not sure (confidence under 0.7) | 4 |
-| The customer asked for a person | 5 |
+The 4 "fee.explain read as fee.overdraft" cases in run 1 were all "what is this 50 pounds" questions. In the linked tickets, a 50 charge is always the overdraft fee, so the confusion no longer appears in the shadow run.
 
-The "no source" handoffs are mostly a **data mismatch, not a copilot failure**. The 200 tickets were generated in Stage 2 separately from the customer records, so many ask about things that don't exist for that customer:
+We still tried narrowing the trap row in `knowledge/nova-taxonomy.md` (version 1.0.10): `fee.overdraft` only when the customer asks *why* 50 was taken, says it happened more than once, or mentions a low balance or overdraft; *what is this 50* → `fee.explain`. The full eval said **DO NOT SHIP**. Eval cases 2 ("ليه اتخصم مني 50 جنيه؟") and 29 ("el 50 geneh di overdraft wala eh?") flipped to `fee.explain`, so intent fell to 95.0% and grounded to 24/29. **Rejected and reverted to the 1.0.9 row** (CHANGELOG 1.0.10).
 
-- 22 of the 27 "no source" dispute questions come from customers with **no dispute record at all** (for example, C-0006 asks about a Careem dispute; C-0006 has no dispute).
-- 22 other "no source" questions retrieved **no matching record** (for example, a 300-pound charge that isn't in that customer's transactions).
-- 12 maintenance questions ran at the real time (30 Oct, evening), when no maintenance notice was live, so "no announced maintenance, a colleague" was the honest answer.
+The underlying issue is labelling, not wording: the Stage 2 tickets label "why did you take 50 pounds" as `fee.explain`, while eval case 2 labels the same question `fee.overdraft`. Both routes answer from the same record and name the overdraft fee, so the customer gets the same answer either way. Recommendation: agree one label for "unexplained 50" in the taxonomy, and relabel the tickets to match, rather than tuning the prompt.
 
-In each case the copilot refused to invent an answer, which is the honesty rule working ("no source, no answer"). So **23% is a lower bound**. The agent's "Copilot" label assumed the agent had the information; the copilot was right not to guess when it didn't.
+## A clock bug in the eval, found and fixed
+
+The first eval run (after midnight in Cairo, 31 Oct) also failed cases 8, 9 and 40. All three were card questions for C-0012, labelled right at confidence 0.9 but handed off. The reason: C-0012's renewal card has a dispatch date of 31 Oct, so from that day it counts as "sent, not delivered" and the copilot hands off. The eval sent no fixed time for its main cases, so its result depended on the day it ran. `tools/eval.mjs` now asks every case at a fixed time (`EVAL_NOW`, default 2026-10-30 12:00 Cairo); status cases keep their own times. The hold-out script and set were not touched.
+
+Rerun on 1.0.9 with the pinned clock: **SHIP**. Fraud 13/13, harmless 7/7, security 18/18, intent 96.7%, grounded 27/29 (93.1%), honesty 5/5, notice match 100%, citation recall 100%, p95 4.2 s, US$0.024. Same as the 1.0.9 baseline.
 
 ## What this means for stage 7
 
-- **Safety holds on new data:** 0 fraud misses, 0 answers where an agent was needed, priority 100%.
-- **Cost and speed hold:** EGP 0.018 per answered message, far under the EGP 1 target; p95 5.7 s is under the 6 s gate but over the 4 s bake-off rule. Watch it in the pilot.
-- **The resolution number needs linked data:** before using the shadow rate as a Key Result, regenerate the labelled tickets from the customer records (stage 2 generator, `build_tickets.py`), so every ticket's charge or dispute exists. Then rerun this script.
-- **One fix to queue:** the `fee.explain` vs `fee.overdraft` confusion (4 cases): reword the 1.0.2 trap row so it fires only when the amount matches the overdraft fee in the customer's records.
+- **Safety holds on new data:** 0 fraud misses and 0 answers where an agent was needed, in both runs.
+- **The shadow resolution rate is 59%** of all tickets (83% of those an agent would hand to the copilot), above the 40% North Star target. It is a shadow number on synthetic tickets: the pilot must confirm it with real customers' "Did this solve your question?".
+- **Cost and speed hold:** EGP 0.025 per answered message, p95 5.2 s.
+- **Two small product decisions:** add branch and cheque-book facts to the knowledge base, or move `general.info` out of scope (10 handoffs); and agree one label for "unexplained EGP 50".
 
 ## Next
 
-1. Regenerate linked tickets and rerun the shadow (about US$0.06).
-2. Fix the fee trap row, run the full eval (about US$0.02), log it in the CHANGELOG.
-3. Then the internal beta in Suggest-only mode.
+1. Internal beta in Suggest-only mode (needs testers).
+2. Optional: add branch hours and cheque-book prices to the knowledge base, then rerun the shadow.

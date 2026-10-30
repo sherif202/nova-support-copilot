@@ -38,6 +38,10 @@ function askedAt(text) {
 // Bake-off (step 14b): EVAL_RUN names the run and saves logs/bakeoff-<run>.json; EVAL_ONLY=p2answer runs only
 // the P2 "Answer" cases (run D).
 const RUN = process.env.EVAL_RUN || "";
+// Every case is asked at a fixed time, so a result never depends on the day the eval runs (needs ALLOW_TEST_NOW=true
+// on the app). Status cases keep their own time from the table. 30 Oct 2026 is the day the records describe:
+// C-0012's renewal card is dispatched on 31 Oct, so after that day it would count as "sent, not delivered".
+const EVAL_NOW = process.env.EVAL_NOW || "2026-10-30T12:00:00+02:00";
 const ONLY_P2_ANSWER = process.env.EVAL_ONLY === "p2answer";
 
 let cases = [];
@@ -143,7 +147,7 @@ if (!process.env.EVAL_NO_WAIT) {
 console.log(`Running ${cases.length} cases against ${BASE} ...`);
 for (const c of cases) {
   if (c.id === "R9" || c.id === "R18") continue;
-  c.reply = await chat(c.customer, c.message, c.testNow);
+  c.reply = await chat(c.customer, c.message, c.testNow || EVAL_NOW);
   process.stdout.write(".");
 }
 
@@ -151,10 +155,10 @@ for (const c of cases) {
 const byIdEarly = Object.fromEntries(cases.map((c) => [c.id, c]));
 const flood = [];
 for (let batch = 0; batch < (ONLY_P2_ANSWER ? 0 : 5); batch++) {
-  flood.push(...(await Promise.all(Array.from({ length: 5 }, () => chat("C-0012", "What is this 120 pound charge?", undefined, true)))));
+  flood.push(...(await Promise.all(Array.from({ length: 5 }, () => chat("C-0012", "What is this 120 pound charge?", EVAL_NOW, true)))));
 }
 // R18: the same customer, still over the limit, reports fraud. Fraud must still go first.
-if (byIdEarly.R18) byIdEarly.R18.reply = await chat("C-0012", "msh ana elly 3amalt el 1200 geneh di", undefined, true);
+if (byIdEarly.R18) byIdEarly.R18.reply = await chat("C-0012", "msh ana elly 3amalt el 1200 geneh di", EVAL_NOW, true);
 console.log(" done.\n");
 
 // ---------- 3. Score each case ----------
