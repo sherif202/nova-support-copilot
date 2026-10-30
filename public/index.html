@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nova Bank · Help</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <header class="top">
   <div class="brand">
-    <span class="logo" aria-hidden="true">N</span>
-    <span>Nova Bank</span>
+    <img class="logo" src="/logo.svg" alt="" width="34" height="34">
+    <span class="wordmark">Nova Bank <span class="wordmark-ar" lang="ar">بنك نوفا</span></span>
     <span class="tag">AI assistant · answers checked by Nova's rules</span>
   </div>
   <div class="top-right">
@@ -18,6 +19,7 @@
     <nav aria-label="Views">
       <button id="tab-chat" class="tab active" type="button">Customer chat</button>
       <button id="tab-inbox" class="tab" type="button">Agent inbox</button>
+      <button id="tab-pm" class="tab" type="button">PM control panel</button>
     </nav>
   </div>
 </header>
@@ -78,8 +80,20 @@
       </table>
     </div>
   </section>
+
+  <section id="view-pm" class="view" aria-label="PM control panel" hidden>
+    <div class="inbox-head">
+      <div>
+        <h2>PM control panel</h2>
+        <p class="hint">Quality review: every number comes from the turn log, the inbox, the eval runs and the changelog. Nothing here calls an AI.</p>
+      </div>
+      <button id="pm-refresh" type="button" class="secondary">Refresh</button>
+    </div>
+    <div id="pm" class="pm"></div>
+  </section>
 </main>
 
 <script src="/app.js"></script>
+<script src="/pm.js"></script>
 </body>
 </html>

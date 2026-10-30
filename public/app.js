@@ -91,16 +91,17 @@ function whyThisAnswer(explain, arabic) {
   return box;
 }
 
-// Pillar 3: feedback loop on every AI answer.
+// Pillar 3: feedback loop on every AI answer. Telos R1: the question is "Did this solve it?", the exact signal
+// the North Star (verified resolution rate) counts, so every answer measures the Key Result directly.
 function feedback(data, arabic) {
   const row = el("div", "feedback");
-  row.append(el("span", "hint", arabic ? "الإجابة دي ساعدتك؟" : "Was this helpful?"));
-  const up = el("button", "icon-btn", "👍");
+  row.append(el("span", "hint", arabic ? "الإجابة دي حلّت مشكلتك؟" : "Did this solve your question?"));
+  const up = el("button", "chip-btn", arabic ? "👍 أيوه" : "👍 Yes");
   up.type = "button";
-  up.setAttribute("aria-label", arabic ? "مفيدة" : "Helpful");
-  const down = el("button", "icon-btn", "👎");
+  up.setAttribute("aria-label", arabic ? "أيوه، اتحلّت" : "Yes, solved");
+  const down = el("button", "chip-btn", arabic ? "👎 لأ" : "👎 No");
   down.type = "button";
-  down.setAttribute("aria-label", arabic ? "مش مفيدة" : "Not helpful");
+  down.setAttribute("aria-label", arabic ? "لأ، ماتحلّتش" : "No, not solved");
   const post = (rating, reason) =>
     fetch("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message_id: data.message_id, customerId: $("customer").value, rating, reason }) });
   up.addEventListener("click", () => {
@@ -347,6 +348,7 @@ function confidenceChip(c) {
 function whyRouted(t) {
   const box = el("div", "routed");
   const rows = [
+    ["Summary", t.summary || "—"],
     ["Understood as", `${INTENT_NAMES[t.intent] || t.intent} (${t.intent}), priority ${t.priority}`],
     ["Confidence", typeof t.confidence === "number" ? t.confidence.toFixed(2) : "not measured (no AI call)"],
     ["Routed by", t.routing_rule || "Customer pressed 'Talk to a person'"],
@@ -524,16 +526,18 @@ async function loadTickets() {
 $("queue-filter").addEventListener("change", loadTickets);
 
 function show(view) {
-  $("view-chat").hidden = view !== "chat";
-  $("view-inbox").hidden = view !== "inbox";
-  $("tab-chat").classList.toggle("active", view === "chat");
-  $("tab-inbox").classList.toggle("active", view === "inbox");
+  for (const v of ["chat", "inbox", "pm"]) {
+    $(`view-${v}`).hidden = view !== v;
+    $(`tab-${v}`).classList.toggle("active", view === v);
+  }
   if (view === "inbox") loadTickets();
   if (view === "chat") scrollDown();
+  if (view === "pm" && window.loadPm) window.loadPm();
 }
 
 $("tab-chat").addEventListener("click", () => show("chat"));
 $("tab-inbox").addEventListener("click", () => show("inbox"));
+$("tab-pm").addEventListener("click", () => show("pm"));
 $("refresh").addEventListener("click", loadTickets);
 
 loadCustomers();

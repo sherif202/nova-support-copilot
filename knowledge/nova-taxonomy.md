@@ -92,6 +92,13 @@ Any match makes the message P0 and sends the fixed fraud reply. Match without ca
 | Dispute | اعتراض على معاملة | شكوى على عملية | e3terad | dispute.* |
 | One-time password | رمز التحقق | الكود اللي بيجي في رسالة | el code | fraud.otp_phishing |
 | Lost card replacement | بدل فاقد | بدل فاقد | badal fa2ed | fraud.card_lost_stolen |
+| Sanabel Fund (investment fund) | صندوق سنابل | السنابل، صندوق السنابل | sanabel | advice.any (P3) if they ask which to choose or whether to invest; otherwise general.info (P4) |
+| Al Baraka Deposits (time deposit) | ودائع البركة | وديعة البركة، البركة | wade3et el baraka | advice.any (P3) if choosing or investing; otherwise general.info (P4) |
+| Aman Certificate (savings certificate) | شهادة الأمان | شهادة أمان، الشهادة | shahadet aman | advice.any (P3) if choosing or investing; otherwise general.info (P4) |
+| Nova Savings Account | حساب توفير نوفا | التوفير | tawfeer | advice.any (P3) if choosing; otherwise general.info (P4) |
+| Nova Personal Finance (loan) | تمويل نوفا الشخصي | قرض، تمويل | 2ard, tamweel | loan.any (P3) |
+
+Product names never change the priority on their own: a payment the customer didn't make from any product is still P0 fraud. The full product list, with IDs and handling rules, is in `knowledge/nova-products.md`.
 
 ## Non-negotiable (enforced in code, not only in the prompt)
 

@@ -30,6 +30,7 @@ const { lookup, liveNotices } = require("./lib/lookup");
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
 const { explainAnswer, HANDOFF_WHY, choicesFor, SAFE_CHOICES } = require("./lib/explain");
+const { pmReport } = require("./lib/pm");
 
 const PORT = process.env.PORT || 3000;
 const DATA = path.join(ROOT, "data");
@@ -336,6 +337,8 @@ async function copilot(customerId, message, testNow, trace, chosenIntent) {
     intent: label.intent,
     priority: label.priority,
     confidence: label.confidence,
+    // One line in Nova's own terms, so an agent never makes the customer repeat themselves (Telos R2).
+    summary: label.rewrite,
   };
 
   if (label.priority === "P0" || label.intent.startsWith("fraud.")) {
@@ -412,6 +415,7 @@ function newTicket(customerId, message, result, queue, note) {
     status: result.ticket_status,
     // For the agent inbox (Stage 6): confidence and the rule that routed it here.
     confidence: typeof result.confidence === "number" ? result.confidence : null,
+    summary: result.summary || null,
     reply_id: result.reply_id || null,
     routing_rule: (HANDOFF_WHY[result.reply_id] || {}).rule || null,
     ...(note ? { note } : {}),
@@ -481,23 +485,8 @@ function newMessageId() {
   return `M-${Date.now().toString(36)}-${messageCounter}`;
 }
 
-// US$ per million tokens (Anthropic price list, October 2026). Cache reads and writes are priced separately.
-const PRICES = {
-  "claude-haiku-5-5": { input: 0.1, output: 0.5, cache_read: 0.01, cache_write: 0.125 },
-  "claude-sonnet-5-5": { input: 2, output: 10, cache_read: 0.2, cache_write: 2.5 },
-  "claude-opus-5-5": { input: 4, output: 20, cache_read: 0.2, cache_write: 5 },
-};
-
-function stepCost(step) {
-  const price = PRICES[step.model];
-  if (!price) return null;
-  return (
-    (step.input_tokens * price.input +
-      step.output_tokens * price.output +
-      step.cache_read_tokens * price.cache_read +
-      step.cache_write_tokens * price.cache_write) / 1e6
-  );
-}
+// Token prices and the cost of one step live in lib/prices.js, shared with the PM control panel.
+const { stepCost } = require("./lib/prices");
 
 function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms }) {
   const costs = trace.steps.map(stepCost);
@@ -521,6 +510,9 @@ function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms
     checks_passed: trace.checks_passed || [],
     failed_check: trace.failed_check || null,
     model: trace.steps.map((s) => s.model).join("+") || "none",
+    provider: trace.steps.length ? process.env.PROVIDER || "anthropic" : "none",
+    customer_choice: trace.customer_choice || null,
+    mode: copilotMode,
     steps: trace.steps,
     attempts: Object.fromEntries(trace.steps.map((s) => [s.step, s.attempts])),
     tokens: trace.steps.reduce(
@@ -582,6 +574,7 @@ const MIME = {
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
 };
 
 function serveStatic(req, res) {
@@ -621,6 +614,11 @@ const server = http.createServer(async (req, res) => {
         const turn = turns[t.ticket_id] || {};
         return { ...t, retrieved_ids: turn.retrieved_ids || [], cited: turn.sources || [], injection_flagged: Boolean(turn.injection_flagged) };
       }));
+    }
+
+    // The PM control panel: quality, cost per model ID, volume bottlenecks, iterations and recommendations
+    if (req.method === "GET" && req.url === "/api/pm") {
+      return sendJson(res, 200, pmReport({ mode: copilotMode }));
     }
 
     // Stage 6, progressive automation: the mode the copilot runs in (Off, Suggest only, Auto-answer low-risk)
