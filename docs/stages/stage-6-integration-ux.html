@@ -65,6 +65,27 @@
   </section>
 
   <section class="panel">
+    <h2>Transaction investigator (1.0.13-draft, not eval-gated yet)</h2>
+    <p>The copilot works with the customer to find the exact transaction, explains its status and history step by step, and checks for money on its way before handing over. Deterministic code over the customer's own records and Nova's transaction rules (TXS), with no AI call and no prompt change, behind the <code>INVESTIGATE</code> flag. Details: <code>docs/INVESTIGATOR.md</code>.</p>
+    <div class="shots">
+      <figure><img src="../screenshots/16-investigate-narrow.png" alt="Guided narrowing"><figcaption>Guided narrowing: chips, a live "3 of 10 match" count, places as a memory jogger</figcaption></figure>
+      <figure><img src="../screenshots/17-investigate-detail-pending.png" alt="Pending transaction explained"><figcaption>A pending hotel hold: timeline, why (TXS-1.2), what happens next, no promise</figcaption></figure>
+      <figure><img src="../screenshots/18-investigate-declined.png" alt="Declined transaction in Arabic"><figcaption>Declined for balance, in Arabic: the balance at that moment, then the money in and the retry</figcaption></figure>
+      <figure><img src="../screenshots/19-waiting-for-money.png" alt="Waiting for money"><figcaption>"I'm waiting for money": found on its way, with the reason and the expected time</figcaption></figure>
+      <figure><img src="../screenshots/20-agent-investigation-summary.png" alt="Investigation summary for the agent"><figcaption>The agent gets the full picture: filters, candidates, pending items, why a person</figcaption></figure>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>Pillar</th><th>How the investigator keeps it</th></tr></thead>
+      <tbody>
+        <tr><td>Trust and reliability</td><td>Honest statuses from the records; every reason cites a rule; expected times are "the normal time, not a guarantee"; nothing invented</td></tr>
+        <tr><td>Explainability</td><td>A memory jogger (where, card, time, terminal), a step-by-step timeline, "why", "what happens next", and what happened around it</td></tr>
+        <tr><td>Human agency</td><td>The customer chooses every step; "Did this solve it?" and "Talk to a person" end every flow; "I didn't make this" goes to the Fraud team; handoffs carry the full picture</td></tr>
+        <tr><td>Bank and law</td><td>Only the customer's own data (Banking Law 194/2020); the sender's name only for money in; last 4 card digits; no promise that a merchant's refund will happen</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
     <h2>Every fallback, designed</h2>
     <div class="scroll"><table>
       <thead><tr><th>Moment</th><th>What the customer sees</th><th>Where it goes</th><th>Status</th></tr></thead>

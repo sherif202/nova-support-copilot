@@ -667,7 +667,7 @@
     "customer_id": "C-0026",
     "date": "2026-08-16",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -150.0,
+    "amount_egp": -150,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -917,7 +917,7 @@
     "customer_id": "C-0014",
     "date": "2026-08-20",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -1395,7 +1395,7 @@
     "customer_id": "C-0016",
     "date": "2026-08-28",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -1777,7 +1777,7 @@
     "customer_id": "C-0007",
     "date": "2026-09-02",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -1797,7 +1797,7 @@
     "customer_id": "C-0013",
     "date": "2026-09-02",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -3392,7 +3392,7 @@
     "customer_id": "C-0001",
     "date": "2026-10-02",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -3658,7 +3658,7 @@
     "customer_id": "C-0029",
     "date": "2026-10-07",
     "merchant": "Fee: withdrawal abroad",
-    "amount_egp": -90.0,
+    "amount_egp": -90,
     "category": "Fee",
     "status": "posted",
     "fee_rule": "FEE-2.4",
@@ -4689,5 +4689,149 @@
     "amount_egp": -374,
     "category": "Transport",
     "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-29-0901",
+    "customer_id": "C-0010",
+    "date": "2026-10-29",
+    "merchant": "Hilton Cairo Heliopolis",
+    "amount_egp": -4200,
+    "category": "Travel",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-30-0902",
+    "customer_id": "C-0010",
+    "date": "2026-10-30",
+    "merchant": "Amazon.eg",
+    "amount_egp": -1250,
+    "category": "Shopping",
+    "status": "declined"
+  },
+  {
+    "record_id": "TXN-2026-10-30-0903",
+    "customer_id": "C-0010",
+    "date": "2026-10-30",
+    "merchant": "InstaPay from Ahmed Hassan",
+    "amount_egp": 2000,
+    "category": "Transfer",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-27-0904",
+    "customer_id": "C-0010",
+    "date": "2026-10-27",
+    "merchant": "Uber",
+    "amount_egp": -180,
+    "category": "Transport",
+    "status": "reversed"
+  },
+  {
+    "record_id": "TXN-2026-10-29-0906",
+    "customer_id": "C-0003",
+    "date": "2026-10-29",
+    "merchant": "ATM withdrawal, Nova ATM Nasr City",
+    "amount_egp": -15000,
+    "category": "Cash",
+    "status": "posted"
+  },
+  {
+    "record_id": "TXN-2026-10-29-0905",
+    "customer_id": "C-0003",
+    "date": "2026-10-29",
+    "merchant": "ATM withdrawal, Banque Misr ATM Nasr City",
+    "amount_egp": -10000,
+    "category": "Cash",
+    "status": "declined"
+  },
+  {
+    "record_id": "TXN-2026-11-01-0907",
+    "customer_id": "C-0003",
+    "date": "2026-11-01",
+    "merchant": "Salary payment, Delta Logistics",
+    "amount_egp": 18500,
+    "category": "Income",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-30-0908",
+    "customer_id": "C-0005",
+    "date": "2026-10-30",
+    "merchant": "Carrefour Maadi",
+    "amount_egp": -1450,
+    "category": "Groceries",
+    "status": "declined"
+  },
+  {
+    "record_id": "TXN-2026-10-30-0909",
+    "customer_id": "C-0005",
+    "date": "2026-10-30",
+    "merchant": "InstaPay from Mona Adel",
+    "amount_egp": 3000,
+    "category": "Transfer",
+    "status": "posted"
+  },
+  {
+    "record_id": "TXN-2026-10-30-0910",
+    "customer_id": "C-0005",
+    "date": "2026-10-30",
+    "merchant": "Carrefour Maadi",
+    "amount_egp": -1450,
+    "category": "Groceries",
+    "status": "posted"
+  },
+  {
+    "record_id": "TXN-2026-10-28-0911",
+    "customer_id": "C-0005",
+    "date": "2026-10-28",
+    "merchant": "International transfer from Karim Fathy",
+    "amount_egp": 12000,
+    "category": "Transfer",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-20-0912",
+    "customer_id": "C-0009",
+    "date": "2026-10-20",
+    "merchant": "Jumia",
+    "amount_egp": -899,
+    "category": "Shopping",
+    "status": "refunded"
+  },
+  {
+    "record_id": "TXN-2026-10-28-0913",
+    "customer_id": "C-0009",
+    "date": "2026-10-28",
+    "merchant": "Refund from Jumia",
+    "amount_egp": 899,
+    "category": "Transfer",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-31-0914",
+    "customer_id": "C-0009",
+    "date": "2026-10-31",
+    "merchant": "Seoudi Market Zamalek",
+    "amount_egp": -640,
+    "category": "Groceries",
+    "status": "declined"
+  },
+  {
+    "record_id": "TXN-2026-10-29-0915",
+    "customer_id": "C-0017",
+    "date": "2026-10-29",
+    "merchant": "Bank transfer from Hany Mostafa",
+    "amount_egp": 1500,
+    "category": "Transfer",
+    "status": "pending"
+  },
+  {
+    "record_id": "TXN-2026-10-01-0916",
+    "customer_id": "C-0017",
+    "date": "2026-10-01",
+    "merchant": "Standing order: rent, Alexandria",
+    "amount_egp": -6000,
+    "category": "Bills",
+    "status": "posted"
   }
 ]

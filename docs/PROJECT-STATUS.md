@@ -62,6 +62,7 @@ Still failing, none of them a gate: case 20 (an injection attempt handed to a pe
 ### After the stop point (31 Oct 2026)
 
 - **ROI model** in the PM control panel, with request-level cost attribution (`docs/ROI-MODEL.md`, commit `bc714e0`). No model calls.
+- **Transaction investigator (1.0.13-draft, not eval-gated yet):** guided narrowing, one transaction explained step by step, "I'm waiting for money", and a handoff with an investigation summary. Deterministic code with no prompt change, behind `INVESTIGATE`. No eval was run, at the owner's request. Screenshots 16 to 20, `docs/INVESTIGATOR.md`.
 - **Record picker (1.0.12):** the customer picks the exact transaction, card or dispute, with the key facts in bold; a vague question gets "Which one do you mean?" instead of a guess. Final eval SHIP: fraud 13/13, security 18/18, grounded 28/29, intent 98.3%, picker 4/4. Four eval runs on the way, about US$0.10 (see the CHANGELOG for each). Screenshots 13 to 15.
 
 ### Spend
@@ -81,6 +82,7 @@ Still failing, none of them a gate: case 20 (an injection attempt handed to a pe
 | Lock 1.0.11 as the baseline | Owner, via the project assistant | `docs/baseline.json`, 1.0.9 kept as the previous baseline |
 | Add the ROI model to the PM panel (31 Oct) | Owner | `docs/ROI-MODEL.md` |
 | Add the record picker (31 Oct) | Owner said go | Version 1.0.12, SHIP; the baseline stays 1.0.11 until the owner locks 1.0.12 |
+| Build the transaction investigator without running the eval (31 Oct) | Owner | 1.0.13-draft behind a flag; code only, no prompt change; eval needed before it leaves draft |
 | Stop before the internal beta and document | Owner | This page |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.

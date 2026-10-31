@@ -55,6 +55,7 @@ Stopped on 30 Oct 2026, before the internal beta. Version 1.0.11 is the locked b
 | `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
 | `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` · `tools/build_linked_tickets.mjs` | Step 14 eval with SHIP/DO NOT SHIP (asked at a fixed date), red team, the one-time hold-out run, the stage 7 shadow run on 200 labelled tickets, and the script that links those tickets to the customer records. |
 | `docs/lifecycle/` | The lifecycle plan and the stage 1 to 4 pages, as published. |
+| `lib/investigate.js` · `knowledge/nova-transaction-rules.md` · `data/transaction-details.json` | The transaction investigator (1.0.13-draft, behind `INVESTIGATE`): guided narrowing, one transaction explained, "I'm waiting for money", handoff with a summary. See `docs/INVESTIGATOR.md`. |
 | `lib/picker.js` | The record picker: the customer's own transactions, cards and disputes as cards to tap, key facts in bold (1.0.12). |
 | `docs/ROI-MODEL.md` · `lib/roi.js` · `lib/roi-config.js` | The ROI model in the PM panel: request-level cost attribution, ROI, size tiers, what to track, credits (synthetic assumptions). |
 | `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |

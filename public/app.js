@@ -72,7 +72,7 @@ function quickStart(arabic) {
   for (const q of QUICK) {
     const b = el("button", "suggestion quick-chip", arabic ? q.ar : q.en);
     b.type = "button";
-    b.addEventListener("click", () => (q.kind ? openPicker(q.kind, arabic, b.textContent) : send(arabic ? q.send.ar : q.send.en)));
+    b.addEventListener("click", () => (q.flow === "find" ? openFinder(arabic, "", b.textContent) : q.flow === "waiting" ? openWaiting(arabic, b.textContent) : q.kind ? openPicker(q.kind, arabic, b.textContent) : send(arabic ? q.send.ar : q.send.en)));
     row.append(b);
   }
   return row;
@@ -94,6 +94,7 @@ function recordCard(item, arabic, onTap) {
     if (i) top.append(el("span", "rec-dot", " · "));
     top.append(el("b", "", pick(x, arabic)));
   });
+  if (item.status) top.append(el("span", `st-pill st-${item.status.tone}`, pick(item.status, arabic)));
   const meta = el("span", "rec-meta");
   meta.append(el("span", "rec-tag", pick(item.tag, arabic)));
   item.meta.forEach((m) => meta.append(el("span", "", pick(m, arabic))));
@@ -202,8 +203,315 @@ function whichOne(data, original, arabic) {
       send(original, { recordId: it.id, chosenIntent: data.intent, label: shortLabel(it, arabic) });
     }));
   }
-  box.append(list, noneOfThese(arabic));
+  box.append(list);
+  if (features.investigate && data.picker.kind === "transactions") {
+    const search = el("button", "secondary small", arabic ? "🔎 دوّر في كل عملياتي" : "🔎 Search all my transactions");
+    search.type = "button";
+    search.addEventListener("click", () => openFinder(arabic, original, search.textContent));
+    box.append(search);
+  }
+  box.append(noneOfThese(arabic));
   return box;
+}
+
+// ---------- Transaction investigator (1.0.13-draft, behind INVESTIGATE; docs/INVESTIGATOR.md) ----------
+// The customer and the copilot narrow the search together, open one transaction to see its status and history
+// step by step, and check money on its way before anything goes to a person. Built in code from the customer's
+// own records and Nova's transaction rules; no AI call. Every flow ends with "Did this solve it?" and a person.
+
+let features = { investigate: false };
+async function loadFeatures() {
+  try {
+    features = await (await fetch("/api/features")).json();
+  } catch {
+    features = { investigate: false };
+  }
+  if (features.investigate) {
+    QUICK.unshift(
+      { flow: "find", en: "🔎 Find a transaction", ar: "🔎 دوّر على عملية" },
+      { flow: "waiting", en: "💸 I'm waiting for money", ar: "💸 مستني فلوس" }
+    );
+  }
+}
+
+const FIND_GROUPS = [
+  { key: "when", en: "When?", ar: "إمتى؟", options: [["today", "Today", "النهارده"], ["yesterday", "Yesterday", "امبارح"], ["week", "This week", "الأسبوع ده"], ["month", "This month", "الشهر ده"]] },
+  { key: "how", en: "How?", ar: "إزاي؟", options: [["card_in_store", "Card in a shop", "بالكارت في محل"], ["online", "Online", "أونلاين"], ["atm", "ATM", "ماكينة صراف"], ["transfer", "Transfer or InstaPay", "تحويل أو إنستاباي"]] },
+  { key: "direction", en: "Money in or out?", ar: "فلوس داخلة ولا خارجة؟", options: [["out", "Money out", "خارجة"], ["in", "Money in", "داخلة"]] },
+  { key: "amount", en: "How much, roughly?", ar: "المبلغ تقريباً؟", options: [["range:0:500", "Under 500", "أقل من 500"], ["range:500:5000", "500 to 5,000", "من 500 لـ 5,000"], ["range:5000:10000000", "Over 5,000", "أكتر من 5,000"]] },
+];
+
+const api = (route, params) => fetch(`/api/investigate/${route}?${new URLSearchParams({ customerId: $("customer").value, ...params })}`).then((r) => r.json());
+const postInv = (route, body) => fetch(`/api/investigate/${route}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customerId: $("customer").value, ...body }) }).then((r) => r.json());
+
+// Handoff with the full picture: the agent sees what the customer looked for, what was checked and why.
+async function investigationHandoff(arabic, ctx, reason, afterNode) {
+  const data = await postInv("handoff", { ...ctx, reason });
+  const wrap = el("div", "bot-turn");
+  wrap.setAttribute("dir", arabic ? "rtl" : "ltr");
+  wrap.append(
+    el("div", "msg bot", arabic ? `حوّلتك لزميل ومعاه كل اللي دوّرنا عليه، فمش هتعيد الكلام. رقم طلبك ${data.ticket.ticket_id}.` : `I've passed you to a colleague with everything we checked, so you won't have to repeat yourself. Your reference is ${data.ticket.ticket_id}.`),
+    el("div", "badge badge-wait", arabic ? "↪ اتحوّلت لموظف ومعاه ملخص البحث" : "↪ Passed to a colleague with the investigation summary")
+  );
+  (afterNode || $("messages").lastChild).after(wrap);
+  scrollDown();
+}
+
+// "Did this solve it?" at the end of every flow, plus a person.
+function invFeedback(arabic, ctx, onHandoff) {
+  const row = el("div", "feedback");
+  row.append(el("span", "hint", arabic ? "ده حلّ سؤالك؟" : "Did this solve it?"));
+  const yes = el("button", "chip-btn", arabic ? "👍 أيوه" : "👍 Yes");
+  const no = el("button", "chip-btn", arabic ? "👎 لأ" : "👎 No");
+  const person = el("button", "secondary small", arabic ? "🙋 كلّم موظف" : "🙋 Talk to a person");
+  [yes, no, person].forEach((b) => (b.type = "button"));
+  yes.addEventListener("click", () => {
+    postInv("log", { ...ctx.log, outcome: "solved" });
+    row.replaceChildren(el("span", "hint", arabic ? "تمام، شكراً." : "Great, thanks."));
+  });
+  no.addEventListener("click", () => {
+    postInv("log", { ...ctx.log, outcome: "not_solved" });
+    row.replaceChildren(el("span", "hint", arabic ? "آسفين. زميل يقدر يكمّل معاك:" : "Sorry about that. A colleague can take it from here:"), person);
+  });
+  person.addEventListener("click", () => onHandoff(arabic ? "العميل طلب موظف" : "the customer asked for a person"));
+  row.append(yes, no, person);
+  return row;
+}
+
+// a) "Find a transaction": guided narrowing with a live count, pre-filled from the customer's own words.
+async function openFinder(arabic, text, chipText) {
+  if (chipText) addUser(chipText);
+  const box = el("div", "bot-turn finder");
+  box.setAttribute("dir", arabic ? "rtl" : "ltr");
+  const state = { filters: {}, steps: 0 };
+  const head = el("p", "msg bot", arabic ? "تعالى ندوّر عليها سوا. اختار اللي فاكره، وأنا هضيّق البحث:" : "Let's find it together. Pick what you remember and I'll narrow it down:");
+  const count = el("p", "find-count");
+  const prefill = el("p", "hint");
+  const groups = el("div", "find-groups");
+  const where = el("div", "find-group");
+  const whereInput = el("input", "find-input");
+  whereInput.placeholder = arabic ? "اسم المحل أو المكان (مثلاً Carrefour)" : "Shop or place (for example Carrefour)";
+  const places = el("div", "suggestions");
+  const results = el("div", "rec-list");
+  const footer = el("div", "find-footer");
+  box.append(head, prefill, count, groups, where, results, footer);
+  $("messages").append(box);
+
+  const chipsFor = {};
+  for (const g of FIND_GROUPS) {
+    const row = el("div", "find-group");
+    row.append(el("span", "find-label", arabic ? g.ar : g.en));
+    chipsFor[g.key] = [];
+    for (const [value, en, ar] of g.options) {
+      const b = el("button", "chip-btn", arabic ? ar : en);
+      b.type = "button";
+      b.addEventListener("click", () => {
+        state.filters[g.key] = state.filters[g.key] === value ? "" : value;
+        state.steps += 1;
+        refresh();
+      });
+      chipsFor[g.key].push([value, b]);
+      row.append(b);
+    }
+    groups.append(row);
+  }
+  const go = el("button", "secondary small", arabic ? "دوّر" : "Search");
+  go.type = "button";
+  const applyPlace = () => {
+    state.filters.place = whereInput.value.trim();
+    state.steps += 1;
+    refresh();
+  };
+  go.addEventListener("click", applyPlace);
+  whereInput.addEventListener("keydown", (e) => e.key === "Enter" && applyPlace());
+  where.append(el("span", "find-label", arabic ? "فين؟" : "Where?"), whereInput, go, places);
+
+  const ctx = () => ({ flow: "find", lookingFor: text || "", filters: state.filters, candidates: [...results.querySelectorAll(".rec-card")].map((c) => c.dataset.id), found: [], steps: state.steps, log: { flow: "find", steps: state.steps, found: false } });
+
+  async function refresh(first = false) {
+    const params = Object.fromEntries(Object.entries(state.filters).filter(([, v]) => v));
+    if (first && text) params.q = text;
+    const data = await api("find", params);
+    if (first && data.clues) {
+      Object.assign(state.filters, data.clues);
+      const known = Object.keys(data.clues);
+      // Show the clues with the chip labels the customer sees ("This week", "Online"), not internal values.
+      const label = (k, v) => {
+        const g = FIND_GROUPS.find((x) => x.key === k);
+        const o = g && g.options.find(([value]) => value === v);
+        if (o) return arabic ? o[2] : o[1];
+        if (k === "amount") return (arabic ? "حوالي " : "about EGP ") + String(v).split(":")[1];
+        return String(v).replace(/^date:/, "");
+      };
+      if (known.length) prefill.textContent = (arabic ? "من كلامك: " : "From your message: ") + known.map((k) => label(k, data.clues[k])).join(" · ");
+      if (data.clues.place) whereInput.value = data.clues.place;
+    }
+    for (const g of FIND_GROUPS) for (const [value, b] of chipsFor[g.key]) b.classList.toggle("on", state.filters[g.key] === value);
+    count.replaceChildren(el("b", "", String(data.count)), document.createTextNode(arabic ? ` عملية مطابقة من ${data.total}` : ` of ${data.total} transactions match`));
+    places.replaceChildren();
+    if (!state.filters.place && data.places.length) {
+      places.append(el("span", "hint", arabic ? "مش فاكر فين؟ أماكن في النتايج دي:" : "Not sure where? Places in these results:"));
+      for (const p of data.places) {
+        const b = el("button", "suggestion", p);
+        b.type = "button";
+        b.addEventListener("click", () => {
+          whereInput.value = p;
+          applyPlace();
+        });
+        places.append(b);
+      }
+    }
+    results.replaceChildren();
+    for (const item of data.items) {
+      const c = recordCard(item, arabic, (it, button) => {
+        results.querySelectorAll(".rec-card").forEach((x) => x.classList.toggle("picked", x === button));
+        openDetail(it.id, arabic, { ...ctx(), steps: state.steps }, box);
+      });
+      c.dataset.id = item.id;
+      results.append(c);
+    }
+    if (!data.count) results.append(el("p", "hint", arabic ? "مفيش عملية بالمواصفات دي. جرّب تشيل اختيار." : "Nothing matches all of these. Try removing a choice."));
+    footer.replaceChildren();
+    const missing = el("button", "secondary small", arabic ? "مش لاقيها هنا" : "It isn't here");
+    missing.type = "button";
+    missing.addEventListener("click", () => {
+      postInv("log", { flow: "find", steps: state.steps, found: false, outcome: "handoff" });
+      investigationHandoff(arabic, ctx(), arabic ? "العميل مش لاقي العملية في النتايج" : "the customer couldn't find it in the results", box);
+    });
+    footer.append(missing, personButton(arabic));
+    scrollDown();
+  }
+  refresh(true);
+}
+
+// c) One transaction: memory jogger, timeline, why, what next, what happened around it.
+async function openDetail(id, arabic, ctx, afterNode) {
+  const d = await api("txn", { id });
+  if (d.error) return;
+  postInv("log", { flow: ctx.flow, steps: ctx.steps, found: true, outcome: "viewed", recordId: id, reason: d.reason_key });
+  const box = el("div", "bot-turn detail-card");
+  box.setAttribute("dir", arabic ? "rtl" : "ltr");
+  const header = recordCard(d.item, arabic, () => {});
+  header.disabled = true;
+  header.classList.add("picked");
+  box.append(header, el("p", "jogger", `💡 ${pick(d.jogger, arabic)}`));
+  const tl = el("ol", "timeline");
+  d.steps.forEach((s) => {
+    const li = el("li", `tl-${s.tone}`);
+    li.append(el("span", "", pick(s, arabic)));
+    tl.append(li);
+  });
+  box.append(el("h4", "", arabic ? "اللي حصل خطوة بخطوة" : "What happened, step by step"), tl);
+  if (d.why) {
+    const why = el("div", "why-box");
+    const title = d.item.status.key === "declined" ? (arabic ? "ليه اترفضت؟" : "Why was it declined?") : d.item.status.key === "pending" ? (arabic ? "ليه لسه معلّقة؟" : "Why is it pending?") : arabic ? "ليه؟" : "Why?";
+    why.append(el("strong", "", title), el("p", "", pick(d.why, arabic)));
+    if (d.rule) {
+      const r = el("code", "src-id", d.rule);
+      r.title = d.rule_text || "";
+      why.append(el("span", "hint", arabic ? "القاعدة: " : "Nova rule: "), r);
+    }
+    box.append(why);
+  }
+  if (d.next) box.append(el("div", "next-box", `${arabic ? "اللي جاي: " : "What happens next: "}${pick(d.next, arabic)}`));
+  if (d.around.length) {
+    const ar = el("ul", "around");
+    d.around.forEach((a) => ar.append(el("li", "", `${pick(a.when, arabic)} · ${pick(a.what, arabic)} · ${pick(a.status, arabic)}`)));
+    box.append(el("h4", "", arabic ? "اللي حصل حواليها" : "Around that time"), ar);
+  }
+  const actions = el("div", "find-footer");
+  if (d.can_report_fraud) {
+    const fraud = el("button", "secondary small danger", arabic ? "⚠ مش أنا اللي عملتها" : "⚠ I didn't make this");
+    fraud.type = "button";
+    // Fraud goes first: the same fraud word list as the chat, so it reaches the Fraud team with no AI call.
+    fraud.addEventListener("click", () => send(arabic ? "مش أنا اللي عملت العملية دي" : "I didn't make this payment", { recordId: id, label: shortLabel(d.item, arabic) }));
+    actions.append(fraud);
+  }
+  const handCtx = { ...ctx, candidates: [id], found: d.item.status.key === "pending" ? [id] : [], log: { flow: ctx.flow, steps: ctx.steps, found: true, recordId: id, reason: d.reason_key } };
+  const handoff = (reason) => investigationHandoff(arabic, handCtx, reason, box);
+  if (d.late) {
+    const trace = el("button", "small", arabic ? "زميل يتتبعها" : "A colleague will trace it");
+    trace.type = "button";
+    trace.addEventListener("click", () => handoff(arabic ? "الميعاد العادي عدّى والعملية لسه معلّقة" : "the normal time has passed and it is still pending"));
+    actions.append(trace);
+  }
+  box.append(actions, invFeedback(arabic, handCtx, handoff));
+  (afterNode || $("messages").lastChild).after(box);
+  scrollDown();
+}
+
+// d) "I'm waiting for money": who from, when, how; check money on its way before any handoff.
+const WAIT_SOURCES = [["person", "Someone sent me money", "حد بعتلي فلوس"], ["salary", "My salary", "مرتبي"], ["refund", "A refund from a shop", "فلوس راجعة من محل"], ["abroad", "From abroad", "من بره مصر"]];
+const WAIT_SENT = [["today", "Today", "النهارده"], ["yesterday", "Yesterday", "امبارح"], ["2-3", "2 to 3 days ago", "من يومين تلاتة"], ["4+", "4 days ago or more", "من 4 أيام أو أكتر"], ["", "Not sure", "مش متأكد"]];
+
+function openWaiting(arabic, chipText, preset = {}) {
+  if (chipText) addUser(chipText);
+  const box = el("div", "bot-turn finder");
+  box.setAttribute("dir", arabic ? "rtl" : "ltr");
+  const state = { source: preset.source || "", sent: preset.sent, steps: 0 };
+  box.append(el("p", "msg bot", arabic ? "خليني أشوف لو فيه فلوس في الطريق لحسابك. الفلوس جاية منين؟" : "Let me check whether money is on its way to your account. Where is it coming from?"));
+  const srcRow = el("div", "find-group");
+  const sentRow = el("div", "find-group");
+  const name = el("input", "find-input");
+  name.placeholder = arabic ? "اسم اللي باعت (اختياري)" : "Sender's name (optional)";
+  const out = el("div", "waiting-out");
+  const pickRow = (row, list, key) => list.map(([value, en, ar]) => {
+    const b = el("button", "chip-btn", arabic ? ar : en);
+    b.type = "button";
+    b.addEventListener("click", () => {
+      state[key] = value;
+      state.steps += 1;
+      row.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      if (state.source && state.sent !== undefined) check();
+    });
+    if (preset[key] === value) b.classList.add("on");
+    row.append(b);
+    return b;
+  });
+  srcRow.append(el("span", "find-label", arabic ? "منين؟" : "From?"));
+  pickRow(srcRow, WAIT_SOURCES, "source");
+  sentRow.append(el("span", "find-label", arabic ? "اتبعتت إمتى؟" : "When was it sent?"));
+  pickRow(sentRow, WAIT_SENT, "sent");
+  const nameRow = el("div", "find-group");
+  nameRow.append(el("span", "find-label", arabic ? "مين؟" : "Who?"), name);
+  box.append(srcRow, nameRow, sentRow, out);
+  $("messages").append(box);
+
+  async function check() {
+    const w = await api("waiting", { source: state.source, sent: state.sent || "", from: name.value.trim() });
+    out.replaceChildren();
+    const ctx = { flow: "waiting", lookingFor: `${pick(w.source, false)}${w.from ? ` from ${w.from}` : ""}`, filters: { source: state.source, sent: state.sent || "not sure", from: w.from }, candidates: [...w.pending, ...w.posted].map((x) => x.id), found: w.pending.map((x) => x.id), steps: state.steps };
+    const log = { flow: "waiting", steps: state.steps, found: w.pending.length + w.posted.length > 0 };
+    const showItems = (list, title) => {
+      out.append(el("p", "msg bot", title));
+      for (const item of list) {
+        const c = recordCard(item, arabic, () => openDetail(item.id, arabic, { ...ctx }, out));
+        out.append(c);
+        const tl = el("ol", "timeline");
+        item.detail.steps.forEach((s) => tl.append(el("li", `tl-${s.tone}`, pick(s, arabic))));
+        out.append(tl);
+        if (item.detail.why) out.append(el("p", "hint", `${pick(item.detail.why, arabic)} (${item.detail.rule})`));
+      }
+    };
+    if (w.pending.length) showItems(w.pending, arabic ? "لقيتها: الفلوس في الطريق لحسابك." : "Found it: the money is on its way to your account.");
+    if (w.posted.length) showItems(w.posted, arabic ? "ودي فلوس وصلت حسابك في آخر 10 أيام:" : "And this already arrived in your account in the last 10 days:");
+    if (!w.pending.length && !w.posted.length) {
+      out.append(el("p", "msg bot", arabic ? "لسه مفيش فلوس في الطريق من النوع ده." : "Nothing of this kind is on its way yet."));
+      out.append(el("div", "why-box", `${pick(w.normal, arabic)} (${w.normal.rule})${w.normal_by ? (arabic ? ` حسب ميعاد الإرسال، المعتاد توصل قبل ${pick(w.normal_by, true)}.` : ` From when it was sent, it would normally arrive by ${pick(w.normal_by, false)}.`) : ""}`));
+    }
+    const actions = el("div", "find-footer");
+    if (w.suggest_handoff) {
+      const trace = el("button", "small", arabic ? "زميل يتتبعها" : "A colleague will trace it");
+      trace.type = "button";
+      trace.addEventListener("click", () => investigationHandoff(arabic, ctx, w.overdue ? (arabic ? "الميعاد العادي عدّى ومفيش فلوس في الطريق" : "the normal time has passed and nothing is on its way") : arabic ? "العميل مش متأكد من ميعاد الإرسال ومفيش حاجة في الطريق" : "nothing on its way and the customer isn't sure when it was sent", box));
+      actions.append(trace);
+    } else if (!w.pending.length && !w.posted.length) {
+      actions.append(el("span", "hint", arabic ? "لسه في الميعاد العادي، فالأفضل نستنى شوية." : "It's still within the normal time, so it's best to wait a little."));
+    }
+    out.append(actions, invFeedback(arabic, { log }, (reason) => investigationHandoff(arabic, ctx, reason, box)));
+    scrollDown();
+  }
+  if (state.source && state.sent !== undefined) check();
 }
 
 // ---------- One message ----------
@@ -445,6 +753,7 @@ async function pollApprovedReplies() {
 setInterval(pollApprovedReplies, 5000);
 
 async function loadCustomers() {
+  await loadFeatures();
   customers = await (await fetch("/api/customers")).json();
   $("customer").replaceChildren(
     ...customers.map((c) => {
@@ -460,6 +769,12 @@ async function loadCustomers() {
   $("customer").value = customers.some((c) => c.customer_id === wanted) ? wanted : customers.some((c) => c.customer_id === "C-0012") ? "C-0012" : $("customer").value;
   showWelcome();
   const open = params.get("open");
+  const who = customers.find((c) => c.customer_id === $("customer").value) || {};
+  const inArabic = isArabic(who.preferred_language);
+  if (features.investigate && open === "find") openFinder(inArabic, params.get("q") || "", inArabic ? "🔎 دوّر على عملية" : "🔎 Find a transaction");
+  if (features.investigate && open === "txn") openDetail(params.get("id"), inArabic, { flow: "find", steps: 0 });
+  if (features.investigate && open === "waiting") openWaiting(inArabic, inArabic ? "💸 مستني فلوس" : "💸 I'm waiting for money", { source: params.get("source") || "", sent: params.has("sent") ? params.get("sent") : undefined });
+  if (params.get("view") === "inbox") $("tab-inbox").click();
   if (["transactions", "cards", "disputes"].includes(open)) {
     const customer = customers.find((c) => c.customer_id === $("customer").value) || {};
     const arabic = isArabic(customer.preferred_language);
@@ -521,10 +836,27 @@ function whyRouted(t) {
     ["Sources cited", (t.draft_sources || t.cited || []).join(", ") || "none"],
   ];
   if (t.injection_flagged) rows.push(["Warning", "The message looked like an attempt to change the assistant's rules"]);
-  if (t.note) rows.push(["Note", t.note]);
+  if (t.note && !t.investigation) rows.push(["Note", t.note]);
   const dl = el("dl");
   for (const [k, v] of rows) dl.append(el("dt", "", k), el("dd", "", v));
   box.append(dl);
+  if (t.investigation) {
+    const inv = t.investigation;
+    const card = el("div", "inv-summary");
+    card.append(el("strong", "", "🔎 Investigation summary: what the copilot already checked"));
+    const idl = el("dl");
+    const filters = Object.entries(inv.filters || {}).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join(" · ") || "none";
+    [
+      ["Flow", inv.flow === "waiting" ? "Waiting for money" : "Find a transaction"],
+      ["Looking for", inv.looking_for || "not stated"],
+      ["Filters used", filters],
+      ["Candidates checked", inv.candidates.length ? inv.candidates.join(", ") : "none"],
+      ["Pending or incoming found", inv.found.length ? inv.found.join(", ") : "none"],
+      ["Why a person", inv.reason],
+    ].forEach(([k, v]) => idl.append(el("dt", "", k), el("dd", "", v)));
+    card.append(idl, el("p", "hint", "The customer won't have to repeat any of this."));
+    box.append(card);
+  }
   return box;
 }
 
@@ -664,6 +996,8 @@ async function loadTickets() {
       why.setAttribute("aria-expanded", "true");
     });
     actions.append(why);
+    if (new URLSearchParams(location.search).get("ticket") === t.ticket_id) setTimeout(() => why.click(), 0);
+    if (t.investigation) cells[6].prepend(el("span", "st-pill st-info", "🔎 Investigation"), el("br"));
     if (t.status === "draft_pending_approval") {
       const edit = el("button", "small", "Edit reply");
       edit.type = "button";

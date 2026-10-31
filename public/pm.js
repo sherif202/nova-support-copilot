@@ -191,6 +191,21 @@
     // 2b. ROI model
     root.append(roiSection(d.roi));
 
+    // 2c. Transaction investigator (1.0.13-draft)
+    const I = d.investigator;
+    if (I) {
+      const inv = section("Transaction investigator (draft, not eval-gated)", "From logs/investigations.jsonl: one line per finished investigation (solved, not solved, or handed to an agent). Code only, no AI calls.");
+      const t = el("div", "tiles");
+      t.append(
+        tile("Investigations", num(I.investigations), `${num(I.handoffs)} handed to an agent with the full picture`),
+        tile("Average narrowing steps", I.avg_steps === null ? "—" : I.avg_steps.toFixed(1), "chips used before the customer found it"),
+        tile("Found the transaction", pct(I.found_rate), "investigations that ended on a transaction"),
+        tile("Resolved without an agent", pct(I.solved_without_agent), "the customer said it solved it")
+      );
+      inv.append(t, table(["Top decline and pending reasons (opened by customers)", "Count"], I.top_reasons.map((r) => [r.reason.replace(/_/g, " "), r.count])));
+      root.append(inv);
+    }
+
     // 3. Cost and calls by model ID
     const mod = section("Cost and calls by model", "Which model ran each step, with its exact model ID. Prices from lib/prices.js.");
     mod.append(table(

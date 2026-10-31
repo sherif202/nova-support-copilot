@@ -28,6 +28,11 @@ const { prompts, reply, answerUserTurn, retryNote } = require("./lib/prompts");
 const { runChecks, SECURITY_CHECKS } = require("./lib/checks");
 const { lookup, liveNotices, ambiguity, ownsRecord } = require("./lib/lookup");
 const { listRecords, itemsFor } = require("./lib/picker");
+const investigate = require("./lib/investigate");
+
+// Transaction investigator (1.0.13-draft, not eval-gated yet; docs/INVESTIGATOR.md). On unless INVESTIGATE=off.
+// Deterministic code over the customer's own records; it never calls a model.
+const INVESTIGATE = process.env.INVESTIGATE !== "off";
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
 const { explainAnswer, HANDOFF_WHY, choicesFor, SAFE_CHOICES } = require("./lib/explain");
@@ -675,6 +680,60 @@ const server = http.createServer(async (req, res) => {
         const turn = turns[t.ticket_id] || {};
         return { ...t, retrieved_ids: turn.retrieved_ids || [], cited: turn.sources || [], injection_flagged: Boolean(turn.injection_flagged) };
       }));
+    }
+
+    // Transaction investigator: narrowing, one transaction explained, money on its way, and a handoff with the
+    // full picture. All code over the logged-in customer's own records; never a model call.
+    if (req.method === "GET" && req.url === "/api/features") {
+      return sendJson(res, 200, { investigate: INVESTIGATE });
+    }
+    if (req.url.startsWith("/api/investigate/")) {
+      if (!INVESTIGATE) return sendJson(res, 404, { error: "The transaction investigator is off (INVESTIGATE=off)." });
+      const q = new URLSearchParams(req.url.split("?")[1] || "");
+      const body = req.method === "POST" ? await readBody(req) : {};
+      const customerId = String(q.get("customerId") || body.customerId || "");
+      if (!readJson("customers.json").some((c) => c.customer_id === customerId)) return sendJson(res, 404, { error: "Unknown customer" });
+      const today = cairoNow(q.get("now") || body.now).day;
+      const route = req.url.split("?")[0];
+      if (req.method === "GET" && route === "/api/investigate/find") {
+        const clues = q.get("q") ? investigate.cluesFrom(mask(String(q.get("q"))).slice(0, 300), customerId) : {};
+        const filters = { ...clues };
+        for (const k of ["when", "how", "amount", "place", "direction"]) if (q.get(k)) filters[k] = String(q.get(k)).slice(0, 60);
+        return sendJson(res, 200, { clues, filters, ...investigate.find(customerId, filters, today) });
+      }
+      if (req.method === "GET" && route === "/api/investigate/txn") {
+        const found = investigate.detail(customerId, String(q.get("id") || ""), today);
+        return found ? sendJson(res, 200, found) : sendJson(res, 404, { error: "Not one of this customer's transactions" });
+      }
+      if (req.method === "GET" && route === "/api/investigate/waiting") {
+        return sendJson(res, 200, investigate.waiting(customerId, { source: String(q.get("source") || "person"), from: String(q.get("from") || "").slice(0, 60), sent: String(q.get("sent") || "") }, today));
+      }
+      // One line per investigation for the PM panel: structured fields only, no free text.
+      if (req.method === "POST" && route === "/api/investigate/log") {
+        appendLog("investigations.jsonl", {
+          time: new Date().toISOString(), customer_id: customerId, flow: String(body.flow || "find").slice(0, 20), steps: Number(body.steps) || 0,
+          found: Boolean(body.found), outcome: String(body.outcome || "viewed").slice(0, 20), record_id: String(body.recordId || "").slice(0, 40) || null,
+          reason: String(body.reason || "").slice(0, 40) || null,
+        });
+        return sendJson(res, 200, { ok: true });
+      }
+      // Handoff with the full picture, so the agent never makes the customer repeat themselves.
+      if (req.method === "POST" && route === "/api/investigate/handoff") {
+        const inv = {
+          flow: String(body.flow || "find").slice(0, 20),
+          looking_for: mask(String(body.lookingFor || "")).slice(0, 200),
+          filters: Object.fromEntries(Object.entries(body.filters || {}).slice(0, 6).map(([k, v]) => [String(k).slice(0, 20), String(v).slice(0, 60)])),
+          candidates: (body.candidates || []).slice(0, 10).map((x) => String(x).slice(0, 40)).filter((id) => ownsRecord(customerId, id)),
+          found: (body.found || []).slice(0, 10).map((x) => String(x).slice(0, 40)).filter((id) => ownsRecord(customerId, id)),
+          reason: String(body.reason || "the customer asked").slice(0, 200),
+        };
+        const note = investigate.summary({ flow: inv.flow, filters: inv.filters, candidates: inv.candidates, found: inv.found, reason: inv.reason, lookingFor: inv.looking_for });
+        const ticket = newTicket(customerId, inv.looking_for || "Transaction investigation", { intent: "general.info", priority: "P4", ticket_status: "moved_to_agent", summary: note.split(". ")[0] }, "Agent", note);
+        updateTicket(ticket.ticket_id, (t) => ({ ...t, investigation: inv }));
+        appendLog("investigations.jsonl", { time: new Date().toISOString(), customer_id: customerId, flow: inv.flow, steps: Number(body.steps) || 0, found: inv.candidates.length > 0, outcome: "handoff", record_id: inv.candidates[0] || null, reason: null });
+        return sendJson(res, 200, { ticket });
+      }
+      return sendJson(res, 404, { error: "Not found" });
     }
 
     // Record picker: the logged-in customer's own transactions, cards or disputes as picker cards. No model call.

@@ -1,0 +1,3238 @@
+{
+ "what": "Synthetic extra facts per transaction for the transaction investigator (tools/build_investigator_data.mjs). Not read by the AI prompts.",
+ "details": {
+  "TXN-2026-08-01-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-01T13:12"
+  },
+  "TXN-2026-08-01-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-01T14:12",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 2763",
+   "posted_at": "2026-08-01T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-08-01-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-01T15:12",
+   "terminal": "POS 2764",
+   "posted_at": "2026-08-01T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-08-01-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-01T16:12"
+  },
+  "TXN-2026-08-01-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-01T17:12",
+   "area": "Maadi",
+   "terminal": "POS 2766",
+   "posted_at": "2026-08-01T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-08-01-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-08-01T18:12"
+  },
+  "TXN-2026-08-02-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-02T18:14",
+   "terminal": "POS 2913",
+   "posted_at": "2026-08-02T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-08-02-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-02T19:14"
+  },
+  "TXN-2026-08-02-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-02T20:14"
+  },
+  "TXN-2026-08-03-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-03T10:16",
+   "terminal": "POS 3064",
+   "posted_at": "2026-08-03T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-08-03-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-03T11:16",
+   "terminal": "POS 3065",
+   "posted_at": "2026-08-03T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-08-03-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-08-03T12:16",
+   "terminal": "ATM 3066",
+   "card_last4": "5177"
+  },
+  "TXN-2026-08-03-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-03T13:16"
+  },
+  "TXN-2026-08-04-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-04T15:18",
+   "terminal": "jumia.com",
+   "posted_at": "2026-08-04T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-08-04-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-08-04T16:18",
+   "terminal": "ATM 3216",
+   "card_last4": "3937"
+  },
+  "TXN-2026-08-04-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-04T17:18"
+  },
+  "TXN-2026-08-05-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-05T20:20",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-05T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-08-05-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-05T08:20",
+   "terminal": "POS 3367",
+   "posted_at": "2026-08-05T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-08-06-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-08-06T12:22",
+   "terminal": "ATM 3517",
+   "card_last4": "7585"
+  },
+  "TXN-2026-08-06-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-06T13:22",
+   "terminal": "POS 3518",
+   "posted_at": "2026-08-06T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-08-06-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-06T14:22",
+   "area": "Mall of Egypt",
+   "terminal": "POS 3519",
+   "posted_at": "2026-08-06T23:59",
+   "card_last4": "9212"
+  },
+  "TXN-2026-08-06-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-06T15:22",
+   "terminal": "POS 3520",
+   "posted_at": "2026-08-06T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-06-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-06T16:22",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 3521",
+   "posted_at": "2026-08-06T23:59",
+   "card_last4": "2401"
+  },
+  "TXN-2026-08-07-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-07T17:24",
+   "terminal": "careem.com",
+   "posted_at": "2026-08-07T23:59",
+   "card_last4": "5365"
+  },
+  "TXN-2026-08-07-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-07T18:24",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-07T23:59",
+   "card_last4": "4622"
+  },
+  "TXN-2026-08-07-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-08-07T19:24",
+   "terminal": "ATM 3670",
+   "card_last4": "9955"
+  },
+  "TXN-2026-08-07-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-07T20:24"
+  },
+  "TXN-2026-08-07-0204": {
+   "channel": "online",
+   "authorised_at": "2026-08-07T08:24",
+   "terminal": "careem.com",
+   "posted_at": "2026-08-07T23:59",
+   "card_last4": "5828"
+  },
+  "TXN-2026-08-07-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-07T09:24",
+   "terminal": "POS 3673",
+   "posted_at": "2026-08-07T23:59",
+   "card_last4": "1990"
+  },
+  "TXN-2026-08-07-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-07T10:24",
+   "terminal": "POS 3674",
+   "posted_at": "2026-08-07T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-08-08-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-08T09:26",
+   "terminal": "POS 3819",
+   "posted_at": "2026-08-08T23:59",
+   "card_last4": "4047"
+  },
+  "TXN-2026-08-08-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-08T10:26",
+   "terminal": "POS 3820",
+   "posted_at": "2026-08-08T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-08-09-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T14:28",
+   "area": "Maadi",
+   "terminal": "POS 3970",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "7891"
+  },
+  "TXN-2026-08-09-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T15:28",
+   "terminal": "POS 3971",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-08-09-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T16:28",
+   "terminal": "POS 3972",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-08-09-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T17:28",
+   "terminal": "POS 3973",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "7160"
+  },
+  "TXN-2026-08-09-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T18:28",
+   "terminal": "POS 3974",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "4047"
+  },
+  "TXN-2026-08-09-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-09T19:28",
+   "terminal": "POS 3975",
+   "posted_at": "2026-08-09T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-08-10-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-10T20:10",
+   "area": "Maadi",
+   "terminal": "POS 7292",
+   "posted_at": "2026-08-10T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-08-10-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-10T08:10",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-10T23:59",
+   "card_last4": "5828"
+  },
+  "TXN-2026-08-10-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-10T09:10",
+   "terminal": "POS 7294",
+   "posted_at": "2026-08-10T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-10-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-10T10:10"
+  },
+  "TXN-2026-08-11-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-11T12:12",
+   "terminal": "jumia.com",
+   "posted_at": "2026-08-11T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-08-12-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-12T17:14",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-12T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-08-12-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-12T18:14"
+  },
+  "TXN-2026-08-12-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-12T19:14"
+  },
+  "TXN-2026-08-12-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-12T20:14",
+   "terminal": "POS 7597",
+   "posted_at": "2026-08-12T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-08-12-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-08-12T08:14"
+  },
+  "TXN-2026-08-12-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-12T09:14",
+   "terminal": "POS 7599",
+   "posted_at": "2026-08-12T23:59",
+   "card_last4": "3059"
+  },
+  "TXN-2026-08-12-0206": {
+   "channel": "online",
+   "authorised_at": "2026-08-12T10:15",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-12T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-13-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-13T09:16",
+   "terminal": "POS 7745",
+   "posted_at": "2026-08-13T23:59",
+   "card_last4": "6370"
+  },
+  "TXN-2026-08-13-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-13T10:16",
+   "area": "Maadi",
+   "terminal": "POS 7746",
+   "posted_at": "2026-08-13T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-13-0202": {
+   "channel": "online",
+   "authorised_at": "2026-08-13T11:16",
+   "terminal": "noon.com",
+   "posted_at": "2026-08-13T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-13-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-13T12:16",
+   "terminal": "POS 7748",
+   "posted_at": "2026-08-13T23:59",
+   "card_last4": "6630"
+  },
+  "TXN-2026-08-14-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-08-14T14:18",
+   "terminal": "ATM 7896",
+   "card_last4": "4047"
+  },
+  "TXN-2026-08-14-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-08-14T15:18"
+  },
+  "TXN-2026-08-14-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-08-14T16:18",
+   "terminal": "ATM 7898",
+   "card_last4": "5828"
+  },
+  "TXN-2026-08-14-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-14T17:18"
+  },
+  "TXN-2026-08-14-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-08-14T18:18"
+  },
+  "TXN-2026-08-14-0205": {
+   "channel": "atm",
+   "authorised_at": "2026-08-14T19:18",
+   "terminal": "ATM 7901",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-14-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-08-14T20:18"
+  },
+  "TXN-2026-08-14-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-14T08:18",
+   "terminal": "POS 7903",
+   "posted_at": "2026-08-14T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-08-14-0208": {
+   "channel": "online",
+   "authorised_at": "2026-08-14T09:19",
+   "terminal": "jumia.com",
+   "posted_at": "2026-08-14T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-08-15-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-15T19:20",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-15T23:59",
+   "card_last4": "7891"
+  },
+  "TXN-2026-08-15-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-15T20:20",
+   "area": "Mall of Egypt",
+   "terminal": "POS 8048",
+   "posted_at": "2026-08-15T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-08-15-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-15T08:20"
+  },
+  "TXN-2026-08-15-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-15T09:20"
+  },
+  "TXN-2026-08-15-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-15T10:20",
+   "terminal": "POS 8051",
+   "posted_at": "2026-08-15T23:59",
+   "card_last4": "4659"
+  },
+  "TXN-2026-08-15-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-15T11:20",
+   "terminal": "POS 8052",
+   "posted_at": "2026-08-15T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-08-16-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T11:22",
+   "terminal": "POS 8198",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-08-16-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-08-16T12:22",
+   "terminal": "ATM 8199",
+   "card_last4": "1559"
+  },
+  "TXN-2026-08-16-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-16T13:22"
+  },
+  "TXN-2026-08-16-0203": {
+   "channel": "online",
+   "authorised_at": "2026-08-16T14:22",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-08-16-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T15:22",
+   "terminal": "POS 8202",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-08-16-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T16:22",
+   "area": "City Stars",
+   "terminal": "POS 8203",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "6630"
+  },
+  "TXN-2026-08-16-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T17:22",
+   "terminal": "POS 8204",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "6630"
+  },
+  "TXN-2026-08-16-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T18:22",
+   "terminal": "POS 8205",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-08-16-0208": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-16T19:22",
+   "terminal": "POS 8206",
+   "posted_at": "2026-08-16T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-08-17-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-17T16:24",
+   "terminal": "POS 8349",
+   "posted_at": "2026-08-17T23:59",
+   "card_last4": "4437"
+  },
+  "TXN-2026-08-17-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-17T17:24",
+   "terminal": "careem.com",
+   "posted_at": "2026-08-17T23:59",
+   "card_last4": "6370"
+  },
+  "TXN-2026-08-17-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-08-17T18:24",
+   "terminal": "ATM 8351",
+   "card_last4": "1622"
+  },
+  "TXN-2026-08-17-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-17T19:24"
+  },
+  "TXN-2026-08-17-0204": {
+   "channel": "atm",
+   "authorised_at": "2026-08-17T20:24",
+   "terminal": "ATM 8353",
+   "card_last4": "5177"
+  },
+  "TXN-2026-08-17-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-08-17T08:24"
+  },
+  "TXN-2026-08-17-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-17T09:24",
+   "terminal": "POS 8355",
+   "posted_at": "2026-08-17T23:59",
+   "card_last4": "6630"
+  },
+  "TXN-2026-08-17-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-17T10:24",
+   "area": "Maadi",
+   "terminal": "POS 8356",
+   "posted_at": "2026-08-17T23:59",
+   "card_last4": "2401"
+  },
+  "TXN-2026-08-18-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-18T08:26",
+   "terminal": "POS 8500",
+   "posted_at": "2026-08-18T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-08-18-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-18T09:26",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-18T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-08-18-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-18T10:26",
+   "area": "City Stars",
+   "terminal": "POS 8502",
+   "posted_at": "2026-08-18T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-08-18-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-18T11:26",
+   "terminal": "POS 8503",
+   "posted_at": "2026-08-18T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-08-18-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-18T12:26",
+   "area": "Maadi",
+   "terminal": "POS 8504",
+   "posted_at": "2026-08-18T23:59",
+   "card_last4": "1614"
+  },
+  "TXN-2026-08-19-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-19T13:28",
+   "terminal": "POS 8651",
+   "posted_at": "2026-08-19T23:59",
+   "card_last4": "7891"
+  },
+  "TXN-2026-08-19-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-19T14:28",
+   "terminal": "POS 8652",
+   "posted_at": "2026-08-19T23:59",
+   "card_last4": "6577"
+  },
+  "TXN-2026-08-19-0202": {
+   "channel": "online",
+   "authorised_at": "2026-08-19T15:28",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-19T23:59",
+   "card_last4": "4511"
+  },
+  "TXN-2026-08-19-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-19T16:28",
+   "area": "Maadi",
+   "terminal": "POS 8654",
+   "posted_at": "2026-08-19T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-08-19-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-19T17:28",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 8655",
+   "posted_at": "2026-08-19T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-08-20-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-08-20T10:54"
+  },
+  "TXN-2026-08-20-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-08-20T11:54",
+   "terminal": "ATM 6678",
+   "card_last4": "6897"
+  },
+  "TXN-2026-08-20-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-20T12:54"
+  },
+  "TXN-2026-08-20-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-20T13:55"
+  },
+  "TXN-2026-08-20-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-08-20T14:55"
+  },
+  "TXN-2026-08-20-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-20T15:55",
+   "area": "City Stars",
+   "terminal": "POS 6682",
+   "posted_at": "2026-08-20T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-20-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-20T16:55",
+   "terminal": "POS 6683",
+   "posted_at": "2026-08-20T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-21-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-21T15:56",
+   "terminal": "POS 6828",
+   "posted_at": "2026-08-21T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-08-21-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-21T16:56",
+   "terminal": "jumia.com",
+   "posted_at": "2026-08-21T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-08-21-0202": {
+   "channel": "online",
+   "authorised_at": "2026-08-21T17:56",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-21T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-21-0203": {
+   "channel": "online",
+   "authorised_at": "2026-08-21T18:56",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-21T23:59",
+   "card_last4": "1614"
+  },
+  "TXN-2026-08-22-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-22T20:58",
+   "terminal": "noon.com",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-08-22-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-22T08:58",
+   "terminal": "POS 6980",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "5365"
+  },
+  "TXN-2026-08-22-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-22T09:58",
+   "terminal": "POS 6981",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "5365"
+  },
+  "TXN-2026-08-22-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-22T10:58",
+   "terminal": "POS 6982",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "4622"
+  },
+  "TXN-2026-08-22-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-22T11:58",
+   "terminal": "POS 6983",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-08-22-0205": {
+   "channel": "online",
+   "authorised_at": "2026-08-22T12:59",
+   "terminal": "aliexpressusd.com",
+   "posted_at": "2026-08-22T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-22-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-08-22T13:59"
+  },
+  "TXN-2026-08-23-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-23T12:00",
+   "terminal": "POS 7130",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-08-23-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-23T13:00",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-08-23-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-23T14:00",
+   "terminal": "POS 7132",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "3059"
+  },
+  "TXN-2026-08-23-0203": {
+   "channel": "online",
+   "authorised_at": "2026-08-23T15:00",
+   "terminal": "jumia.com",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-08-23-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-23T16:00",
+   "terminal": "POS 7134",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-08-23-0205": {
+   "channel": "online",
+   "authorised_at": "2026-08-23T17:00",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-23T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-08-24-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-24T17:02",
+   "terminal": "POS 7281",
+   "posted_at": "2026-08-24T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-08-24-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-24T18:02",
+   "terminal": "uber.com",
+   "posted_at": "2026-08-24T23:59",
+   "card_last4": "3059"
+  },
+  "TXN-2026-08-25-0200": {
+   "channel": "online",
+   "authorised_at": "2026-08-25T09:04",
+   "terminal": "jumia.com",
+   "card_last4": "8484"
+  },
+  "TXN-2026-08-25-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-25T10:04"
+  },
+  "TXN-2026-08-25-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-25T11:04",
+   "area": "Mall of Egypt",
+   "terminal": "POS 7434",
+   "posted_at": "2026-08-25T23:59",
+   "card_last4": "4511"
+  },
+  "TXN-2026-08-25-0203": {
+   "channel": "online",
+   "authorised_at": "2026-08-25T12:04",
+   "terminal": "talabat.com",
+   "posted_at": "2026-08-25T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-08-25-0204": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-25T13:04"
+  },
+  "TXN-2026-08-25-0205": {
+   "channel": "online",
+   "authorised_at": "2026-08-25T14:04",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-25T23:59",
+   "card_last4": "2401"
+  },
+  "TXN-2026-08-25-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-25T15:04",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 7438",
+   "posted_at": "2026-08-25T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-08-26-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-26T14:06"
+  },
+  "TXN-2026-08-26-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-26T15:06",
+   "terminal": "POS 7584",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-08-26-0202": {
+   "channel": "online",
+   "authorised_at": "2026-08-26T16:06",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-08-26-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-26T17:06"
+  },
+  "TXN-2026-08-26-0204": {
+   "channel": "online",
+   "authorised_at": "2026-08-26T18:06",
+   "terminal": "careem.com",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-08-26-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-26T19:06"
+  },
+  "TXN-2026-08-26-0206": {
+   "channel": "online",
+   "authorised_at": "2026-08-26T20:06",
+   "terminal": "noon.com",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-08-26-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-26T08:06",
+   "terminal": "POS 7590",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-08-26-0208": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-26T09:06"
+  },
+  "TXN-2026-08-26-0209": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-26T10:07",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 7592",
+   "posted_at": "2026-08-26T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-08-26-0210": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-26T19:08"
+  },
+  "TXN-2026-08-27-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-27T19:08",
+   "terminal": "POS 7734",
+   "posted_at": "2026-08-27T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-08-27-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-27T20:08",
+   "terminal": "POS 7735",
+   "posted_at": "2026-08-27T23:59",
+   "card_last4": "4622"
+  },
+  "TXN-2026-08-27-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-27T08:08",
+   "terminal": "POS 7736",
+   "posted_at": "2026-08-27T23:59",
+   "card_last4": "6370"
+  },
+  "TXN-2026-08-27-0203": {
+   "channel": "online",
+   "authorised_at": "2026-08-27T09:08",
+   "terminal": "Booking.com",
+   "posted_at": "2026-08-27T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-08-27-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-08-27T10:08"
+  },
+  "TXN-2026-08-27-0205": {
+   "channel": "atm",
+   "authorised_at": "2026-08-27T11:08",
+   "terminal": "ATM 7739",
+   "card_last4": "5610"
+  },
+  "TXN-2026-08-27-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-08-27T12:08"
+  },
+  "TXN-2026-08-28-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-28T11:10",
+   "terminal": "POS 7885",
+   "posted_at": "2026-08-28T23:59",
+   "card_last4": "7891"
+  },
+  "TXN-2026-08-28-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-28T12:10",
+   "terminal": "POS 7886",
+   "posted_at": "2026-08-28T23:59",
+   "card_last4": "4400"
+  },
+  "TXN-2026-08-28-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-08-28T13:10",
+   "terminal": "ATM 7887",
+   "card_last4": "2611"
+  },
+  "TXN-2026-08-28-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-28T14:10"
+  },
+  "TXN-2026-08-28-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-28T15:10",
+   "terminal": "POS 7889",
+   "posted_at": "2026-08-28T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-08-29-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-29T16:12"
+  },
+  "TXN-2026-08-29-0201": {
+   "channel": "online",
+   "authorised_at": "2026-08-29T17:12",
+   "terminal": "careem.com",
+   "posted_at": "2026-08-29T23:59",
+   "card_last4": "3059"
+  },
+  "TXN-2026-08-29-0202": {
+   "channel": "online",
+   "authorised_at": "2026-08-29T18:12",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-29T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-08-30-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-30T09:54",
+   "area": "Hurghada",
+   "terminal": "POS 2358",
+   "card_last4": "5610"
+  },
+  "TXN-2026-08-30-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-30T10:54",
+   "terminal": "POS 2359",
+   "posted_at": "2026-08-30T23:59",
+   "card_last4": "6577"
+  },
+  "TXN-2026-08-30-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-30T11:55",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 2360",
+   "posted_at": "2026-08-30T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-08-31-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T14:56"
+  },
+  "TXN-2026-08-31-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T15:56"
+  },
+  "TXN-2026-08-31-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T16:56"
+  },
+  "TXN-2026-08-31-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T17:57"
+  },
+  "TXN-2026-08-31-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T18:57"
+  },
+  "TXN-2026-08-31-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-08-31T19:57"
+  },
+  "TXN-2026-08-31-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T20:57"
+  },
+  "TXN-2026-08-31-0207": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T08:57"
+  },
+  "TXN-2026-08-31-0208": {
+   "channel": "online",
+   "authorised_at": "2026-08-31T09:57",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-08-31T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-08-31-0209": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T10:57"
+  },
+  "TXN-2026-08-31-0210": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T19:58"
+  },
+  "TXN-2026-08-31-0211": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T20:58"
+  },
+  "TXN-2026-08-31-0212": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T08:58"
+  },
+  "TXN-2026-08-31-0213": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T09:58"
+  },
+  "TXN-2026-08-31-0214": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T10:59"
+  },
+  "TXN-2026-08-31-0215": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T11:59"
+  },
+  "TXN-2026-08-31-0216": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T12:59"
+  },
+  "TXN-2026-08-31-0217": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T13:59"
+  },
+  "TXN-2026-08-31-0218": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T14:59"
+  },
+  "TXN-2026-08-31-0219": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-08-31T15:59",
+   "terminal": "POS 2549",
+   "posted_at": "2026-08-31T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-08-31-0220": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T11:00"
+  },
+  "TXN-2026-08-31-0221": {
+   "channel": "fee",
+   "authorised_at": "2026-08-31T12:00"
+  },
+  "TXN-2026-09-01-0003": {
+   "channel": "fee",
+   "authorised_at": "2026-09-01T09:08"
+  },
+  "TXN-2026-09-01-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-01T17:08",
+   "terminal": "POS 9299",
+   "posted_at": "2026-09-01T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-09-01-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-01T18:08"
+  },
+  "TXN-2026-09-01-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-01T19:08",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 9301",
+   "posted_at": "2026-09-01T23:59",
+   "card_last4": "4585"
+  },
+  "TXN-2026-09-01-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-01T20:08",
+   "area": "City Stars",
+   "terminal": "POS 9302",
+   "posted_at": "2026-09-01T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-09-01-0204": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-01T08:08"
+  },
+  "TXN-2026-09-01-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-01T09:09"
+  },
+  "TXN-2026-09-01-0206": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-01T10:09"
+  },
+  "TXN-2026-09-02-0011": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-02T17:12",
+   "area": "Mall of Egypt",
+   "terminal": "POS 7560",
+   "posted_at": "2026-09-02T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-02-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-09-02T09:10",
+   "terminal": "ATM 9450",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-02-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-09-02T10:10"
+  },
+  "TXN-2026-09-02-0202": {
+   "channel": "atm",
+   "authorised_at": "2026-09-02T11:10",
+   "terminal": "ATM 9452",
+   "card_last4": "7585"
+  },
+  "TXN-2026-09-02-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-09-02T12:10"
+  },
+  "TXN-2026-09-02-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-02T13:10",
+   "terminal": "POS 9454",
+   "posted_at": "2026-09-02T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-09-03-0014": {
+   "channel": "online",
+   "authorised_at": "2026-09-03T12:14",
+   "terminal": "talabat.com",
+   "posted_at": "2026-09-03T23:59",
+   "card_last4": "4400"
+  },
+  "TXN-2026-09-03-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-03T14:12",
+   "terminal": "POS 9601",
+   "card_last4": "2611"
+  },
+  "TXN-2026-09-03-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-03T15:12",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 9602",
+   "posted_at": "2026-09-03T23:59",
+   "card_last4": "9955"
+  },
+  "TXN-2026-09-03-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-03T16:12",
+   "terminal": "POS 9603",
+   "posted_at": "2026-09-03T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-09-03-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-03T17:12",
+   "terminal": "POS 9604",
+   "posted_at": "2026-09-03T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-09-04-0019": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-04T09:16",
+   "terminal": "POS 7870",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-04-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-04T19:14",
+   "terminal": "POS 9752",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "6577"
+  },
+  "TXN-2026-09-04-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-04T20:14",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "4437"
+  },
+  "TXN-2026-09-04-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-04T08:14",
+   "terminal": "POS 9754",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-09-04-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-09-04T09:14"
+  },
+  "TXN-2026-09-04-0204": {
+   "channel": "online",
+   "authorised_at": "2026-09-04T10:14",
+   "terminal": "spotifyusd.com",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-09-04-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-09-04T11:14"
+  },
+  "TXN-2026-09-04-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-04T12:14",
+   "area": "City Stars",
+   "terminal": "POS 9758",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-09-04-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-04T13:14",
+   "terminal": "POS 9759",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-09-04-0208": {
+   "channel": "online",
+   "authorised_at": "2026-09-04T14:15",
+   "terminal": "talabat.com",
+   "posted_at": "2026-09-04T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-09-05-0025": {
+   "channel": "online",
+   "authorised_at": "2026-09-05T15:20",
+   "terminal": "Amazon.eg",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-05-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-05T11:16",
+   "terminal": "POS 9903",
+   "posted_at": "2026-09-05T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-09-05-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-05T12:16",
+   "terminal": "careem.com",
+   "posted_at": "2026-09-05T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-09-06-0031": {
+   "channel": "fee",
+   "authorised_at": "2026-09-06T08:24"
+  },
+  "TXN-2026-09-06-0032": {
+   "channel": "fee",
+   "authorised_at": "2026-09-06T09:24"
+  },
+  "TXN-2026-09-06-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-06T16:18",
+   "terminal": "POS 1054",
+   "posted_at": "2026-09-06T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-09-07-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-07T08:20",
+   "terminal": "talabat.com",
+   "posted_at": "2026-09-07T23:59",
+   "card_last4": "6630"
+  },
+  "TXN-2026-09-07-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-07T09:20",
+   "terminal": "talabat.com",
+   "posted_at": "2026-09-07T23:59",
+   "card_last4": "1614"
+  },
+  "TXN-2026-09-08-0041": {
+   "channel": "atm",
+   "authorised_at": "2026-09-08T10:29",
+   "terminal": "ATM 8559",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-08-0042": {
+   "channel": "fee",
+   "authorised_at": "2026-09-08T11:30"
+  },
+  "TXN-2026-09-08-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T13:22",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 1356",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "4511"
+  },
+  "TXN-2026-09-08-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-08T14:22",
+   "terminal": "jumia.com",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "4659"
+  },
+  "TXN-2026-09-08-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T15:22",
+   "terminal": "POS 1358",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "7160"
+  },
+  "TXN-2026-09-08-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T16:22",
+   "area": "Mall of Egypt",
+   "terminal": "POS 1359",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "6370"
+  },
+  "TXN-2026-09-08-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T17:22",
+   "terminal": "POS 1360",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-09-08-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T18:22",
+   "terminal": "POS 1361",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-09-08-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-08T19:22",
+   "terminal": "POS 1362",
+   "posted_at": "2026-09-08T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-09-09-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-09T18:24",
+   "terminal": "POS 1507",
+   "posted_at": "2026-09-09T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-09-09-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-09T19:24",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 1508",
+   "posted_at": "2026-09-09T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-09-09-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-09T20:24",
+   "area": "Mall of Egypt",
+   "terminal": "POS 1509",
+   "posted_at": "2026-09-09T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-09-09-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-09T08:24",
+   "terminal": "POS 1510",
+   "posted_at": "2026-09-09T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-09-09-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-09-09T09:24"
+  },
+  "TXN-2026-09-10-0058": {
+   "channel": "atm",
+   "authorised_at": "2026-09-10T20:16",
+   "terminal": "ATM 3070",
+   "card_last4": "4400"
+  },
+  "TXN-2026-09-10-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-10T11:06",
+   "terminal": "talabat.com",
+   "card_last4": "9955"
+  },
+  "TXN-2026-09-10-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-09-10T12:06",
+   "terminal": "ATM 4830",
+   "card_last4": "1622"
+  },
+  "TXN-2026-09-10-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-09-10T13:06"
+  },
+  "TXN-2026-09-11-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-11T16:08",
+   "terminal": "POS 4980",
+   "posted_at": "2026-09-11T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-11-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-11T17:08",
+   "area": "City Stars",
+   "terminal": "POS 4981",
+   "posted_at": "2026-09-11T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-09-11-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-11T18:08",
+   "terminal": "POS 4982",
+   "posted_at": "2026-09-11T23:59",
+   "card_last4": "7160"
+  },
+  "TXN-2026-09-11-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-11T19:08",
+   "terminal": "POS 4983",
+   "posted_at": "2026-09-11T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-09-12-0071": {
+   "channel": "online",
+   "authorised_at": "2026-09-12T20:24",
+   "terminal": "netflixusd.com",
+   "posted_at": "2026-09-12T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-12-0072": {
+   "channel": "fee",
+   "authorised_at": "2026-09-12T08:24"
+  },
+  "TXN-2026-09-12-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-12T08:10",
+   "terminal": "noon.com",
+   "posted_at": "2026-09-12T23:59",
+   "card_last4": "6577"
+  },
+  "TXN-2026-09-12-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-12T09:10",
+   "terminal": "POS 5132",
+   "posted_at": "2026-09-12T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-09-13-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-13T13:12",
+   "area": "Maadi",
+   "terminal": "POS 5282",
+   "posted_at": "2026-09-13T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-09-13-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-13T14:12",
+   "terminal": "POS 5283",
+   "posted_at": "2026-09-13T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-09-13-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-13T15:12",
+   "area": "Mall of Egypt",
+   "terminal": "POS 5284",
+   "posted_at": "2026-09-13T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-09-13-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-13T16:12",
+   "terminal": "POS 5285",
+   "posted_at": "2026-09-13T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-09-13-0204": {
+   "channel": "atm",
+   "authorised_at": "2026-09-13T17:12",
+   "terminal": "ATM 5286",
+   "card_last4": "4978"
+  },
+  "TXN-2026-09-13-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-09-13T18:12"
+  },
+  "TXN-2026-09-13-0206": {
+   "channel": "atm",
+   "authorised_at": "2026-09-13T19:13",
+   "terminal": "ATM 5288",
+   "card_last4": "3657"
+  },
+  "TXN-2026-09-13-0207": {
+   "channel": "fee",
+   "authorised_at": "2026-09-13T20:13"
+  },
+  "TXN-2026-09-14-0086": {
+   "channel": "atm",
+   "authorised_at": "2026-09-14T14:30",
+   "terminal": "ATM 3765",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-14-0087": {
+   "channel": "fee",
+   "authorised_at": "2026-09-14T15:30"
+  },
+  "TXN-2026-09-14-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-14T18:14",
+   "terminal": "POS 5433",
+   "posted_at": "2026-09-14T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-14-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-14T19:14",
+   "terminal": "POS 5434",
+   "posted_at": "2026-09-14T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-09-14-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-09-14T20:14"
+  },
+  "TXN-2026-09-14-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-14T08:14",
+   "terminal": "POS 5436",
+   "posted_at": "2026-09-14T23:59",
+   "card_last4": "4047"
+  },
+  "TXN-2026-09-14-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-14T09:14",
+   "terminal": "POS 5437",
+   "posted_at": "2026-09-14T23:59",
+   "card_last4": "3989"
+  },
+  "TXN-2026-09-14-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-14T10:14",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 5438",
+   "posted_at": "2026-09-14T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-09-15-0090": {
+   "channel": "fee",
+   "authorised_at": "2026-09-15T18:33"
+  },
+  "TXN-2026-09-15-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-15T10:16",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 5584",
+   "posted_at": "2026-09-15T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-09-15-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-15T11:16",
+   "terminal": "POS 5585",
+   "posted_at": "2026-09-15T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-15-0202": {
+   "channel": "online",
+   "authorised_at": "2026-09-15T12:16",
+   "terminal": "careem.com",
+   "posted_at": "2026-09-15T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-09-15-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-15T13:16",
+   "terminal": "POS 5587",
+   "posted_at": "2026-09-15T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-09-16-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-16T15:18",
+   "terminal": "POS 5735",
+   "posted_at": "2026-09-16T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-09-16-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-16T16:18",
+   "terminal": "jumia.com",
+   "posted_at": "2026-09-16T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-09-17-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-17T20:20",
+   "area": "Mall of Egypt",
+   "terminal": "POS 5886",
+   "posted_at": "2026-09-17T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-09-17-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-17T08:20",
+   "terminal": "POS 5887",
+   "posted_at": "2026-09-17T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-09-17-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-17T09:20",
+   "area": "City Stars",
+   "terminal": "POS 5888",
+   "posted_at": "2026-09-17T23:59",
+   "card_last4": "5365"
+  },
+  "TXN-2026-09-17-0203": {
+   "channel": "online",
+   "authorised_at": "2026-09-17T10:20",
+   "terminal": "noon.com",
+   "posted_at": "2026-09-17T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-09-18-0101": {
+   "channel": "online",
+   "authorised_at": "2026-09-18T14:22",
+   "terminal": "uber.com",
+   "posted_at": "2026-09-18T23:59",
+   "card_last4": "4585"
+  },
+  "TXN-2026-09-18-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-18T12:22",
+   "terminal": "POS 6037",
+   "card_last4": "7293"
+  },
+  "TXN-2026-09-18-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-18T13:22"
+  },
+  "TXN-2026-09-18-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-18T14:22",
+   "terminal": "POS 6039",
+   "posted_at": "2026-09-18T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-09-19-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-19T17:24",
+   "terminal": "POS 6188",
+   "posted_at": "2026-09-19T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-09-19-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-09-19T18:24",
+   "terminal": "ATM 6189",
+   "card_last4": "9955"
+  },
+  "TXN-2026-09-20-0112": {
+   "channel": "fee",
+   "authorised_at": "2026-09-20T18:08"
+  },
+  "TXN-2026-09-20-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-20T10:06",
+   "area": "Maadi",
+   "terminal": "POS 9510",
+   "posted_at": "2026-09-20T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-09-20-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-20T11:06",
+   "terminal": "POS 9511",
+   "posted_at": "2026-09-20T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-09-20-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-20T12:07",
+   "terminal": "POS 9512",
+   "posted_at": "2026-09-20T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-09-20-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-09-20T13:07"
+  },
+  "TXN-2026-09-21-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-21T15:08",
+   "terminal": "noon.com",
+   "card_last4": "1559"
+  },
+  "TXN-2026-09-21-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-21T16:08",
+   "terminal": "POS 9662",
+   "posted_at": "2026-09-21T23:59",
+   "card_last4": "4437"
+  },
+  "TXN-2026-09-21-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-21T17:08",
+   "area": "City Stars",
+   "terminal": "POS 9663",
+   "posted_at": "2026-09-21T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-09-21-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-21T18:09",
+   "area": "City Stars",
+   "terminal": "POS 9664",
+   "posted_at": "2026-09-21T23:59",
+   "card_last4": "2401"
+  },
+  "TXN-2026-09-22-0120": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-22T18:14"
+  },
+  "TXN-2026-09-22-0121": {
+   "channel": "fee",
+   "authorised_at": "2026-09-22T19:14"
+  },
+  "TXN-2026-09-22-0140": {
+   "channel": "fee",
+   "authorised_at": "2026-09-22T15:18"
+  },
+  "TXN-2026-09-22-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T20:10",
+   "terminal": "POS 9812",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "4400"
+  },
+  "TXN-2026-09-22-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-09-22T08:10",
+   "terminal": "ATM 9813",
+   "card_last4": "4474"
+  },
+  "TXN-2026-09-22-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T09:10",
+   "terminal": "POS 9814",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "4047"
+  },
+  "TXN-2026-09-22-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T10:10",
+   "terminal": "POS 9815",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-09-22-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T11:11",
+   "area": "Maadi",
+   "terminal": "POS 9816",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "3989"
+  },
+  "TXN-2026-09-22-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T12:11",
+   "area": "Maadi",
+   "terminal": "POS 9817",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "1990"
+  },
+  "TXN-2026-09-22-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-22T13:11",
+   "terminal": "POS 9818",
+   "posted_at": "2026-09-22T23:59",
+   "card_last4": "3059"
+  },
+  "TXN-2026-09-23-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-23T12:12",
+   "area": "City Stars",
+   "terminal": "POS 9963",
+   "posted_at": "2026-09-23T23:59",
+   "card_last4": "4585"
+  },
+  "TXN-2026-09-23-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-23T13:12",
+   "terminal": "POS 9964",
+   "posted_at": "2026-09-23T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-09-23-0202": {
+   "channel": "online",
+   "authorised_at": "2026-09-23T14:12",
+   "terminal": "noon.com",
+   "posted_at": "2026-09-23T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-09-23-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-23T15:12",
+   "area": "City Stars",
+   "terminal": "POS 9966",
+   "posted_at": "2026-09-23T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-09-23-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-23T16:12",
+   "terminal": "POS 9967",
+   "posted_at": "2026-09-23T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-09-24-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-24T17:14",
+   "terminal": "uber.com",
+   "posted_at": "2026-09-24T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-09-24-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-24T18:14",
+   "terminal": "noon.com",
+   "posted_at": "2026-09-24T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-09-24-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-24T19:14",
+   "terminal": "POS 1116",
+   "posted_at": "2026-09-24T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-09-24-0203": {
+   "channel": "online",
+   "authorised_at": "2026-09-24T20:14",
+   "terminal": "jumia.com",
+   "posted_at": "2026-09-24T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-09-24-0204": {
+   "channel": "online",
+   "authorised_at": "2026-09-24T08:14",
+   "terminal": "noon.com",
+   "posted_at": "2026-09-24T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-09-25-0131": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-25T13:22",
+   "terminal": "POS 9398",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "4400"
+  },
+  "TXN-2026-09-25-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-25T09:16"
+  },
+  "TXN-2026-09-25-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-25T10:16",
+   "terminal": "POS 1266",
+   "posted_at": "2026-09-25T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-09-25-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-25T11:16"
+  },
+  "TXN-2026-09-25-0203": {
+   "channel": "online",
+   "authorised_at": "2026-09-25T12:16",
+   "terminal": "Booking.com",
+   "posted_at": "2026-09-25T23:59",
+   "card_last4": "3989"
+  },
+  "TXN-2026-09-25-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-09-25T13:16"
+  },
+  "TXN-2026-09-25-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-25T14:16"
+  },
+  "TXN-2026-09-26-0200": {
+   "channel": "online",
+   "authorised_at": "2026-09-26T14:18",
+   "terminal": "careem.com",
+   "card_last4": "2383"
+  },
+  "TXN-2026-09-26-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-26T15:18",
+   "area": "Mall of Egypt",
+   "terminal": "POS 1417",
+   "posted_at": "2026-09-26T23:59",
+   "card_last4": "4585"
+  },
+  "TXN-2026-09-26-0202": {
+   "channel": "online",
+   "authorised_at": "2026-09-26T16:18",
+   "terminal": "jumia.com",
+   "posted_at": "2026-09-26T23:59",
+   "card_last4": "7160"
+  },
+  "TXN-2026-09-26-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-26T17:18",
+   "terminal": "POS 1419",
+   "posted_at": "2026-09-26T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-09-26-0204": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-26T18:18"
+  },
+  "TXN-2026-09-26-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-26T19:18"
+  },
+  "TXN-2026-09-26-0206": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-26T20:18"
+  },
+  "TXN-2026-09-26-0207": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-26T08:18"
+  },
+  "TXN-2026-09-27-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-27T19:20",
+   "area": "City Stars",
+   "terminal": "POS 1567",
+   "posted_at": "2026-09-27T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-09-28-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-28T11:22",
+   "terminal": "POS 1718",
+   "posted_at": "2026-09-28T23:59",
+   "card_last4": "4678"
+  },
+  "TXN-2026-09-28-0201": {
+   "channel": "online",
+   "authorised_at": "2026-09-28T12:22",
+   "terminal": "spotifyusd.com",
+   "posted_at": "2026-09-28T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-09-28-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-09-28T13:22"
+  },
+  "TXN-2026-09-28-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-09-28T14:22"
+  },
+  "TXN-2026-09-28-0204": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-09-28T15:22"
+  },
+  "TXN-2026-09-28-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-09-28T16:22"
+  },
+  "TXN-2026-09-29-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-29T16:24",
+   "terminal": "POS 1869",
+   "posted_at": "2026-09-29T23:59",
+   "card_last4": "3644"
+  },
+  "TXN-2026-09-29-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-29T17:24",
+   "area": "Maadi",
+   "terminal": "POS 1870",
+   "posted_at": "2026-09-29T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-09-29-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-29T18:24",
+   "area": "City Stars",
+   "terminal": "POS 1871",
+   "posted_at": "2026-09-29T23:59",
+   "card_last4": "1614"
+  },
+  "TXN-2026-09-30-0150": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T09:16"
+  },
+  "TXN-2026-09-30-0151": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T10:16"
+  },
+  "TXN-2026-09-30-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T09:06"
+  },
+  "TXN-2026-09-30-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T10:07"
+  },
+  "TXN-2026-09-30-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T11:07"
+  },
+  "TXN-2026-09-30-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T12:07"
+  },
+  "TXN-2026-09-30-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T13:07"
+  },
+  "TXN-2026-09-30-0205": {
+   "channel": "online",
+   "authorised_at": "2026-09-30T14:07",
+   "terminal": "talabat.com",
+   "posted_at": "2026-09-30T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-09-30-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T15:07"
+  },
+  "TXN-2026-09-30-0207": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T16:07"
+  },
+  "TXN-2026-09-30-0208": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T17:07"
+  },
+  "TXN-2026-09-30-0209": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T18:07"
+  },
+  "TXN-2026-09-30-0210": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T14:08"
+  },
+  "TXN-2026-09-30-0211": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T15:08"
+  },
+  "TXN-2026-09-30-0212": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T16:09"
+  },
+  "TXN-2026-09-30-0213": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T17:09"
+  },
+  "TXN-2026-09-30-0214": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T18:09"
+  },
+  "TXN-2026-09-30-0215": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T19:09"
+  },
+  "TXN-2026-09-30-0216": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T20:09"
+  },
+  "TXN-2026-09-30-0217": {
+   "channel": "fee",
+   "authorised_at": "2026-09-30T08:09"
+  },
+  "TXN-2026-09-30-0218": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-09-30T09:09",
+   "terminal": "POS 5230",
+   "posted_at": "2026-09-30T23:59",
+   "card_last4": "3657"
+  },
+  "TXN-2026-10-01-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-10-01T13:22"
+  },
+  "TXN-2026-10-01-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-01T14:22"
+  },
+  "TXN-2026-10-01-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-01T15:22",
+   "terminal": "POS 8075",
+   "posted_at": "2026-10-01T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-10-01-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-01T16:22",
+   "terminal": "POS 8076",
+   "posted_at": "2026-10-01T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-10-01-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-01T17:22",
+   "terminal": "jumia.com",
+   "posted_at": "2026-10-01T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-10-01-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-01T18:22"
+  },
+  "TXN-2026-10-01-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-01T19:22",
+   "terminal": "POS 8079",
+   "posted_at": "2026-10-01T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-10-01-0207": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-01T20:22"
+  },
+  "TXN-2026-10-01-0208": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-01T08:22",
+   "terminal": "POS 8081",
+   "posted_at": "2026-10-01T23:59",
+   "card_last4": "3989"
+  },
+  "TXN-2026-10-01-0209": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-01T09:22"
+  },
+  "TXN-2026-10-02-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-02T18:24",
+   "area": "Mall of Egypt",
+   "terminal": "POS 8224",
+   "card_last4": "4978"
+  },
+  "TXN-2026-10-02-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-10-02T19:24",
+   "terminal": "ATM 8225",
+   "card_last4": "7891"
+  },
+  "TXN-2026-10-02-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-10-02T20:24"
+  },
+  "TXN-2026-10-03-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-10-03T10:25",
+   "terminal": "ATM 8375",
+   "card_last4": "6370"
+  },
+  "TXN-2026-10-03-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-03T11:26"
+  },
+  "TXN-2026-10-03-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-10-03T12:26"
+  },
+  "TXN-2026-10-03-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-03T13:26",
+   "area": "City Stars",
+   "terminal": "POS 8378",
+   "posted_at": "2026-10-03T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-10-03-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-03T14:26",
+   "terminal": "jumia.com",
+   "posted_at": "2026-10-03T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-10-03-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-03T15:26",
+   "terminal": "POS 8380",
+   "posted_at": "2026-10-03T23:59",
+   "card_last4": "9212"
+  },
+  "TXN-2026-10-03-0206": {
+   "channel": "fee",
+   "authorised_at": "2026-10-03T16:26"
+  },
+  "TXN-2026-10-04-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-04T15:27",
+   "area": "Maadi",
+   "terminal": "POS 8526",
+   "posted_at": "2026-10-04T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-10-05-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-10-05T20:29"
+  },
+  "TXN-2026-10-05-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-05T08:29",
+   "terminal": "Booking.com",
+   "posted_at": "2026-10-05T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-10-05-0202": {
+   "channel": "fee",
+   "authorised_at": "2026-10-05T09:29"
+  },
+  "TXN-2026-10-05-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-05T10:30",
+   "area": "Mall of Egypt",
+   "terminal": "POS 8680",
+   "posted_at": "2026-10-05T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-10-05-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-05T11:30",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 8681",
+   "posted_at": "2026-10-05T23:59",
+   "card_last4": "3521"
+  },
+  "TXN-2026-10-05-0205": {
+   "channel": "online",
+   "authorised_at": "2026-10-05T12:30",
+   "terminal": "jumia.com",
+   "posted_at": "2026-10-05T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-10-05-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-05T13:30",
+   "terminal": "POS 8683",
+   "posted_at": "2026-10-05T23:59",
+   "card_last4": "4978"
+  },
+  "TXN-2026-10-05-0207": {
+   "channel": "fee",
+   "authorised_at": "2026-10-05T14:30"
+  },
+  "TXN-2026-10-06-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-06T16:15",
+   "terminal": "POS 3532",
+   "posted_at": "2026-10-06T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-10-06-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-06T17:15"
+  },
+  "TXN-2026-10-06-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-06T18:15",
+   "terminal": "POS 3534",
+   "posted_at": "2026-10-06T23:59",
+   "card_last4": "2611"
+  },
+  "TXN-2026-10-06-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-06T19:15",
+   "area": "Mall of Egypt",
+   "terminal": "POS 3535",
+   "posted_at": "2026-10-06T23:59",
+   "card_last4": "5828"
+  },
+  "TXN-2026-10-06-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-06T20:16",
+   "terminal": "POS 3536",
+   "posted_at": "2026-10-06T23:59",
+   "card_last4": "9212"
+  },
+  "TXN-2026-10-06-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-06T08:16",
+   "terminal": "POS 3537",
+   "posted_at": "2026-10-06T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-10-07-0200": {
+   "channel": "online",
+   "authorised_at": "2026-10-07T08:17",
+   "terminal": "Booking.com",
+   "posted_at": "2026-10-07T23:59",
+   "card_last4": "1990"
+  },
+  "TXN-2026-10-07-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-07T09:17"
+  },
+  "TXN-2026-10-07-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-07T10:17",
+   "terminal": "POS 3685",
+   "posted_at": "2026-10-07T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-10-07-0203": {
+   "channel": "atm",
+   "authorised_at": "2026-10-07T11:17",
+   "terminal": "ATM 3686",
+   "card_last4": "3521"
+  },
+  "TXN-2026-10-07-0204": {
+   "channel": "atm",
+   "authorised_at": "2026-10-07T12:17",
+   "terminal": "ATM 3687",
+   "card_last4": "9152"
+  },
+  "TXN-2026-10-07-0205": {
+   "channel": "fee",
+   "authorised_at": "2026-10-07T13:18"
+  },
+  "TXN-2026-10-07-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-07T14:18",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 3689",
+   "posted_at": "2026-10-07T23:59",
+   "card_last4": "3937"
+  },
+  "TXN-2026-10-08-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-08T13:19",
+   "terminal": "POS 3834",
+   "posted_at": "2026-10-08T23:59",
+   "card_last4": "4511"
+  },
+  "TXN-2026-10-08-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-08T14:19",
+   "terminal": "POS 3835",
+   "posted_at": "2026-10-08T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-10-08-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-08T15:19",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-08T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-10-08-0203": {
+   "channel": "online",
+   "authorised_at": "2026-10-08T16:19",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-08T23:59",
+   "card_last4": "1622"
+  },
+  "TXN-2026-10-08-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-08T17:19",
+   "terminal": "POS 3838",
+   "posted_at": "2026-10-08T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-10-09-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-09T18:21",
+   "terminal": "POS 3985",
+   "card_last4": "4047"
+  },
+  "TXN-2026-10-09-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-09T19:21",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-09T23:59",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-09-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-09T20:21",
+   "terminal": "POS 3987",
+   "posted_at": "2026-10-09T23:59",
+   "card_last4": "9955"
+  },
+  "TXN-2026-10-09-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-09T08:21"
+  },
+  "TXN-2026-10-09-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-09T09:21",
+   "terminal": "POS 3989",
+   "posted_at": "2026-10-09T23:59",
+   "card_last4": "5828"
+  },
+  "TXN-2026-10-09-0205": {
+   "channel": "online",
+   "authorised_at": "2026-10-09T10:21",
+   "terminal": "noon.com",
+   "posted_at": "2026-10-09T23:59",
+   "card_last4": "9212"
+  },
+  "TXN-2026-10-10-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-10-10T11:04",
+   "terminal": "ATM 7307",
+   "card_last4": "1405"
+  },
+  "TXN-2026-10-10-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-10T12:04",
+   "terminal": "POS 7308",
+   "posted_at": "2026-10-10T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-10-10-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-10T13:04",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-10T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-10-10-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-10T14:04",
+   "area": "City Stars",
+   "terminal": "POS 7310",
+   "posted_at": "2026-10-10T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-10-11-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-11T16:06"
+  },
+  "TXN-2026-10-11-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-11T17:06"
+  },
+  "TXN-2026-10-11-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-11T18:06",
+   "terminal": "POS 7460",
+   "posted_at": "2026-10-11T23:59",
+   "card_last4": "6577"
+  },
+  "TXN-2026-10-11-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-11T19:06",
+   "terminal": "POS 7461",
+   "posted_at": "2026-10-11T23:59",
+   "card_last4": "7585"
+  },
+  "TXN-2026-10-11-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-11T20:06",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-11T23:59",
+   "card_last4": "1990"
+  },
+  "TXN-2026-10-11-0205": {
+   "channel": "online",
+   "authorised_at": "2026-10-11T08:06",
+   "terminal": "careem.com",
+   "posted_at": "2026-10-11T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-10-11-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-11T09:06",
+   "terminal": "POS 7464",
+   "posted_at": "2026-10-11T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-10-12-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-10-12T08:08"
+  },
+  "TXN-2026-10-12-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-12T09:08",
+   "terminal": "aliexpressusd.com",
+   "card_last4": "7585"
+  },
+  "TXN-2026-10-12-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-12T10:08",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-12T23:59",
+   "card_last4": "4400"
+  },
+  "TXN-2026-10-13-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-13T13:10",
+   "area": "Mall of Egypt",
+   "terminal": "POS 7760",
+   "posted_at": "2026-10-13T23:59",
+   "card_last4": "4659"
+  },
+  "TXN-2026-10-13-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-13T14:10",
+   "terminal": "POS 7761",
+   "posted_at": "2026-10-13T23:59",
+   "card_last4": "7293"
+  },
+  "TXN-2026-10-14-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-10-14T18:11"
+  },
+  "TXN-2026-10-14-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-14T19:12",
+   "terminal": "POS 7912",
+   "posted_at": "2026-10-14T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-10-14-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-14T20:12",
+   "terminal": "careem.com",
+   "posted_at": "2026-10-14T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-10-14-0203": {
+   "channel": "online",
+   "authorised_at": "2026-10-14T08:12",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-14T23:59",
+   "card_last4": "4078"
+  },
+  "TXN-2026-10-15-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-15T10:13",
+   "terminal": "POS 8062",
+   "card_last4": "1614"
+  },
+  "TXN-2026-10-15-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-15T11:13",
+   "terminal": "uber.com",
+   "posted_at": "2026-10-15T23:59",
+   "card_last4": "4585"
+  },
+  "TXN-2026-10-15-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-15T12:14",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-15T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-10-15-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-10-15T13:14"
+  },
+  "TXN-2026-10-15-0204": {
+   "channel": "atm",
+   "authorised_at": "2026-10-15T14:14",
+   "terminal": "ATM 8066",
+   "card_last4": "5828"
+  },
+  "TXN-2026-10-16-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-16T15:15",
+   "terminal": "POS 8213",
+   "posted_at": "2026-10-16T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-10-16-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-16T16:15",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 8214",
+   "posted_at": "2026-10-16T23:59",
+   "card_last4": "5610"
+  },
+  "TXN-2026-10-17-0200": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-17T20:17"
+  },
+  "TXN-2026-10-17-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-17T08:17"
+  },
+  "TXN-2026-10-17-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-17T09:17",
+   "terminal": "spotifyusd.com",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "4047"
+  },
+  "TXN-2026-10-17-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-10-17T10:17"
+  },
+  "TXN-2026-10-17-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-17T11:18",
+   "terminal": "careem.com",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-10-17-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-17T12:18",
+   "terminal": "POS 8369",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-10-17-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-17T13:18",
+   "area": "Mall of Egypt",
+   "terminal": "POS 8370",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-10-17-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-17T14:18",
+   "terminal": "POS 8371",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "3989"
+  },
+  "TXN-2026-10-17-0208": {
+   "channel": "online",
+   "authorised_at": "2026-10-17T15:18",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-17T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-10-18-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-18T12:19",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 8515",
+   "posted_at": "2026-10-18T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-10-18-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-18T13:19",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 8516",
+   "posted_at": "2026-10-18T23:59",
+   "card_last4": "6077"
+  },
+  "TXN-2026-10-18-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-18T14:19",
+   "terminal": "POS 8517",
+   "posted_at": "2026-10-18T23:59",
+   "card_last4": "6897"
+  },
+  "TXN-2026-10-18-0203": {
+   "channel": "online",
+   "authorised_at": "2026-10-18T15:19",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-18T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-10-19-0200": {
+   "channel": "fee",
+   "authorised_at": "2026-10-19T17:21"
+  },
+  "TXN-2026-10-19-0201": {
+   "channel": "atm",
+   "authorised_at": "2026-10-19T18:21",
+   "terminal": "ATM 8667",
+   "card_last4": "6370"
+  },
+  "TXN-2026-10-19-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-19T19:21",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-19T23:59",
+   "card_last4": "1559"
+  },
+  "TXN-2026-10-19-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-19T20:21",
+   "terminal": "POS 8669",
+   "posted_at": "2026-10-19T23:59",
+   "card_last4": "9152"
+  },
+  "TXN-2026-10-19-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-19T08:21",
+   "terminal": "jumia.com",
+   "posted_at": "2026-10-19T23:59",
+   "card_last4": "5177"
+  },
+  "TXN-2026-10-20-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-20T10:04",
+   "area": "City Stars",
+   "terminal": "POS 2988",
+   "posted_at": "2026-10-20T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-10-20-0201": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-20T11:04"
+  },
+  "TXN-2026-10-20-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-20T12:04",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-20T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-10-20-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-20T13:04",
+   "terminal": "POS 2991",
+   "posted_at": "2026-10-20T23:59",
+   "card_last4": "1614"
+  },
+  "TXN-2026-10-20-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-20T14:04",
+   "terminal": "careem.com",
+   "posted_at": "2026-10-20T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-10-21-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-21T15:06",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 3139",
+   "posted_at": "2026-10-21T23:59",
+   "card_last4": "1405"
+  },
+  "TXN-2026-10-21-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-21T16:06",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-21T23:59",
+   "card_last4": "9955"
+  },
+  "TXN-2026-10-21-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-21T17:06"
+  },
+  "TXN-2026-10-21-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-10-21T18:06"
+  },
+  "TXN-2026-10-21-0204": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-21T19:06",
+   "terminal": "POS 3143",
+   "posted_at": "2026-10-21T23:59",
+   "card_last4": "2549"
+  },
+  "TXN-2026-10-22-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-22T20:08",
+   "area": "City Stars",
+   "terminal": "POS 3290",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "7891"
+  },
+  "TXN-2026-10-22-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T08:08",
+   "terminal": "noon.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "4437"
+  },
+  "TXN-2026-10-22-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-22T09:08"
+  },
+  "TXN-2026-10-22-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-10-22T10:08"
+  },
+  "TXN-2026-10-22-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T11:08",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-22-0205": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T12:08",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "4548"
+  },
+  "TXN-2026-10-22-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-22T13:08",
+   "terminal": "POS 3296",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "9955"
+  },
+  "TXN-2026-10-22-0207": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-22T14:08",
+   "area": "Mall of Egypt",
+   "terminal": "POS 3297",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "6370"
+  },
+  "TXN-2026-10-22-0208": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T15:08",
+   "terminal": "noon.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "8927"
+  },
+  "TXN-2026-10-22-0209": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T16:08",
+   "terminal": "breadfast.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "9882"
+  },
+  "TXN-2026-10-22-0210": {
+   "channel": "online",
+   "authorised_at": "2026-10-22T12:10",
+   "terminal": "noon.com",
+   "posted_at": "2026-10-22T23:59",
+   "card_last4": "6025"
+  },
+  "TXN-2026-10-23-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-23T12:10",
+   "terminal": "POS 3441",
+   "posted_at": "2026-10-23T23:59",
+   "card_last4": "3535"
+  },
+  "TXN-2026-10-24-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-24T17:12",
+   "terminal": "POS 3592",
+   "card_last4": "3644"
+  },
+  "TXN-2026-10-24-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-24T18:12",
+   "terminal": "POS 3593",
+   "posted_at": "2026-10-24T23:59",
+   "card_last4": "2606"
+  },
+  "TXN-2026-10-24-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-24T19:12",
+   "terminal": "POS 3594",
+   "posted_at": "2026-10-24T23:59",
+   "card_last4": "4474"
+  },
+  "TXN-2026-10-24-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-24T20:12",
+   "terminal": "POS 3595",
+   "posted_at": "2026-10-24T23:59",
+   "card_last4": "2907"
+  },
+  "TXN-2026-10-24-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-24T08:12",
+   "terminal": "careem.com",
+   "posted_at": "2026-10-24T23:59",
+   "card_last4": "8484"
+  },
+  "TXN-2026-10-24-0205": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-24T09:12",
+   "area": "Mall of Egypt",
+   "terminal": "POS 3597",
+   "posted_at": "2026-10-24T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-10-24-0206": {
+   "channel": "atm",
+   "authorised_at": "2026-10-24T10:12",
+   "terminal": "ATM 3598",
+   "card_last4": "4078"
+  },
+  "TXN-2026-10-25-0200": {
+   "channel": "online",
+   "authorised_at": "2026-10-25T09:13",
+   "terminal": "breadfast.com",
+   "card_last4": "3535"
+  },
+  "TXN-2026-10-25-0201": {
+   "channel": "online",
+   "authorised_at": "2026-10-25T10:14",
+   "terminal": "talabat.com",
+   "posted_at": "2026-10-25T23:59",
+   "card_last4": "4511"
+  },
+  "TXN-2026-10-25-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-25T11:14"
+  },
+  "TXN-2026-10-25-0203": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-25T12:14",
+   "terminal": "POS 3746",
+   "posted_at": "2026-10-25T23:59",
+   "card_last4": "2383"
+  },
+  "TXN-2026-10-25-0204": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-25T13:14"
+  },
+  "TXN-2026-10-25-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-25T14:14"
+  },
+  "TXN-2026-10-26-0200": {
+   "channel": "atm",
+   "authorised_at": "2026-10-26T14:15",
+   "terminal": "ATM 3894",
+   "card_last4": "1405"
+  },
+  "TXN-2026-10-26-0201": {
+   "channel": "fee",
+   "authorised_at": "2026-10-26T15:15"
+  },
+  "TXN-2026-10-26-0202": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-26T16:16"
+  },
+  "TXN-2026-10-26-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-26T17:16"
+  },
+  "TXN-2026-10-26-0204": {
+   "channel": "fee",
+   "authorised_at": "2026-10-26T18:16"
+  },
+  "TXN-2026-10-26-0205": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-26T19:16"
+  },
+  "TXN-2026-10-26-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-26T20:16",
+   "terminal": "POS 3900",
+   "posted_at": "2026-10-26T23:59",
+   "card_last4": "5828"
+  },
+  "TXN-2026-10-26-0207": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-26T08:16"
+  },
+  "TXN-2026-10-26-0208": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-26T09:16",
+   "terminal": "POS 3902",
+   "posted_at": "2026-10-26T23:59",
+   "card_last4": "1990"
+  },
+  "TXN-2026-10-27-0200": {
+   "channel": "online",
+   "authorised_at": "2026-10-27T19:17",
+   "terminal": "Amazon.eg",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "9882"
+  },
+  "TXN-2026-10-27-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-27T20:17",
+   "area": "Sheikh Zayed",
+   "terminal": "POS 4046",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-27-0202": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-27T08:17",
+   "terminal": "POS 4047",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "7293"
+  },
+  "TXN-2026-10-27-0203": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-27T09:18"
+  },
+  "TXN-2026-10-28-0200": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-28T11:19",
+   "terminal": "POS 4196",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "4400"
+  },
+  "TXN-2026-10-28-0201": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-28T12:19",
+   "terminal": "POS 4197",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "1405"
+  },
+  "TXN-2026-10-28-0202": {
+   "channel": "online",
+   "authorised_at": "2026-10-28T13:19",
+   "terminal": "breadfast.com",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-28-0203": {
+   "channel": "fee",
+   "authorised_at": "2026-10-28T14:19"
+  },
+  "TXN-2026-10-28-0204": {
+   "channel": "online",
+   "authorised_at": "2026-10-28T15:20",
+   "terminal": "jumia.com",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "6370"
+  },
+  "TXN-2026-10-28-0205": {
+   "channel": "online",
+   "authorised_at": "2026-10-28T16:20",
+   "terminal": "noon.com",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "3521"
+  },
+  "TXN-2026-10-28-0206": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-28T17:20",
+   "terminal": "POS 4202",
+   "hold_reason": "card_hold",
+   "rule": "TXS-1.1",
+   "card_last4": "6077"
+  },
+  "TXN-2026-10-29-0901": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-29T15:10",
+   "area": "Heliopolis, Cairo",
+   "terminal": "POS 2218",
+   "hold_reason": "hotel_hold",
+   "rule": "TXS-1.2",
+   "expected_post": "2026-11-12",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-30-0902": {
+   "channel": "online",
+   "authorised_at": "2026-10-30T22:47",
+   "terminal": "amazon.eg",
+   "area": "Online",
+   "decline_code": "online_security_check",
+   "rule": "TXS-2.5",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-30-0903": {
+   "channel": "instapay",
+   "authorised_at": "2026-10-30T18:04",
+   "sender": "Ahmed Hassan",
+   "sent_at": "2026-10-30T23:55",
+   "hold_reason": "new_sender_review",
+   "expected_post": "2026-10-31T12:00",
+   "rule": "TXS-4.1"
+  },
+  "TXN-2026-10-27-0904": {
+   "channel": "online",
+   "authorised_at": "2026-10-27T08:15",
+   "terminal": "uber.com",
+   "area": "Alexandria",
+   "reversed_at": "2026-10-28T09:00",
+   "rule": "TXS-5.1",
+   "card_last4": "4678"
+  },
+  "TXN-2026-10-29-0906": {
+   "channel": "atm",
+   "authorised_at": "2026-10-29T09:05",
+   "area": "Nasr City, Cairo",
+   "terminal": "Nova ATM 0417",
+   "card_last4": "4400"
+  },
+  "TXN-2026-10-29-0905": {
+   "channel": "atm",
+   "authorised_at": "2026-10-29T17:40",
+   "area": "Nasr City, Cairo",
+   "terminal": "Banque Misr ATM 2290",
+   "decline_code": "daily_limit",
+   "used_today_egp": 15000,
+   "rule": "TXS-2.2",
+   "card_last4": "4400"
+  },
+  "TXN-2026-11-01-0907": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-11-01T17:19",
+   "sender": "Delta Logistics (payroll)",
+   "sent_at": "2026-10-30T11:00",
+   "hold_reason": "payroll_date",
+   "expected_post": "2026-11-01T10:00",
+   "rule": "TXS-4.3"
+  },
+  "TXN-2026-10-30-0908": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-30T18:42",
+   "area": "Maadi, Cairo",
+   "terminal": "POS 7712",
+   "decline_code": "insufficient_balance",
+   "available_balance_egp": 980,
+   "rule": "TXS-2.1",
+   "card_last4": "4437"
+  },
+  "TXN-2026-10-30-0909": {
+   "channel": "instapay",
+   "authorised_at": "2026-10-30T11:05",
+   "sender": "Mona Adel",
+   "sent_at": "2026-10-30T20:10",
+   "posted_at": "2026-10-30T20:10"
+  },
+  "TXN-2026-10-30-0910": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-30T20:31",
+   "area": "Maadi, Cairo",
+   "terminal": "POS 7712",
+   "posted_at": "2026-10-30T23:59",
+   "retry_of": "TXN-2026-10-30-0908",
+   "card_last4": "4437"
+  },
+  "TXN-2026-10-28-0911": {
+   "channel": "international",
+   "authorised_at": "2026-10-28T10:22",
+   "sender": "Karim Fathy",
+   "sent_at": "2026-10-28T13:00",
+   "hold_reason": "international_transfer",
+   "expected_post": "2026-11-04",
+   "rule": "TXS-4.4"
+  },
+  "TXN-2026-10-20-0912": {
+   "channel": "online",
+   "authorised_at": "2026-10-19T21:05",
+   "terminal": "jumia.com.eg",
+   "area": "Online",
+   "posted_at": "2026-10-20T10:00",
+   "refund_id": "TXN-2026-10-28-0913",
+   "rule": "TXS-5.2",
+   "card_last4": "4511"
+  },
+  "TXN-2026-10-28-0913": {
+   "channel": "refund",
+   "authorised_at": "2026-10-28T12:22",
+   "sender": "Jumia",
+   "sent_at": "2026-10-28T12:00",
+   "hold_reason": "merchant_refund",
+   "expected_post": "2026-11-11",
+   "refund_of": "TXN-2026-10-20-0912",
+   "rule": "TXS-5.2"
+  },
+  "TXN-2026-10-31-0914": {
+   "channel": "card_in_store",
+   "authorised_at": "2026-10-31T11:20",
+   "area": "Zamalek, Cairo",
+   "terminal": "POS 3305",
+   "decline_code": "pin_tries",
+   "rule": "TXS-2.4",
+   "card_last4": "4511"
+  },
+  "TXN-2026-10-29-0915": {
+   "channel": "bank_transfer",
+   "authorised_at": "2026-10-29T19:24",
+   "sender": "Hany Mostafa",
+   "sent_at": "2026-10-29T16:20",
+   "hold_reason": "after_cutoff",
+   "expected_post": "2026-11-01",
+   "rule": "TXS-4.2"
+  },
+  "TXN-2026-10-01-0916": {
+   "channel": "standing_order",
+   "authorised_at": "2026-10-01T07:00",
+   "area": "Alexandria"
+  }
+ }
+}
