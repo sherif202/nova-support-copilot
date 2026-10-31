@@ -18,6 +18,7 @@
 | R-EMPTY | Empty or junk message (step 9). No model call | Please type your question. | من فضلك اكتب سؤالك. |
 | R-TOO-LONG | Over 1,000 characters (step 9). No model call | Please keep your message under 1,000 characters. | من فضلك خلّي رسالتك أقل من 1000 حرف. |
 | R-WAIT | Over 20 messages a minute (security step). No model call | Please wait a moment. | من فضلك استنى لحظة. |
+| R-PICK | Record picker: the question fits two or more of the customer's records and names none (code, before the answer step) | Which one do you mean? Tap it and I'll answer about that one. | تقصد أنهي واحدة؟ دوس عليها وأنا أجاوبك عنها. |
 | R-HELLO | general.chitchat greeting, P4 | Hello, I'm Nova's assistant. I can explain a fee, tell you where your dispute is, or help replace a damaged or expiring card. A colleague is always one tap away. | أهلاً، أنا مساعد نوفا. أقدر أشرحلك أي رسوم، أقولك الاعتراض بتاعك وصل لفين، أو أساعدك تغيّر كارت بايظ أو هيخلص. وفي أي وقت تقدر تكلّم حد من زمايلنا. |
 
 Every reply that hands off creates a ticket, so every one carries a reference. Change the wording here only with Compliance, and log the change in CHANGELOG.md.

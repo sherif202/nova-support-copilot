@@ -26,7 +26,8 @@ loadEnv();
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
 const { prompts, reply, answerUserTurn, retryNote } = require("./lib/prompts");
 const { runChecks, SECURITY_CHECKS } = require("./lib/checks");
-const { lookup, liveNotices } = require("./lib/lookup");
+const { lookup, liveNotices, ambiguity, ownsRecord } = require("./lib/lookup");
+const { listRecords, itemsFor } = require("./lib/picker");
 const { guard, mask } = require("./lib/guard");
 const { fraudSignal } = require("./lib/fraud");
 const { explainAnswer, HANDOFF_WHY, choicesFor, SAFE_CHOICES } = require("./lib/explain");
@@ -178,9 +179,9 @@ function cairoNow(testNow) {
 // Step 12: every answer is checked in code. One retry with prompts/retry.md if a check fails or the JSON
 // is broken; if the retry fails too, status is "check_failed". Never a third try.
 // Returns { status: "ok" | "handoff" | "check_failed", json, attempts, checks_passed, failed_check, ... }.
-async function answer(customerId, message, label, testNow, budget) {
+async function answer(customerId, message, label, testNow, budget, pickedId = null) {
   const now = cairoNow(testNow);
-  const found = lookup(customerId, message, label.intent);
+  const found = lookup(customerId, message, label.intent, pickedId);
   const notices = label.intent === "service.status" ? liveNotices(now) : [];
   const user = answerUserTurn({
     NOW_CAIRO: now.text,
@@ -189,7 +190,7 @@ async function answer(customerId, message, label, testNow, budget) {
     LAST_TURNS_MASKED: "none",
     INPUT_LANGUAGE: label.input_language,
     INTENT: label.intent,
-    REWRITE: label.rewrite,
+    REWRITE: found.pinned ? `${label.rewrite} (The customer picked record ${found.pinned} from their list: answer about that one.)` : label.rewrite,
     MASKED_MESSAGE: message,
   });
   const ctx = {
@@ -226,6 +227,8 @@ async function answer(customerId, message, label, testNow, budget) {
       if (json.sources.some((id) => id.startsWith("ANN-")) && !json.sources.includes("DIG-8")) json.sources.push("DIG-8");
       // A dispute status answer always names the stage, which is defined by DSP-2.
       if (label.intent === "dispute.status" && json.sources.some((id) => id.startsWith("D-")) && !json.sources.includes("DSP-2")) json.sources.push("DSP-2");
+      // Record picker: the record the customer tapped is the subject of the answer, so it is always cited.
+      if (found.pinned && !json.sources.includes(found.pinned)) json.sources.push(found.pinned);
       const checked = runChecks(json, ctx);
       console.log(`[answer] sources=${json.sources.join(",") || "none"} checks passed=${checked.passed.join(",")}${checked.failed ? ` FAILED=${checked.failed.check}` : ""}`);
       if (!checked.failed) return { ...meta, status: "ok", json, attempts: attempt, checks_passed: checked.passed };
@@ -305,7 +308,7 @@ function fraudHandOff(customerId, message, base) {
 // `chosenIntent` (Stage 6, "Did you mean…"): the customer picked one of the safe options the copilot offered.
 // It is used only when the understand step still sees a low-risk P2 or P4 question; fraud, complaints,
 // sensitive and out-of-scope routes always win.
-async function copilot(customerId, message, testNow, trace, chosenIntent) {
+async function copilot(customerId, message, testNow, trace, chosenIntent, recordId) {
   const signal = fraudSignal(message);
   if (signal) {
     console.log(`[fraud] word list matched (${signal.signal}), no model call`);
@@ -368,6 +371,29 @@ async function copilot(customerId, message, testNow, trace, chosenIntent) {
     return { ...handOff(customerId, message, base, "R-UNSURE", "Agent"), choices: label.priority === "P2" ? choicesFor(label.intent) : [] };
   }
 
+  // Record picker (Stage 6, Human Agency). A record the customer tapped is used only if it is theirs. A question
+  // that names no amount, date or merchant while two or more of their records fit gets "Which one do you mean?"
+  // with those records as cards, instead of a guess. Fraud, complaints and out-of-scope routes above always win.
+  const picked = recordId && ownsRecord(customerId, recordId) ? recordId : null;
+  if (picked) trace.picked_record_id = picked;
+  else if (["P2", "P4"].includes(label.priority)) {
+    const vague = ambiguity(customerId, message, label.intent);
+    if (vague.ambiguous) {
+      trace.picker_shown = true;
+      const language = label.input_language === "english" ? "english" : "arabic";
+      return {
+        ...base,
+        reply_language: language,
+        answer_text: reply("R-PICK", language),
+        sources: [],
+        action: "pick",
+        reply_id: "R-PICK",
+        ticket_status: "awaiting_customer",
+        picker: { kind: vague.kind, items: itemsFor(customerId, vague.ids) },
+      };
+    }
+  }
+
   // A card that was sent but has no delivery recorded (and isn't still on its way) needs a person to check the
   // delivery; the copilot can't know where it is (evalset case 41).
   if (label.intent.startsWith("card.")) {
@@ -377,7 +403,7 @@ async function copilot(customerId, message, testNow, trace, chosenIntent) {
 
   let answered;
   try {
-    answered = await answer(customerId, message, label, testNow, budget);
+    answered = await answer(customerId, message, label, testNow, budget, picked);
   } catch (err) {
     console.error(`[answer] failed: ${err.message}`);
     trace.error = `answer: ${err.message}`;
@@ -522,7 +548,9 @@ function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms
     retries: trace.steps.reduce((a, s) => a + Math.max(0, s.attempts - 1), 0),
     latency_ms: ms,
     cost_egp: costUsd === null ? null : Number((costUsd * EGP_PER_USD).toFixed(5)),
-    outcome: result.priority === "P0" || result.queue === "Fraud" ? "fraud" : answered ? "answered" : result.action === "handoff" ? "handoff" : "fixed_reply",
+    outcome: result.priority === "P0" || result.queue === "Fraud" ? "fraud" : answered ? "answered" : result.action === "handoff" ? "handoff" : result.action === "pick" ? "picker" : "fixed_reply",
+    picker_shown: Boolean(trace.picker_shown),
+    picked_record_id: trace.picked_record_id || null,
     time: new Date().toISOString(),
     message_id: trace.message_id,
     customerId,
@@ -647,6 +675,14 @@ const server = http.createServer(async (req, res) => {
         const turn = turns[t.ticket_id] || {};
         return { ...t, retrieved_ids: turn.retrieved_ids || [], cited: turn.sources || [], injection_flagged: Boolean(turn.injection_flagged) };
       }));
+    }
+
+    // Record picker: the logged-in customer's own transactions, cards or disputes as picker cards. No model call.
+    if (req.method === "GET" && req.url.startsWith("/api/records?")) {
+      const q = new URLSearchParams(req.url.split("?")[1]);
+      const customerId = String(q.get("customerId") || "");
+      if (!readJson("customers.json").some((c) => c.customer_id === customerId)) return sendJson(res, 404, { error: "Unknown customer" });
+      return sendJson(res, 200, listRecords(customerId, String(q.get("kind") || ""), Math.max(0, Number(q.get("offset")) || 0)));
     }
 
     // The PM control panel: quality, cost per model ID, volume bottlenecks, iterations and recommendations
@@ -788,7 +824,7 @@ const server = http.createServer(async (req, res) => {
           : handOff(customerId, checked.masked, base, "R-OFF", "Agent");
       } else {
         if (checked.injection_flagged) console.log("[guard] injection phrase flagged");
-        result = await copilot(customerId, checked.masked, body.testNow, trace, String(body.chosenIntent || ""));
+        result = await copilot(customerId, checked.masked, body.testNow, trace, String(body.chosenIntent || ""), String(body.recordId || "").slice(0, 40));
         // The customer resolved an earlier "not sure" ticket by picking an option.
         if (result.customer_choice && body.ticketId) {
           updateTicket(String(body.ticketId), (t) => (t.customer_id === customerId ? { ...t, status: "resolved_by_customer_choice" } : null));

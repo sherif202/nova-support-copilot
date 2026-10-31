@@ -18,7 +18,7 @@ function scrollDown() {
   $("messages").scrollTop = $("messages").scrollHeight;
 }
 
-const isArabic = (lang) => lang === "arabic" || lang === "franco";
+const isArabic = (lang) => ["arabic", "ar", "franco"].includes(lang);
 const pick = (pair, arabic) => (pair ? (arabic ? pair.ar : pair.en) : "");
 
 // ---------- Pillar 1: calibration. What the assistant is and isn't, in the customer's language. ----------
@@ -41,6 +41,7 @@ function showWelcome() {
     : ["I answer only from your own account and Nova's published rules.", "I can explain a fee, tell you where your dispute is, or help with a damaged or expiring card.", "I can't move money, remove fees or give financial advice: a colleague can.", "I will never ask for your PIN, OTP or CVV.", "You can talk to a person at any time."]
   ).forEach((t) => list.append(el("li", "", t)));
   card.append(list);
+  card.append(quickStart(arabic));
   const tries = el("div", "suggestions");
   tries.append(el("span", "hint", arabic ? "جرّب:" : "Try:"));
   for (const q of SUGGESTIONS[arabic ? "ar" : "en"]) {
@@ -52,6 +53,157 @@ function showWelcome() {
   }
   card.append(tries);
   $("messages").replaceChildren(card);
+}
+
+// ---------- Record picker (Stage 6, Human Agency) ----------
+// The customer points at exactly what they mean: their own transactions, cards and disputes as cards, with the
+// facts that tell them apart in bold. The server builds the cards from the logged-in customer's records only.
+
+const QUICK = [
+  { kind: "transactions", en: "🧾 A charge on my account", ar: "🧾 خصم على حسابي" },
+  { kind: "cards", en: "💳 My card", ar: "💳 الكارت بتاعي" },
+  { kind: "disputes", en: "⚖ My dispute", ar: "⚖ الاعتراض بتاعي" },
+  { send: { en: "Is there any maintenance or outage right now?", ar: "هل فيه صيانة أو عطل دلوقتي؟" }, en: "📢 Is a service down?", ar: "📢 فيه خدمة واقفة؟" },
+];
+
+function quickStart(arabic) {
+  const row = el("div", "suggestions quick");
+  row.append(el("span", "hint", arabic ? "ابدأ من هنا:" : "Start here:"));
+  for (const q of QUICK) {
+    const b = el("button", "suggestion quick-chip", arabic ? q.ar : q.en);
+    b.type = "button";
+    b.addEventListener("click", () => (q.kind ? openPicker(q.kind, arabic, b.textContent) : send(arabic ? q.send.ar : q.send.en)));
+    row.append(b);
+  }
+  return row;
+}
+
+const PICK_TITLE = {
+  transactions: { en: "Which charge? Your latest transactions:", ar: "أنهي خصم؟ آخر عملياتك:" },
+  cards: { en: "Which card?", ar: "أنهي كارت؟" },
+  disputes: { en: "Which dispute?", ar: "أنهي اعتراض؟" },
+};
+
+// One picker card: the facts that tell records apart in bold, then the details.
+function recordCard(item, arabic, onTap) {
+  const b = el("button", "rec-card");
+  b.type = "button";
+  b.setAttribute("dir", arabic ? "rtl" : "ltr");
+  const top = el("span", "rec-bold");
+  item.bold.forEach((x, i) => {
+    if (i) top.append(el("span", "rec-dot", " · "));
+    top.append(el("b", "", pick(x, arabic)));
+  });
+  const meta = el("span", "rec-meta");
+  meta.append(el("span", "rec-tag", pick(item.tag, arabic)));
+  item.meta.forEach((m) => meta.append(el("span", "", pick(m, arabic))));
+  b.append(top, el("span", "rec-title", pick(item.title, arabic)), meta);
+  b.addEventListener("click", () => onTap(item, b));
+  return b;
+}
+
+function shortLabel(item, arabic) {
+  return item.bold.map((x) => pick(x, arabic)).join(" · ");
+}
+
+// What a tap on a record can ask. Fees are answered at once; other records offer the services an agent helps with.
+const FOLLOW_UPS = {
+  fee: (item) => [{ en: "Why was I charged this?", ar: "الخصم ده ليه؟", intent: item.intent }],
+  transaction: () => [
+    { en: "I don't recognise this payment", ar: "مش أنا اللي عملت العملية دي" },
+    { en: "I want to dispute this payment", ar: "عايز أعترض على العملية دي" },
+  ],
+  card: (item) => [
+    ...(item.on_its_way ? [{ en: "Where is my new card?", ar: "الكارت الجديد بتاعي فين؟", intent: "card.replace_expired" }] : []),
+    { en: "My card is damaged, how do I replace it?", ar: "الكارت بايظ، أغيّره إزاي؟", intent: "card.replace_damaged" },
+    { en: "My card is expiring, what happens?", ar: "الكارت هيخلص، إيه اللي هيحصل؟", intent: "card.replace_expired" },
+    { en: "I lost my card", ar: "الكارت ضاع مني" },
+  ],
+  dispute: () => [
+    { en: "Where is my dispute now?", ar: "الاعتراض بتاعي وصل لفين؟", intent: "dispute.status" },
+    { en: "What documents do you need for it?", ar: "محتاجين أوراق إيه للاعتراض ده؟", intent: "dispute.documents" },
+  ],
+};
+
+function followUps(item, arabic, box) {
+  const key = item.kind === "transaction" ? (item.is_fee ? "fee" : "transaction") : item.kind;
+  const options = FOLLOW_UPS[key](item);
+  const ask = (o) => send(pick(o, arabic), { recordId: item.id, chosenIntent: o.intent, label: shortLabel(item, arabic) });
+  if (options.length === 1) return ask(options[0]);
+  const row = el("div", "choices");
+  row.setAttribute("dir", arabic ? "rtl" : "ltr");
+  row.append(el("p", "", arabic ? `عن ${shortLabel(item, arabic)}، عايز تعرف إيه؟` : `About ${shortLabel(item, arabic)}: what would you like to do?`));
+  for (const o of options) {
+    const b = el("button", "chip-btn", pick(o, arabic));
+    b.type = "button";
+    b.addEventListener("click", () => {
+      row.querySelectorAll("button").forEach((x) => (x.disabled = true));
+      ask(o);
+    });
+    row.append(b);
+  }
+  box.after(row);
+  scrollDown();
+}
+
+function noneOfThese(arabic) {
+  const b = el("button", "secondary small", arabic ? "🙋 ولا واحدة: كلّم موظف" : "🙋 None of these: talk to a person");
+  b.type = "button";
+  b.addEventListener("click", talkToPerson);
+  return b;
+}
+
+// A picker opened from a quick-start chip: the customer's own records of one kind.
+async function openPicker(kind, arabic, chipText, offset = 0, box = null) {
+  let data;
+  try {
+    data = await (await fetch(`/api/records?customerId=${encodeURIComponent($("customer").value)}&kind=${kind}&offset=${offset}`)).json();
+  } catch {
+    return;
+  }
+  if (!box) {
+    addUser(chipText);
+    box = el("div", "bot-turn picker");
+    box.setAttribute("dir", arabic ? "rtl" : "ltr");
+    box.append(el("p", "msg bot", data.items.length ? pick(PICK_TITLE[kind], arabic) : arabic ? "مفيش حاجة من النوع ده على حسابك." : "There's nothing of this kind on your account."));
+    box.append(el("div", "rec-list"));
+    $("messages").append(box);
+  }
+  const list = box.querySelector(".rec-list");
+  box.querySelectorAll(".more-btn, .none-btn").forEach((x) => x.remove());
+  const tap = (item, button) => {
+    box.querySelectorAll(".rec-card").forEach((x) => x.classList.toggle("picked", x === button));
+    followUps(item, arabic, box);
+  };
+  data.items.forEach((item) => list.append(recordCard(item, arabic, tap)));
+  if (data.more) {
+    const more = el("button", "secondary small more-btn", arabic ? "اعرض أكتر" : "Show more");
+    more.type = "button";
+    more.addEventListener("click", () => openPicker(kind, arabic, chipText, offset + data.items.length, box));
+    box.append(more);
+  }
+  const none = noneOfThese(arabic);
+  none.classList.add("none-btn");
+  box.append(none);
+  scrollDown();
+}
+
+// The automatic picker: the question was too vague to know which record, so the copilot asks.
+function whichOne(data, original, arabic) {
+  const box = el("div", "picker");
+  box.setAttribute("dir", arabic ? "rtl" : "ltr");
+  const list = el("div", "rec-list");
+  for (const item of data.picker.items) {
+    list.append(recordCard(item, arabic, (it, button) => {
+      box.querySelectorAll(".rec-card").forEach((x) => {
+        x.disabled = true;
+        x.classList.toggle("picked", x === button);
+      });
+      send(original, { recordId: it.id, chosenIntent: data.intent, label: shortLabel(it, arabic) });
+    }));
+  }
+  box.append(list, noneOfThese(arabic));
+  return box;
 }
 
 // ---------- One message ----------
@@ -67,6 +219,7 @@ function addUser(text) {
 function statusBadge(data, arabic) {
   if (data.priority === "P0") return el("div", "badge badge-risk", arabic ? "⚠ حماية من الاحتيال: وصلناك بفريق الاحتيال" : "⚠ Fraud protection: sent to our Fraud team");
   if (data.reply_id === "R-DRAFT") return el("div", "badge badge-wait", arabic ? "⏳ في انتظار مراجعة موظف" : "⏳ Waiting for a colleague to review");
+  if (data.action === "pick") return el("div", "badge badge-info", arabic ? "ℹ اختار واحدة عشان أجاوبك عنها بالظبط، من غير تخمين" : "ℹ Pick one so I answer about exactly that one, no guessing");
   if (data.action === "handoff") return el("div", "badge badge-wait", arabic ? "↪ اتحوّلت لموظف" : "↪ Passed to a colleague");
   if (data.reply_id === "R-WAIT" || data.reply_id === "R-EMPTY" || data.reply_id === "R-TOO-LONG") return el("div", "badge badge-info", arabic ? "ℹ مفيش استخدام للذكاء الاصطناعي في الرد ده" : "ℹ No AI was used for this reply");
   const confidence = data.confidence >= 0.85 ? (arabic ? "ثقة عالية" : "high confidence") : (arabic ? "ثقة متوسطة" : "medium confidence");
@@ -212,7 +365,8 @@ function addBot(data, original) {
     if (data.customer_choice) wrap.append(el("p", "hint", arabic ? "جاوبت على حسب اختيارك." : "Answered using the option you picked."));
     wrap.append(whyThisAnswer(data.explain, arabic), feedback(data, arabic));
   }
-  if (data.choices && data.choices.length) wrap.append(didYouMean(data, original, arabic));
+  if (data.action === "pick" && data.picker) wrap.append(whichOne(data, original, arabic));
+  else if (data.choices && data.choices.length) wrap.append(didYouMean(data, original, arabic));
   else if (data.action === "handoff" && data.priority !== "P0" && data.reply_id !== "R-PERSON") wrap.append(personButton(arabic));
   if (data.block_card) wrap.append(blockCard(arabic));
   $("messages").append(wrap);
@@ -228,7 +382,7 @@ async function send(text, extra = {}) {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ customerId: $("customer").value, message: text, chosenIntent: extra.chosenIntent, ticketId: extra.ticketId }),
+      body: JSON.stringify({ customerId: $("customer").value, message: text, chosenIntent: extra.chosenIntent, ticketId: extra.ticketId, recordId: extra.recordId }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Request failed");
@@ -299,8 +453,19 @@ async function loadCustomers() {
       return opt;
     })
   );
-  if (customers.some((c) => c.customer_id === "C-0012")) $("customer").value = "C-0012";
+  // ?customer=C-0004 logs in as that synthetic customer; &open=transactions|cards|disputes opens that picker
+  // (for demos and screenshots; opening a picker calls no AI).
+  const params = new URLSearchParams(location.search);
+  const wanted = params.get("customer");
+  $("customer").value = customers.some((c) => c.customer_id === wanted) ? wanted : customers.some((c) => c.customer_id === "C-0012") ? "C-0012" : $("customer").value;
   showWelcome();
+  const open = params.get("open");
+  if (["transactions", "cards", "disputes"].includes(open)) {
+    const customer = customers.find((c) => c.customer_id === $("customer").value) || {};
+    const arabic = isArabic(customer.preferred_language);
+    const chip = QUICK.find((q) => q.kind === open);
+    openPicker(open, arabic, arabic ? chip.ar : chip.en);
+  }
 }
 $("customer").addEventListener("change", showWelcome);
 

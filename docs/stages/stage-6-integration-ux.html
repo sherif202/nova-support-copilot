@@ -31,6 +31,7 @@
       <div class="kpi ok"><span class="l">To reach a person</span><span class="v">1 tap</span><span class="l">no AI used for it</span></div>
       <div class="kpi ok"><span class="l">Card digits in the log</span><span class="v">0</span><span class="l">masked before saving</span></div>
       <div class="kpi ok"><span class="l">Automation modes</span><span class="v">3</span><span class="l">Off · Suggest only · Auto-answer</span></div>
+      <div class="kpi ok"><span class="l">Record picker</span><span class="v">1.0.12</span><span class="l">transactions · cards · disputes, key facts in bold</span></div>
     </div>
     <div class="shots">
       <figure><img src="../screenshots/01-chat-welcome-calibration.jpg" alt="Welcome card in Arabic"><figcaption>Calibration card in the customer's language</figcaption></figure>
@@ -39,7 +40,28 @@
       <figure><img src="../screenshots/05-chat-did-you-mean.jpg" alt="Did you mean options"><figcaption>"Did you mean…" when not sure</figcaption></figure>
       <figure><img src="../screenshots/07-inbox-why-routed-here.jpg" alt="Agent inbox"><figcaption>Agent inbox: confidence and "Why routed here?"</figcaption></figure>
       <figure><img src="../screenshots/10-pm-panel-key-results-and-recommendations.jpg" alt="PM control panel"><figcaption>PM control panel</figcaption></figure>
+      <figure><img src="../screenshots/13-picker-transactions.png" alt="Transaction picker"><figcaption>Record picker: the customer's latest transactions, amount and date in bold</figcaption></figure>
+      <figure><img src="../screenshots/14-picker-cards.png" alt="Card picker in Arabic"><figcaption>Card picker in Arabic, right to left, last 4 digits only</figcaption></figure>
+      <figure><img src="../screenshots/15-picker-vague.png" alt="Which one do you mean"><figcaption>A vague question gets "Which one do you mean?" instead of a guess</figcaption></figure>
     </div>
+  </section>
+
+  <section class="panel">
+    <h2>Record picker: the customer points at what they mean (1.0.12)</h2>
+    <p>Customers often don't say which charge, card or dispute they mean. Instead of guessing, the chat lets them pick it, the way a support agent would ask "which one?". Built in code from the logged-in customer's own records only, with no AI call to build a list.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Piece</th><th>What the customer sees</th><th>Safety</th></tr></thead>
+      <tbody>
+        <tr><td>"Start here" chips</td><td>A charge on my account · My card · My dispute · Is a service down?</td><td>Opening a list calls no AI</td></tr>
+        <tr><td>Transactions</td><td><b>Amount and date in bold</b>, merchant, a tag (Fee, Purchase, ATM / cash, Money in), and the linked record for a fee; latest 5, "Show more"</td><td>Only this customer's records</td></tr>
+        <tr><td>Cards</td><td><b>Card name and •••• last 4</b>, status (active, blocked, new card on its way with the date), expiry</td><td>Never more than 4 digits</td></tr>
+        <tr><td>Disputes</td><td><b>Dispute ID and amount</b>, merchant, stage, decision target (DSP-3), missing documents</td><td>Dates from the record and the rule</td></tr>
+        <tr><td>After a tap</td><td>A fee is answered at once; a card offers damaged, expiring, where is my new card, or lost; a dispute offers status or documents; a payment they don't recognise goes to the Fraud team</td><td>Lost card and unknown payment go through the fraud word list first</td></tr>
+        <tr><td>"Which one do you mean?"</td><td>When a question names no amount, date or merchant and two or more records fit, the copilot shows them as cards instead of guessing</td><td>Never on fraud; not for a damaged card (same answer for any card)</td></tr>
+        <tr><td>Always</td><td>"None of these: talk to a person"</td><td>No AI</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The tapped record is pinned as the answer's main source and is always cited. Each turn logs <code>picker_shown</code> and <code>picked_record_id</code>; the PM control panel counts pickers shown, picks, picks answered and picks marked solved. Eval: 4 new cases (K1 to K4), all pass.</p>
   </section>
 
   <section class="panel">
@@ -88,7 +110,7 @@
       <tbody>
         <tr><td>1 · Trust &amp; reliability</td><td>Calibration card in the customer's language; plain-words confidence badge on every reply; an honest one-line reason and a person on every handoff</td></tr>
         <tr><td>2 · Explainability</td><td>"Why this answer?": general → sources in plain words with icons → decision; codes kept out of the answer; readable labels in the inbox</td></tr>
-        <tr><td>3 · Human agency</td><td>"Did you mean…", block-card confirm, "Did this solve your question?", automation modes, agent edit-and-approve, relabel and close with undo</td></tr>
+        <tr><td>3 · Human agency</td><td>Record picker ("Which one do you mean?"), "Did you mean…", block-card confirm, "Did this solve your question?", automation modes, agent edit-and-approve, relabel and close with undo</td></tr>
       </tbody>
     </table></div>
     <p>The screens were then critiqued against Nova's Key Results with the Telos method. Its two top recommendations are applied: the feedback question is now <b>"Did this solve your question?"</b>, the exact signal the North Star counts, and every handoff carries a <b>one-line summary</b> so the agent never asks the customer to repeat. <a href="../telos/critique-card.html">Read the critique card ›</a></p>

@@ -3,7 +3,7 @@
 **Stop point: 30 October 2026, before the internal beta.**
 The owner decided to stop here and document the current state. Everything below can be checked in this repository.
 
-- Shipped and locked version: **1.0.11** (`docs/baseline.json`; 1.0.9 is kept there as the previous baseline).
+- Shipped version: **1.0.12** (31 Oct 2026, record picker, eval SHIP). Locked baseline: **1.0.11** (`docs/baseline.json`; 1.0.9 is kept there as the previous baseline).
 - Commits of the last round: `93ff981` linked shadow tickets and fixed clocks, `4677b74` EGP 50 label rule, `506e367` version 1.0.11, `08d3a7b` baseline lock, then the commit that adds this page.
 - Model: Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7. Anthropic is used for the pilot only; the production vendor is still open (`docs/MODEL-STRATEGY.md`).
 - Nova Bank is fictional. All data is synthetic. No real customer has used the copilot.
@@ -15,9 +15,9 @@ The owner decided to stop here and document the current state. Everything below 
 | 1 · Problem Framing | Done | Scope (fees, disputes, cards), North Star (verified resolution rate, target 40%), fraud gate | Planning pages (`docs/LIFECYCLE-PAGES.md`), `docs/01-PRD.md` |
 | 2 · Data Collection & Prep | Done | 50 synthetic customers, 504 transactions, 15 disputes, policies by rule ID, 200 labelled tickets (now linked to the records), eval set and a 15-case hold-out | `docs/04-DATA-GUIDE.md` |
 | 3 · Model Selection | Done for Anthropic | Bake-off runs A to D, T, U. OpenAI and Gemini runs are scripted but not run (no keys) | `docs/MODEL-STRATEGY.md` |
-| 4 · Prompt & System Design | Done | 8-section prompts, fixed replies, retry note, CHANGELOG 1.0.0 to 1.0.11 | `prompts/CHANGELOG.md` |
-| 5 · Evaluation | Done, with open items | 1.0.11 says SHIP; hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
-| 6 · Integration & UX | Partly done | Chat, agent inbox, PM control panel, the 3 UX pillars, Telos critique. Usability test with 5 people not run | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
+| 4 · Prompt & System Design | Done | 8-section prompts, fixed replies, retry note, CHANGELOG 1.0.0 to 1.0.12 | `prompts/CHANGELOG.md` |
+| 5 · Evaluation | Done, with open items | 1.0.12 says SHIP (92 cases, with 4 record-picker cases); hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
+| 6 · Integration & UX | Partly done | Chat, agent inbox, PM control panel with the ROI model, the record picker (1.0.12), the 3 UX pillars, Telos critique. Usability test with 5 people not run | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | 7 · Staged Launch | Partly done | Shadow run done (3 runs). **Stopped before the internal beta.** Pilot not started | [stage-7-staged-launch.html](stages/stage-7-staged-launch.html), [shadow-run-results.md](stages/shadow-run-results.md) |
 | 8 · Monitoring & Feedback | Built, no real data | PM control panel, alerts as automatic recommendations, weekly report format. Waits for real chats | [stage-8-monitoring.html](stages/stage-8-monitoring.html) |
 | 9 · Iteration & Retraining | Running on the eval only | 12 versions, each with scores; weekly fix cycle and learning loop defined; case study outline | [stage-9-iteration.html](stages/stage-9-iteration.html) |
@@ -59,6 +59,11 @@ Still failing, none of them a gate: case 20 (an injection attempt handed to a pe
 
 **Speed is the number to watch.** p95 was 6.0 s in the last shadow run and 6.4 s in the last eval, against a 6 s pilot gate (it was 4.2 s in the run before). Nothing in 1.0.11 adds work per message, so API speed at that hour is the likely cause, but it is not proven. If the beta shows the same, the planned fix is the Telos recommendation: hand off after 6 s.
 
+### After the stop point (31 Oct 2026)
+
+- **ROI model** in the PM control panel, with request-level cost attribution (`docs/ROI-MODEL.md`, commit `bc714e0`). No model calls.
+- **Record picker (1.0.12):** the customer picks the exact transaction, card or dispute, with the key facts in bold; a vague question gets "Which one do you mean?" instead of a guess. Final eval SHIP: fraud 13/13, security 18/18, grounded 28/29, intent 98.3%, picker 4/4. Four eval runs on the way, about US$0.10 (see the CHANGELOG for each). Screenshots 13 to 15.
+
 ### Spend
 
 - This round (linked tickets to baseline lock): about **US$0.19**. Two shadow runs (US$0.0585, US$0.0600) and three eval runs (US$0.0222, US$0.0240, US$0.0235).
@@ -74,6 +79,8 @@ Still failing, none of them a gate: case 20 (an injection attempt handed to a pe
 | An unexplained EGP 50 is `fee.overdraft` everywhere | Owner (decision 2) | Rule added to the ticket script. Changed 0 labels |
 | Add branch hours and the cheque book price as synthetic facts, and move honesty cases 21 and 57 to facts Nova still doesn't have | Owner chose option A out of the three I listed | FEE-1.5, GEN-1, GEN-2 added; case 21 now asks the safe deposit box price, 57 holiday branch hours. A product decision, not a reaction to failed results. Version 1.0.11: SHIP |
 | Lock 1.0.11 as the baseline | Owner, via the project assistant | `docs/baseline.json`, 1.0.9 kept as the previous baseline |
+| Add the ROI model to the PM panel (31 Oct) | Owner | `docs/ROI-MODEL.md` |
+| Add the record picker (31 Oct) | Owner said go | Version 1.0.12, SHIP; the baseline stays 1.0.11 until the owner locks 1.0.12 |
 | Stop before the internal beta and document | Owner | This page |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.

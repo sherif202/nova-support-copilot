@@ -169,6 +169,7 @@
       tile("Messages", num(L.messages), `${num(L.with_ai)} used AI · ${num(L.answered_by_ai)} answered by AI`),
       tile("Automation rate", pct(L.automation_rate), `handoff rate ${pct(L.handoff_rate)}`),
       tile("Answer retries", pct(L.retry_rate), "answers that needed a second try"),
+      tile("Record picker", `${num(L.picks)} picked`, `${num(L.pickers_shown)} "Which one?" shown · ${num(L.picks_answered)} answered · ${num(L.picks_solved)} said solved`),
       tile("Total spend (live)", usd(L.total_usd), `EGP ${L.total_egp.toFixed(2)} · cache reads ${pct(L.cache_share)} of input`)
     );
     krs.append(tiles);
