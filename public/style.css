@@ -127,3 +127,13 @@ td.empty { color: var(--muted); text-align: center; padding: 24px; }
   .msg, .why, .choices, .why-line { max-width: 100%; }
   .routed dl { grid-template-columns: 1fr; }
 }
+
+/* ROI model in the PM panel */
+.pm-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.pm-sample { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.track-card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); display: grid; gap: 6px; align-content: start; min-width: 0; }
+.pm-grid.track { grid-template-columns: repeat(auto-fit, minmax(min(100%, 640px), 1fr)); }
+.weekbars { display: grid; gap: 4px; font-size: 12px; }
+.weekbar { display: grid; grid-template-columns: 44px minmax(0, 1fr) 28px; gap: 8px; align-items: center; }
+.weektrack { height: 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; }
+.weekfill { display: block; height: 100%; background: var(--ok); }

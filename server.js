@@ -486,11 +486,43 @@ function newMessageId() {
 }
 
 // Token prices and the cost of one step live in lib/prices.js, shared with the PM control panel.
-const { stepCost } = require("./lib/prices");
+const { stepCost, EGP_PER_USD } = require("./lib/prices");
+const { businessLine } = require("./lib/roi-config");
+
+// Request-level cost attribution (docs/ROI-MODEL.md): a conversation ("agent run") lasts, per customer, until an
+// outcome, an AI answer or a handoff. Every turn of it carries the same conversation_id.
+const openConversations = new Map();
+let conversationCounter = 0;
+function conversationFor(customerId, result) {
+  const id = openConversations.get(customerId) || `CONV-${Date.now().toString(36)}-${++conversationCounter}`;
+  const ended = result.action === "handoff" || (result.action === "answer" && !["R-WAIT", "R-EMPTY", "R-TOO-LONG"].includes(result.reply_id));
+  if (ended) openConversations.delete(customerId);
+  else openConversations.set(customerId, id);
+  return id;
+}
 
 function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms }) {
   const costs = trace.steps.map(stepCost);
+  const costUsd = costs.some((c) => c === null) ? null : Number(costs.reduce((a, b) => a + b, 0).toFixed(6));
+  const customer = readJson("customers.json").find((c) => c.customer_id === customerId) || {};
+  const answered = result.action === "answer" && !result.reply_id && trace.steps.length > 0;
   const entry = {
+    // Captured once at the request entry point, so every cost rollup (customer, workflow, conversation, prompt
+    // version, cost per resolved answer) reads the same fields. verified_resolved is joined later from
+    // feedback.jsonl ("Did this solve your question?"), because the log is append-only.
+    request_id: trace.message_id,
+    conversation_id: conversationFor(customerId, result),
+    customer_id: customerId,
+    segment: customer.plan || "unknown",
+    business_line: businessLine(customer.plan),
+    workflow: result.intent || null,
+    prompt_version: `understand ${prompts.understand.version}#${prompts.understand.hash} / answer ${prompts.answer.version}#${prompts.answer.hash}`,
+    model_ids: [...new Set(trace.steps.map((s) => s.model))],
+    deployment: copilotMode,
+    retries: trace.steps.reduce((a, s) => a + Math.max(0, s.attempts - 1), 0),
+    latency_ms: ms,
+    cost_egp: costUsd === null ? null : Number((costUsd * EGP_PER_USD).toFixed(5)),
+    outcome: result.priority === "P0" || result.queue === "Fraud" ? "fraud" : answered ? "answered" : result.action === "handoff" ? "handoff" : "fixed_reply",
     time: new Date().toISOString(),
     message_id: trace.message_id,
     customerId,
@@ -524,7 +556,7 @@ function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms
       }),
       { input: 0, output: 0, cache_read: 0, cache_write: 0 }
     ),
-    cost_usd: costs.some((c) => c === null) ? null : Number(costs.reduce((a, b) => a + b, 0).toFixed(6)),
+    cost_usd: costUsd,
     ms,
     prompts: {
       understand: `${prompts.understand.version}#${prompts.understand.hash}`,
@@ -578,7 +610,8 @@ const MIME = {
 };
 
 function serveStatic(req, res) {
-  const urlPath = req.url === "/" ? "/index.html" : req.url.split("?")[0];
+  const bare = req.url.split("?")[0];
+  const urlPath = bare === "/" ? "/index.html" : bare;
   const filePath = path.normalize(path.join(ROOT, "public", urlPath));
   if (!filePath.startsWith(path.join(ROOT, "public"))) {
     res.writeHead(403);
@@ -617,8 +650,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     // The PM control panel: quality, cost per model ID, volume bottlenecks, iterations and recommendations
-    if (req.method === "GET" && req.url === "/api/pm") {
-      return sendJson(res, 200, pmReport({ mode: copilotMode }));
+    if (req.method === "GET" && (req.url === "/api/pm" || req.url === "/api/pm?sample=1")) {
+      return sendJson(res, 200, pmReport({ mode: copilotMode, sample: req.url.endsWith("?sample=1") }));
     }
 
     // Stage 6, progressive automation: the mode the copilot runs in (Off, Suggest only, Auto-answer low-risk)

@@ -31,6 +31,8 @@ Label rule (30 Oct, owner decision 2): an unexplained EGP 50 is labelled `fee.ov
 
 Stop point (30 Oct 2026): 1.0.11 is the shipped and locked version (`docs/baseline.json`). The project stopped before the internal beta; see `docs/PROJECT-STATUS.md`.
 
+ROI model (31 Oct 2026, code only, no prompt or knowledge change, no eval needed): the turn log now carries request-level cost attribution (request, conversation, customer, segment, business line, workflow, prompt version, model IDs, mode, retries, latency, cost in EGP, outcome), and the PM panel has an ROI section with size tiers, the three things to track and credits. All money assumptions are synthetic; see `docs/ROI-MODEL.md`.
+
 ## Hold-out, opened once
 
 | Date | Commit | Cases | Fraud recall | Harmless | Honesty | Intent acc. | Grounded | Verdict |

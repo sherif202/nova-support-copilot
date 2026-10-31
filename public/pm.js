@@ -14,6 +14,8 @@
   const usd = (x, d = 4) => (x === null || x === undefined ? "—" : `US$${Number(x).toFixed(d)}`);
   const num = (x) => (x === null || x === undefined ? "—" : Number(x).toLocaleString("en-US"));
   const secs = (x) => (x === null || x === undefined ? "—" : `${Number(x).toFixed(1)} s`);
+  const egp = (x, d = 2) => (x === null || x === undefined ? "—" : `EGP ${Number(x).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d })}`);
+  const params = new URLSearchParams(location.search);
 
   function section(title, hint) {
     const s = el("section", "pm-section");
@@ -64,10 +66,96 @@
     return el("span", `conf ${ok ? "conf-high" : v ? "conf-low" : "conf-none"}`, v || "—");
   }
 
+  function chip(text, kind) {
+    return el("span", `conf ${kind}`, text);
+  }
+
+  // The ROI model (lib/roi.js): value of resolved conversations against AI and fixed cost, size tiers, the three
+  // things to track, and credits. All assumptions are synthetic and listed in lib/roi-config.js.
+  function roiSection(r) {
+    const R = r.roi;
+    const a = r.assumptions;
+    const source = r.source === "sample"
+      ? "Sample data: the 1.0.11 shadow run on 200 synthetic tickets (\"would have resolved\" stands in for the customer's answer)."
+      : "Live data from the turn log; resolved = the customer said \"solved\".";
+    const s = section("ROI model", `${source} Synthetic assumptions (lib/roi-config.js): agent time EGP ${a.agent_egp_per_minute.toFixed(2)} a minute, fixed cost EGP ${a.fixed_monthly_egp.toLocaleString("en-US")} a month, ${a.monthly_contacts.toLocaleString("en-US")} contacts a month, EGP ${a.egp_per_usd} per US$.`);
+    s.id = "roi";
+    if (!R.conversations) {
+      s.append(el("p", "hint", "No conversations yet. Tick \"Load sample\" to see the model on the 1.0.11 shadow run."));
+      return s;
+    }
+    const roiPct = (x) => (x === null ? "—" : `${Math.round(x * 100).toLocaleString("en-US")}%`);
+    const tiles = el("div", "tiles");
+    tiles.append(
+      tile("ROI per month (projected)", roiPct(R.monthly.roi), `(value − AI − fixed) ÷ (AI + fixed) at ${R.monthly.contacts.toLocaleString("en-US")} contacts`, R.monthly.roi === null ? "" : R.monthly.roi > 0 ? "ok" : "bad"),
+      tile("Value per month", egp(R.monthly.value_egp, 0), `agent time freed: ${pct(R.resolution_rate)} resolved × minutes × EGP a minute`),
+      tile("AI cost per month", egp(R.monthly.ai_cost_egp, 0), `plus EGP ${R.monthly.fixed_egp.toLocaleString("en-US")} fixed`),
+      tile("Payback volume", R.payback_conversations === null ? "—" : `${R.payback_conversations.toLocaleString("en-US")} a month`, "conversations needed to cover the fixed cost"),
+      tile("Within S to L", pct(r.within_s_to_l), "of conversations · target 80% or more", r.within_s_to_l >= 0.8 ? "ok" : "bad"),
+      tile("Cost per successful answer", egp(R.cost_per_successful_answer_egp, 4), "AI cost ÷ resolved conversations"),
+      tile("This data set", `${egp(R.value_egp, 0)} value`, `${egp(R.ai_cost_egp, 2)} AI cost · ${R.conversations} conversations, ${R.resolved} resolved`),
+      tile("This data set, with a month's fixed cost", roiPct(R.data_set_roi), "why the payback volume matters", R.data_set_roi > 0 ? "ok" : "warn")
+    );
+    s.append(tiles);
+
+    s.append(el("h4", "", "Request-level cost attribution"));
+    s.append(el("p", "hint", "Every request is logged once with the same fields: request, conversation, customer, segment, business line, workflow, prompt version, model IDs, mode, tokens, retries, latency, cost in US$ and EGP, outcome, and whether the customer said it was solved. Every view below is a rollup of those records."));
+    s.append(table(["Prompt version", "Requests", "AI cost", "Resolved", "Cost per successful answer"], r.prompt_versions.map((v) => [v.prompt_version, num(v.requests), egp(v.cost_egp, 2), num(v.resolved), egp(v.cost_per_successful_answer_egp, 4)])));
+    s.append(el("h4", "", "Most expensive conversations (agent runs)"));
+    s.append(table(["Conversation", "Customer", "Workflow", "Requests", "Retries", "AI cost", "Size", "Outcome"], r.runs.map((x) => [x.id, x.customer_id, x.workflow, x.requests, x.retries, egp(x.cost_egp, 4), chip(x.tier, ["XL", "XXL"].includes(x.tier) ? "conf-low" : "conf-high"), x.long_loop ? `${x.outcome} · long loop` : x.outcome])));
+
+    s.append(el("h4", "", "Size tiers: S, M and L cover the work; XL and XXL are reviewed and charged back"));
+    const grid = el("div", "pm-grid");
+    const t1 = el("div");
+    t1.append(table(["Size", "Up to (AI cost)", "Conversations", "Share", "AI cost"], r.tiers.map((t) => [chip(t.tier, ["XL", "XXL"].includes(t.tier) ? "conf-low" : "conf-high"), t.limit_egp === null ? "above XL" : egp(t.limit_egp, 4), num(t.conversations), pct(t.share), egp(t.cost_egp, 2)])));
+    const t2 = el("div");
+    t2.append(el("p", "hint", "Chargeback: XL and XXL conversations are billed to the business line that owns the customer, the internal version of \"charge for XL and XXL\"."), table(["Business line", "XL + XXL", "AI cost", "Above the L limit"], r.chargeback.map((c) => [c.business_line, num(c.conversations), egp(c.cost_egp, 4), egp(c.above_l_egp, 4)])));
+    grid.append(t1, t2);
+    s.append(grid);
+
+    s.append(el("h4", "", "What to track"));
+    const track = el("div", "pm-grid track");
+    const cust = el("div", "track-card");
+    const neg = r.customers.filter((c) => c.negative && c.cost_egp > 0);
+    cust.append(el("strong", "", "Customers"), el("p", "hint", `AI cost against value saved per customer. ${neg.length} cost more than they save (no resolved conversation).`),
+      table(["Customer", "Line", "Chats", "Cost", "Value", "Margin"], r.customers.slice(0, 6).map((c) => [c.customer_id, c.business_line.replace(" banking", ""), c.conversations, egp(c.cost_egp, 3), egp(c.value_egp, 0), c.negative ? chip(egp(c.margin_egp, 3), "conf-low") : egp(c.margin_egp, 0)])));
+    const work = el("div", "track-card");
+    const advice = { Optimise: "conf-medium", Keep: "conf-high", "Route only": "conf-none", Sunset: "conf-low", "Re-price / review": "conf-low" };
+    work.append(el("strong", "", "Workloads"), el("p", "hint", "Cost per workflow, and what to do with each: optimise, re-price or review, or sunset. Hover the advice for the reason."),
+      table(["Workflow", "Chats", "Resolved", "Cost / chat", "Advice"], r.workloads.slice(0, 10).map((w) => { const c = chip(w.action, advice[w.action] || "conf-none"); c.title = w.why; return [w.workflow, w.conversations, pct(w.resolution_rate), egp(w.cost_per_conversation, 4), c]; })));
+    const dem = el("div", "track-card");
+    const D = r.demands;
+    const maxWeek = Math.max(...D.weeks.map((w) => w.conversations), 1);
+    const bars = el("div", "weekbars");
+    D.weeks.forEach((w) => {
+      const row = el("div", "weekbar");
+      const fill = el("span", "weekfill");
+      fill.style.width = `${(w.conversations / maxWeek) * 100}%`;
+      const lane = el("span", "weektrack");
+      lane.append(fill);
+      row.append(el("span", "", w.week.slice(5)), lane, el("span", "", String(w.conversations)));
+      bars.append(row);
+    });
+    const status = D.alert === "over" ? "over budget, growth is eating the margin." : D.alert === "growth" ? "growing fast, watch the margin." : `${egp(D.headroom_egp, 0)} headroom.`;
+    dem.append(el("strong", "", "Demands"), el("p", "hint", `Weekly volume against the committed budget. Growth, last 4 full weeks against the 4 before: ${D.growth === null ? "—" : pct(D.growth)}.`), bars,
+      el("p", D.alert ? "rec-action" : "hint", `Projected AI spend ${egp(D.projected_monthly_ai_egp, 0)} a month against a flat budget of ${egp(D.monthly_budget_egp, 0)}: ${status}`));
+    track.append(cust, work, dem);
+    s.append(track);
+
+    s.append(el("h4", "", "Credits (internal unit)"));
+    s.append(el("p", "hint", `1 credit = the AI cost of a median S conversation = ${egp(r.credits.credit_egp, 4)}. Budgets are set in credits, so when model prices change only the value of a credit changes, not the budgets.`));
+    s.append(table(["Business line", "Share of chats", "Credits in this data", "Credits a month (projected)", "Monthly budget", "Use"], r.credits.lines.map((l) => [l.business_line, pct(l.share), num(Math.round(l.data_set_credits)), num(Math.round(l.monthly_credits)), num(l.monthly_budget), l.use === null ? "—" : chip(pct(l.use), l.use > 1 ? "conf-low" : l.use > 0.8 ? "conf-medium" : "conf-high")])));
+    return s;
+  }
+
   function render(d) {
     const root = $("pm");
     root.replaceChildren();
     const L = d.live;
+    if (params.get("focus") === "roi") {
+      root.append(roiSection(d.roi));
+      return;
+    }
 
     // 1. Key Results at a glance
     const krs = section("Key Results", `Mode: ${d.mode}. Live numbers since the last demo reset. EGP at ${d.egp_per_usd} per US$.`);
@@ -98,6 +186,9 @@
     });
     rec.append(list);
     root.append(rec);
+
+    // 2b. ROI model
+    root.append(roiSection(d.roi));
 
     // 3. Cost and calls by model ID
     const mod = section("Cost and calls by model", "Which model ran each step, with its exact model ID. Prices from lib/prices.js.");
@@ -160,7 +251,7 @@
   async function loadPm() {
     $("pm").replaceChildren(el("p", "hint", "Loading…"));
     try {
-      render(await (await fetch("/api/pm")).json());
+      render(await (await fetch($("pm-sample").checked ? "/api/pm?sample=1" : "/api/pm")).json());
     } catch (err) {
       $("pm").replaceChildren(el("p", "hint", "Couldn't load the panel. Is the app running?"));
     }
@@ -168,4 +259,8 @@
 
   window.loadPm = loadPm;
   $("pm-refresh").addEventListener("click", loadPm);
+  $("pm-sample").addEventListener("change", loadPm);
+  // ?view=pm opens the panel; &sample=1 loads the sample; &focus=roi shows only the ROI section (for presenting).
+  if (params.get("sample") === "1") $("pm-sample").checked = true;
+  if (params.get("view") === "pm") $("tab-pm").click();
 })();

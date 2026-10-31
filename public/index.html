@@ -87,7 +87,10 @@
         <h2>PM control panel</h2>
         <p class="hint">Quality review: every number comes from the turn log, the inbox, the eval runs and the changelog. Nothing here calls an AI.</p>
       </div>
-      <button id="pm-refresh" type="button" class="secondary">Refresh</button>
+      <div class="pm-actions">
+        <label class="pm-sample"><input id="pm-sample" type="checkbox"> Load sample</label>
+        <button id="pm-refresh" type="button" class="secondary">Refresh</button>
+      </div>
     </div>
     <div id="pm" class="pm"></div>
   </section>
