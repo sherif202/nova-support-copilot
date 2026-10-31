@@ -214,7 +214,7 @@ function whichOne(data, original, arabic) {
   return box;
 }
 
-// ---------- Transaction investigator (1.0.13-draft, behind INVESTIGATE; docs/INVESTIGATOR.md) ----------
+// ---------- Transaction investigator (1.0.13; on unless INVESTIGATE=off; docs/INVESTIGATOR.md) ----------
 // The customer and the copilot narrow the search together, open one transaction to see its status and history
 // step by step, and check money on its way before anything goes to a person. Built in code from the customer's
 // own records and Nova's transaction rules; no AI call. Every flow ends with "Did this solve it?" and a person.

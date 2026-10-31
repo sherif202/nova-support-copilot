@@ -21,7 +21,7 @@ Run `npm install` once, add the keys you have to `.env`, then:
 ```
 npm run model-check -- --runs fake:test        # free, checks the script works
 npm run model-check -- --limit 10              # 10 cases on every model in MODEL_CHECK_RUNS
-npm run model-check -- --answer                # all 60 cases, with answers, cost per language
+npm run model-check -- --answer                # the main eval cases, with answers, cost per language
 ```
 
 See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
@@ -35,7 +35,7 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 | `data/` | The "database": JSON files of synthetic customers (50), cards, transactions (504), disputes (15), service notices and the live tickets the app writes. Plus two CSV sheets for Stage 2: `tickets-labelled.csv` (200 labelled tickets) and `whatsapp-phrasing.csv`. See docs/04-DATA-GUIDE.md. |
 | `knowledge/nova-taxonomy.md` | Categories, priorities, traps and safety rules. The copilot labels messages with these. |
 | `knowledge/nova-policies.md` | The only facts the copilot may state, each with a rule ID it must cite. |
-| `knowledge/examples.jsonl` | 43 approved example messages with the right label. Nova's memory of real phrasing: every model reads it, so switching models loses nothing. See docs/06-LEARNING-LOOP.md. |
+| `knowledge/examples.jsonl` | 50 approved example messages with the right label. Nova's memory of real phrasing: every model reads it, so switching models loses nothing. See docs/06-LEARNING-LOOP.md. |
 | `knowledge/evalset.md` | 60 test messages, 6 service status cases, 4 junk inputs and 12 red-team attacks with the correct answers, and how to score them. The 15 hold-out cases are kept outside the kit. |
 | `prompts/` | Stage 4: the copilot's prompts (understand, answer, retry), the fixed replies a person wrote, and the changelog with a score for every change. See prompts/README.md. |
 | `docs/` | Setup checklist, PRD, the build guide with Claude Code prompts, the security and fraud defence guide, the data guide and how to test other vendors' models. |
@@ -44,7 +44,7 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 
 ## Project status
 
-Stopped on 30 Oct 2026, before the internal beta. Version 1.0.11 is the locked baseline (eval SHIP, grounded 28/29); the stage 7 shadow run says the copilot would have resolved 63% of 200 synthetic tickets with 0 fraud missed. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
+Version **1.0.13** (31 Oct 2026) is the shipped and locked baseline: eval SHIP on 106 cases (fraud 13/13, security 18/18, grounded 33/34, intent 98.5%, record picker 4/4, investigator 9/9). Features: grounded answers for fees, disputes, cards and maintenance; the ROI model in the PM panel; the record picker; the transaction investigator. The stage 7 shadow run (on 1.0.11) says the copilot would have resolved 63% of 200 synthetic tickets with 0 fraud missed. Stopped before the internal beta. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
 
 ## Built on top of the starter
 
@@ -53,9 +53,10 @@ Stopped on 30 Oct 2026, before the internal beta. Version 1.0.11 is the locked b
 | `lib/` | The copilot: prompt loader, lookup, guard (masking, junk, injection flags), fraud word list, output checks, model adapter (vendor-neutral), explanations, PM metrics, prices. |
 | `public/` | Three screens: customer chat, agent inbox, and the **PM control panel** (Key Results, cost per model ID, bottlenecks, iterations, auto-updated recommendations). Nova Bank logo in `public/logo.svg`. |
 | `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
+| `tools/test-investigator.mjs` | Free unit checks of the investigator logic (no app, no model). |
 | `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` · `tools/build_linked_tickets.mjs` | Step 14 eval with SHIP/DO NOT SHIP (asked at a fixed date), red team, the one-time hold-out run, the stage 7 shadow run on 200 labelled tickets, and the script that links those tickets to the customer records. |
 | `docs/lifecycle/` | The lifecycle plan and the stage 1 to 4 pages, as published. |
-| `lib/investigate.js` · `knowledge/nova-transaction-rules.md` · `data/transaction-details.json` | The transaction investigator (1.0.13-draft, behind `INVESTIGATE`): guided narrowing, one transaction explained, "I'm waiting for money", handoff with a summary. See `docs/INVESTIGATOR.md`. |
+| `lib/investigate.js` · `knowledge/nova-transaction-rules.md` · `data/transaction-details.json` | The transaction investigator (1.0.13; on by default, `INVESTIGATE=off` turns it off): guided narrowing, one transaction explained, "I'm waiting for money", handoff with a summary. See `docs/INVESTIGATOR.md`. |
 | `lib/picker.js` | The record picker: the customer's own transactions, cards and disputes as cards to tap, key facts in bold (1.0.12). |
 | `docs/ROI-MODEL.md` · `lib/roi.js` · `lib/roi-config.js` | The ROI model in the PM panel: request-level cost attribution, ROI, size tiers, what to track, credits (synthetic assumptions). |
 | `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |

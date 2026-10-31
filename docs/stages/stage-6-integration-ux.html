@@ -65,8 +65,8 @@
   </section>
 
   <section class="panel">
-    <h2>Transaction investigator (1.0.13-draft, not eval-gated yet)</h2>
-    <p>The copilot works with the customer to find the exact transaction, explains its status and history step by step, and checks for money on its way before handing over. Deterministic code over the customer's own records and Nova's transaction rules (TXS), with no AI call and no prompt change, behind the <code>INVESTIGATE</code> flag. Details: <code>docs/INVESTIGATOR.md</code>.</p>
+    <h2>Transaction investigator (1.0.13, eval SHIP)</h2>
+    <p>The copilot works with the customer to find the exact transaction, explains its status and history step by step, and checks for money on its way before handing over. The screens are deterministic code over the customer's own records and Nova's transaction rules (TXS), with no AI call; since 1.0.13 the AI knows the same rules, so typed questions get the same answers. On by default (<code>INVESTIGATE=off</code> turns it off). Tested: 9 investigator checks and 5 typed questions in the eval, 15 free unit checks. Details: <code>docs/INVESTIGATOR.md</code>.</p>
     <div class="shots">
       <figure><img src="../screenshots/16-investigate-narrow.png" alt="Guided narrowing"><figcaption>Guided narrowing: chips, a live "3 of 10 match" count, places as a memory jogger</figcaption></figure>
       <figure><img src="../screenshots/17-investigate-detail-pending.png" alt="Pending transaction explained"><figcaption>A pending hotel hold: timeline, why (TXS-1.2), what happens next, no promise</figcaption></figure>

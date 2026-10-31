@@ -1,10 +1,10 @@
-# Transaction investigator (1.0.13-draft, not eval-gated yet)
+# Transaction investigator (1.0.13)
 
 The copilot works **with** the customer to find the exact transaction they mean, explains its status and history step by step, and checks for money on its way before anything goes to a person. When a person is needed, the agent gets the full picture.
 
-**Status:** draft, behind the `INVESTIGATE` flag (on by default in the demo; set `INVESTIGATE=off` to turn it off). It has **not** been through the eval yet. The owner asked to build it without running test cases this time.
+**Status:** shipped in 1.0.13 (eval SHIP, 31 Oct 2026). On by default; set `INVESTIGATE=off` to turn it off. It was first built as a draft without an eval at the owner's request, then tested: 9 investigator checks in the eval (V1 to V9, all pass), 15 free unit checks (`node tools/test-investigator.mjs`, all pass), and 5 typed questions (cases 61 to 65) now that the AI knows the transaction rules.
 
-**Why it is safe to ship as a draft:** it is deterministic. Narrowing, matching, status reasons, timelines and expected dates are built by code from the logged-in customer's own records and the rule text. It never calls a model and doesn't change the AI prompts, so 1.0.12's eval-gated behaviour is unchanged. The AI still answers only free-text messages, exactly as before.
+**How it stays safe:** the screens are deterministic. Narrowing, matching, status reasons, timelines and expected dates are built by code from the logged-in customer's own records and the rule text, with no model call. Since 1.0.13 the AI also has the transaction rules (TXS) and each record's status facts, so a typed question ("why was my payment declined?", "I'm waiting for money from Ahmed") gets the same answer as the screens, with the usual output checks.
 
 ## The flows
 
@@ -69,7 +69,7 @@ The customer never has to repeat themselves. Screenshot 20.
   - reversals and refunds
   - what can and can't be shared
 
-  It is read by the investigator only; moving it into the AI prompts needs an eval run first.
+  Since 1.0.13 it is also loaded into the AI's answer prompt, after the policies, and the output checks accept TXS rule IDs.
 - `data/transactions.json`: 16 new records (pending, declined, reversed, refunded, money coming in) for five demo customers the eval never uses: C-0003, C-0005, C-0009, C-0010 and C-0017. The 504 existing records are unchanged and in the same order.
 - `data/transaction-details.json`: the extra facts per transaction (authorised and posted times, channel, area, terminal or website, card last 4, decline code, hold reason, expected date, sender name). The AI prompts don't read it.
 - Rebuild both with `node tools/build_investigator_data.mjs`; the output is the same every time.
@@ -95,10 +95,12 @@ The PM control panel has a "Transaction investigator" section, from `logs/invest
 - % resolved without an agent
 - top decline and pending reasons
 
-## Before it can leave draft
+## Tests (1.0.13)
 
-1. Add eval cases for each flow, including fraud from the detail card and a late pending item.
-2. Run the full eval. Only then move the TXS rules into the AI prompts, so free-text questions get the same answers.
-3. Test with real customers: does narrowing take fewer steps than calling, and do people trust the expected times?
+- Eval V1 to V9 (`knowledge/evalset.md`): narrowing finds the right record; declined shows the right reason and rule; a pending hold shows its expected date; "waiting for money" finds the pending InstaPay; with nothing found it explains the normal timing and hands off only after it; "I didn't make this" goes to Fraud; privacy; the handoff summary with no sender account details. All pass.
+- Eval cases 61 to 65: typed questions about a declined payment, a hotel hold, an InstaPay under review, an ATM daily limit and a transfer after the cut-off. All answered and grounded.
+- `node tools/test-investigator.mjs`: 15 free unit checks, all pass.
+
+Still open: real customers (does narrowing take fewer steps than calling, and do people trust the expected times?), and "late" uses the date, not the hour.
 
 Screenshots: `docs/screenshots/16-investigate-narrow.png`, `17-investigate-detail-pending.png`, `18-investigate-declined.png` (Arabic), `19-waiting-for-money.png`, `20-agent-investigation-summary.png`.

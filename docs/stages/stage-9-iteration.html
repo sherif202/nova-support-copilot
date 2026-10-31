@@ -19,13 +19,13 @@
 
   <header class="stage">
     <div class="stage-head"><span class="num c">9</span><div><p class="eyebrow">Phase 4 · Run &amp; Improve · continuous</p><h1>Iteration &amp; Retraining</h1></div></div>
-    <div class="tags"><span class="tag cont">Weekly, after Demo Day too</span><span class="tag">Owner: PM</span><span class="tag">12 versions · 1.0.11 locked</span></div>
+    <div class="tags"><span class="tag cont">Weekly, after Demo Day too</span><span class="tag">Owner: PM</span><span class="tag">14 versions · 1.0.13 locked</span></div>
     <p class="lede"><strong>Goal:</strong> a safe weekly improvement cycle, and the evidence to get phase 2 funded. For Nova, "retraining" means updating the prompt, knowledge base, taxonomy and golden record, never the model's weights.</p>
-    <p class="note"><b>Project status:</b> stopped on 30 Oct 2026 before the internal beta; version 1.0.11 is the locked baseline. See <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
+    <p class="note"><b>Project status:</b> version 1.0.13 is shipped and locked (eval SHIP, 31 Oct 2026); stopped before the internal beta. See <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
   </header>
 
   <section class="panel">
-    <h2>The cycle has already run 12 times</h2>
+    <h2>The cycle has already run 14 times</h2>
     <p class="note">Every change: one thing at a time, the full eval, a CHANGELOG line with the scores, a commit. A version that breaks a hard gate is reverted: 1.0.10 was.</p>
     <ol class="timeline">
       <li><span class="ver">1.0.0</span><span>First prompts: 8 sections, fixed replies, retry note. Intent 91.7%, grounded 75.9%. <span class="st fail">DO NOT SHIP</span></span></li>
@@ -39,13 +39,15 @@
       <li><span class="ver">1.0.8</span><span>Fraud goes first even over the rate limit (found by a test collision). Security 18/18. <span class="st done">SHIP</span></span></li>
       <li><span class="ver">1.0.9</span><span>Learning loop: 3 reworded approved examples. Intent 98.3%, grounded 93.1%. <span class="st done">SHIP</span></span></li>
       <li><span class="ver">1.0.10</span><span>Narrowed the "unexplained EGP 50" trap row after the shadow run. Cases 2 and 29 broke. <span class="st fail">DO NOT SHIP</span> Reverted. The eval also got a fixed date.</span></li>
-      <li><span class="ver">1.0.11</span><span>Owner decision: branch hours and cheque book price as synthetic facts; honesty cases 21 and 57 moved to facts Nova still lacks. Intent 98.3%, grounded 96.6%. <span class="st done">SHIP</span> Locked baseline.</span></li>
+      <li><span class="ver">1.0.11</span><span>Owner decision: branch hours and cheque book price as synthetic facts; honesty cases 21 and 57 moved to facts Nova still lacks. Intent 98.3%, grounded 96.6%. <span class="st done">SHIP</span></span></li>
+      <li><span class="ver">1.0.12</span><span>Record picker: the customer taps the exact transaction, card or dispute; a vague question gets "Which one do you mean?". Grounded 28/29. <span class="st done">SHIP</span></span></li>
+      <li><span class="ver">1.0.13</span><span>Transaction investigator, tested, and its rules in the AI's knowledge; two new intents. Intent 98.5%, grounded 97.1%, investigator 9/9. Run 1 failed on two bugs, fixed. <span class="st done">SHIP</span> Locked baseline.</span></li>
     </ol>
     <div class="bars">
-      <div class="bar-row"><span>Intent 1.0.0 → 1.0.11</span><span class="bar-track"><span class="bar-fill lin" style="width:98.3%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+6.6 pts</span></div>
-      <div class="bar-row"><span>Grounded 1.0.0 → 1.0.11</span><span class="bar-track"><span class="bar-fill" style="width:96.6%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+20.7 pts</span></div>
+      <div class="bar-row"><span>Intent 1.0.0 → 1.0.13</span><span class="bar-track"><span class="bar-fill lin" style="width:98.5%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+6.8 pts</span></div>
+      <div class="bar-row"><span>Grounded 1.0.0 → 1.0.13</span><span class="bar-track"><span class="bar-fill" style="width:97.1%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+21.2 pts</span></div>
     </div>
-    <p class="note">Total cost of all eval, bake-off and shadow runs: about US$2.05. The PM control panel lists every version and run with its cost.</p>
+    <p class="note">Total cost of all eval, bake-off and shadow runs: about US$2.21. The PM control panel lists every version and run with its cost.</p>
   </section>
 
   <div class="grid2">
@@ -111,7 +113,7 @@
       <div>
         <h3>Page 2</h3>
         <ul class="clean">
-          <li><b>Metric and result:</b> North Star = verified resolution rate; the eval went from DO NOT SHIP to SHIP in 12 versions with fraud recall at 100% throughout; the shadow run says 63% of 200 synthetic tickets would be resolved; cost EGP 0.024 per answer. The pilot result is still to come.</li>
+          <li><b>Metric and result:</b> North Star = verified resolution rate; the eval went from DO NOT SHIP to SHIP in 14 versions with fraud recall at 100% throughout; the shadow run says 63% of 200 synthetic tickets would be resolved; cost EGP 0.024 per answer. The pilot result is still to come.</li>
           <li><b>One failure caught and fixed:</b> a rate-limited customer reporting fraud got "please wait"; now fraud always goes first (1.0.8).</li>
           <li><b>What I'd do differently:</b> write the hold-out with a second person from day one; add the LLM judge earlier; test with real phrasing before tuning.</li>
         </ul>

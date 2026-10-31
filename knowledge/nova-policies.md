@@ -72,7 +72,7 @@ A dispute is a transaction the customer made but believes is wrong: charged twic
 
 ## DIG · The copilot itself
 
-- **DIG-4** The copilot answers three things: dispute status, fee explanations, and card replacement (damaged or expiring). It can also share announced maintenance and outages from the service status file (DIG-8).
+- **DIG-4** The copilot answers dispute status, fee explanations, card replacement (damaged or expiring), and, since 1.0.13, why one of the customer's payments is pending, declined, reversed or refunded and whether money is on its way to their account (transaction rules TXS). It can also share announced maintenance and outages from the service status file (DIG-8).
 - **DIG-5** It hands over to a person for fraud, complaints, low confidence, or whenever the customer asks.
 - **DIG-6** It says it is an assistant and how to reach a person.
 - **DIG-7** Chats are kept for service and audit: transaction-related chats for 5+ years, other chats for 12 months.

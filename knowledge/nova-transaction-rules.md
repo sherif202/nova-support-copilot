@@ -2,7 +2,7 @@
 
 Rules the transaction investigator quotes when it explains why a transaction is pending, declined, reversed or refunded, and when money is expected. Same format as `nova-policies.md`.
 
-Nova Bank is fictional. **All limits, times and holidays here are invented for this project (synthetic).** This file is read by the investigator code only (`lib/investigate.js`); it is **not yet in the AI prompts**, so the AI's eval-gated behaviour (1.0.12) is unchanged. Moving these rules into the prompts needs an eval run first.
+Nova Bank is fictional. **All limits, times and holidays here are invented for this project (synthetic).** Since 1.0.13 this file is read by the investigator screens (`lib/investigate.js`) **and** loaded into the AI's answer prompt after `nova-policies.md`, so a typed question gets the same answer as the screens. The output checks treat TXS rule IDs like any other rule.
 
 ## TXS-1 · Card holds and posting
 

@@ -30,7 +30,7 @@ const { lookup, liveNotices, ambiguity, ownsRecord } = require("./lib/lookup");
 const { listRecords, itemsFor } = require("./lib/picker");
 const investigate = require("./lib/investigate");
 
-// Transaction investigator (1.0.13-draft, not eval-gated yet; docs/INVESTIGATOR.md). On unless INVESTIGATE=off.
+// Transaction investigator (1.0.13; docs/INVESTIGATOR.md). On unless INVESTIGATE=off.
 // Deterministic code over the customer's own records; it never calls a model.
 const INVESTIGATE = process.env.INVESTIGATE !== "off";
 const { guard, mask } = require("./lib/guard");

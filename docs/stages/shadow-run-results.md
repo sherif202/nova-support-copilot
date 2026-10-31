@@ -1,5 +1,7 @@
 # Stage 7 shadow run results
 
+> Current version (31 Oct 2026): 1.0.13. The shadow runs below were made on versions up to 1.0.11 and have not been repeated since; the next one (about US$0.06) is planned before the beta. See `docs/PROJECT-STATUS.md`.
+
 Three runs of `node tools/shadow.mjs` on 30 Oct 2026, both with Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7, mode Auto-answer low-risk. Nobody saw the copilot's answers; each route was compared with how an agent handled the ticket.
 
 - **Run 1 (before), 21:46 UTC, commit `854e08f`:** the Stage 2 tickets as generated, asked at the real time.

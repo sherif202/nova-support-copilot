@@ -1,4 +1,4 @@
-# Demo script, Nova Bank support copilot (3 to 4 minutes)
+# Demo script, Nova Bank support copilot (5 to 6 minutes, version 1.0.13)
 
 Typed live in the browser, logged in as **C-0012 Karim Samir**. All data is synthetic.
 
@@ -73,6 +73,23 @@ The three pillars in `docs/UX-PRINCIPLES.md`.
 5. **Inbox.** Open **Agent inbox**: the confidence chips (High, Medium, Low, as words and colour), and the 👎 count at the top. Open **Why routed here?** on a ticket.
 6. **Mode switch.** Show the three modes. "Today it auto-answers only low-risk questions. The bank can switch to **Suggest only**, where every AI answer waits for an agent to edit and approve, or **Off**, where people answer everything. Every change is logged." Leave it on **Auto-answer low-risk**.
 
+## 6b. Pick the exact record (30 s)
+
+1. In the chat, tap **💳 My card** under "Start here" (log in as **C-0030** to show two cards in Arabic, right to left). Say: "The customer points at the card they mean: name and last 4 digits only, in bold, with its status."
+2. Log in as **C-0040** and type: `There's a fee on my account I don't understand`. The copilot asks **"Which one do you mean?"** with her three fees as cards, instead of guessing. Tap one: the answer is about exactly that fee and cites it.
+
+## 6c. The transaction investigator (60 s)
+
+1. Log in as **C-0010**. Tap **🔎 Find a transaction**, then **This week** and **Online**: the count drops ("3 of 10 transactions match"). Point at "Not sure where? Places in these results". Say: "We narrow it down together; nothing is guessed."
+2. Tap the **declined Amazon.eg** card: the memory jogger (where, which card, when), the steps, **Why was it declined?** with the rule (TXS-2.5), and what happens next. Then open the **Hilton** hold: "expected by 12 Nov, the normal time, not a guarantee".
+3. Tap **💸 I'm waiting for money** → **Someone sent me money** → **Yesterday**: the InstaPay from Ahmed Hassan is found, pending a routine security review. Say: "It checks what's on its way before it ever hands over."
+4. Optional, in Arabic: log in as **C-0005** and type `ليه العملية بتاعتي في كارفور المعادي اترفضت؟`. The AI answers like the screens: the balance at that moment was EGP 980, less than EGP 1,450, and the retry went through.
+5. Tap **It isn't here** on a search, then open **Agent inbox** → **Why routed here?**: the agent sees the investigation summary, so the customer never repeats themselves.
+
+## 6d. The PM control panel and ROI (30 s)
+
+Open **PM control panel**, tick **Load sample**. Point at the ROI tiles (projected ROI, payback volume of about 415 conversations a month, 80% within the S to L sizes), then the **Record picker** tile and the **Transaction investigator** section. Say: "All money figures are assumptions in one config file; the panel recomputes everything."
+
 ## 7. Model strategy: vendor-neutral by design (30 s)
 
 Open `lib/model.js`, then `.env.example`.
@@ -92,3 +109,4 @@ Say: "We piloted on one vendor to get a measured baseline. The production model 
 - A reply says "Sorry, I couldn't answer that safely": that's the safety net working. Show it.
 - "Please wait a moment": you typed more than 20 messages in a minute. Wait a minute.
 - Nothing answers: check the app window for errors, then restart `node server.js`.
+- The investigator chips are missing: the app was started with `INVESTIGATE=off`. Restart without it.

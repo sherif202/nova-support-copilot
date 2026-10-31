@@ -191,10 +191,10 @@
     // 2b. ROI model
     root.append(roiSection(d.roi));
 
-    // 2c. Transaction investigator (1.0.13-draft)
+    // 2c. Transaction investigator (1.0.13)
     const I = d.investigator;
     if (I) {
-      const inv = section("Transaction investigator (draft, not eval-gated)", "From logs/investigations.jsonl: one line per finished investigation (solved, not solved, or handed to an agent). Code only, no AI calls.");
+      const inv = section("Transaction investigator", "From logs/investigations.jsonl: one line per finished investigation (solved, not solved, or handed to an agent). Code only, no AI calls.");
       const t = el("div", "tiles");
       t.append(
         tile("Investigations", num(I.investigations), `${num(I.handoffs)} handed to an agent with the full picture`),

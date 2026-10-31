@@ -1,4 +1,4 @@
-// Synthetic data for the transaction investigator (1.0.13-draft, docs/INVESTIGATOR.md). Same output every run.
+// Synthetic data for the transaction investigator (1.0.13, docs/INVESTIGATOR.md). Same output every run.
 //
 // 1. data/transactions.json gets a few new records (pending, declined, reversed, refunded, money coming in) for
 //    five demo customers the eval set never uses (C-0003, C-0005, C-0009, C-0010, C-0017), so the eval results

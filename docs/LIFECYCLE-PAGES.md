@@ -18,7 +18,7 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | Telos critique card | https://claude.ai/artifact/UdDFfWZ76qyuptWnLmkEEh |
 | MVP architecture | https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R |
 
-**Status (30 Oct 2026):** the project stopped before the internal beta, with 1.0.11 as the locked baseline and a shadow resolution rate of 63%; see [PROJECT-STATUS.md](PROJECT-STATUS.md). The published pages above match the GitHub copies in `docs/stages/` as of commit 19b4cec.
+**Status (31 Oct 2026):** version 1.0.13 is shipped and locked (eval SHIP); features: the ROI model, the record picker and the transaction investigator; the shadow resolution rate is 63% (on 1.0.11); stopped before the internal beta. See [PROJECT-STATUS.md](PROJECT-STATUS.md). The GitHub copies in `docs/stages/` and `docs/lifecycle/` are the current version; the published pages above need republishing from them.
 
 Offline copies: the plan and stages 1 to 4 are saved in `docs/lifecycle/` (as published on 30 Oct 2026); stages 5 to 9 are in `docs/stages/`.
 

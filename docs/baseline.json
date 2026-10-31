@@ -1,8 +1,9 @@
 {
   "what": "Measured pilot baseline for the Nova Bank support copilot (build step 14b). A copy also lives in logs/baseline.json, which git ignores.",
-  "date": "2026-10-30",
-  "commit": "506e367",
-  "release": "1.0.11",
+  "date": "2026-10-31",
+  "commit": "see git log: '1.0.13: transaction investigator tested and in the AI's knowledge'",
+  "release": "1.0.13",
+  "skipped": "1.0.12 (record picker) was never locked: 1.0.13 contains it.",
   "settings": {
     "PROVIDER": "anthropic",
     "UNDERSTAND_MODEL": "claude-haiku-5-5",
@@ -15,45 +16,47 @@
     "note": "Pilot only. The production vendor is chosen by the bake-off and the factors in docs/MODEL-STRATEGY.md."
   },
   "prompts": {
-    "understand": "1.0.0#28365d738a62",
-    "answer": "1.0.3#8e4a39da73a1",
-    "replies": "1.0.0#ff0e9204e4e6",
-    "note": "Hashes are of the filled prompts, so they change when nova-policies.md or the taxonomy changes. 1.0.11 added FEE-1.5, GEN-1 and GEN-2."
+    "understand": "1.0.0#404f6a916cfd",
+    "answer": "1.0.4#b5aecabc45dc",
+    "replies": "1.0.0#33b851526052",
+    "note": "Hashes are of the filled prompts (taxonomy, examples, policies and transaction rules included)."
   },
   "eval": {
-    "set": "knowledge/evalset.md: 60 cases, 6 service status, 4 junk, 18 red team. Cases 21 and 57 reworded in 1.0.11 (owner decision)",
-    "run_clock": "fixed: EVAL_NOW 2026-10-30T12:00:00+02:00",
+    "set": "knowledge/evalset.md: 65 main cases, 6 service status, 4 junk, 18 red team, 4 record picker (K1-K4), 9 investigator checks (V1-V9) = 106",
+    "run_clock": "fixed: EVAL_NOW 2026-10-30T12:00:00+02:00 (investigator checks at 2026-10-31T13:00:00+02:00)",
     "verdict": "SHIP",
     "fraud_recall": "13/13",
     "harmless": "7/7",
     "security": "18/18",
-    "intent_accuracy": 0.983,
-    "grounded_answers": "28/29",
-    "citation_recall": 1,
-    "citation_precision": 0.632,
-    "notice_match": 1,
-    "recall_at_3": 1,
-    "mrr": 1,
-    "honesty": "5/5 (cases 21 safe deposit box, 57 holiday branch hours, 59, S3, S6)",
+    "intent_accuracy": 0.985,
+    "grounded_answers": "33/34",
+    "citation_recall": 1.0,
+    "citation_precision": 0.641,
+    "notice_match": 1.0,
+    "recall_at_3": 1.0,
+    "mrr": 1.0,
+    "record_picker": "4/4",
+    "investigator": "9/9",
+    "honesty": "5/5 (cases 21, 57, 59, S3, S6)",
     "still_failing_not_gates": [
       "20",
       "45",
       "S4"
-    ]
+    ],
+    "unit_checks": "node tools/test-investigator.mjs: 15/15"
   },
   "speed_seconds": {
-    "p50": 2.6,
-    "p95": 6.4,
-    "note": "p95 was 4.2 s on 1.0.9 with the pinned clock; no change adds work per message. Watch in the beta"
+    "p50": 2.5,
+    "p95": 4.8
   },
   "cost_usd_per_message": {
-    "english": 0.00022,
-    "arabic": 0.00028,
-    "franco": 0.00026,
-    "per_answered_message": 0.00039,
+    "english": 0.00023,
+    "arabic": 0.00037,
+    "franco": 0.0003,
+    "per_answered_message": 0.00044,
     "fraud_or_junk": 0
   },
-  "retry_rate": 0.04,
+  "retry_rate": 0.02,
   "shadow": {
     "date": "2026-10-30",
     "tickets": "200 linked tickets (data/tickets-labelled.csv, tools/build_linked_tickets.mjs)",
@@ -63,7 +66,8 @@
     "intent_accuracy": 1,
     "agent_minutes_saved": 1207,
     "egp_per_answered": 0.024,
-    "p95_seconds": 6
+    "p95_seconds": 6,
+    "note": "Last shadow run on 1.0.11; not repeated on 1.0.13."
   },
   "holdout": {
     "opened": "2026-10-30, once, against commit b23e0ca (1.0.8)",
@@ -80,46 +84,48 @@
     "E_to_H_openai_gemini": "scripted, waiting for keys"
   },
   "previous_baseline": {
-    "release": "1.0.9",
-    "commit": "b3cd9ae",
+    "release": "1.0.11",
+    "commit": "506e367",
     "date": "2026-10-30",
     "eval": {
-      "set": "knowledge/evalset.md: 60 cases, 6 service status, 4 junk, 18 red team",
+      "set": "knowledge/evalset.md: 60 cases, 6 service status, 4 junk, 18 red team. Cases 21 and 57 reworded in 1.0.11 (owner decision)",
+      "run_clock": "fixed: EVAL_NOW 2026-10-30T12:00:00+02:00",
       "verdict": "SHIP",
       "fraud_recall": "13/13",
       "harmless": "7/7",
       "security": "18/18",
       "intent_accuracy": 0.983,
-      "grounded_answers": "27/29",
-      "citation_recall": 0.986,
-      "citation_precision": 0.617,
+      "grounded_answers": "28/29",
+      "citation_recall": 1,
+      "citation_precision": 0.632,
       "notice_match": 1,
       "recall_at_3": 1,
       "mrr": 1,
-      "honesty": "5/5 (cases 21, 57, 59, S3, S6)",
+      "honesty": "5/5 (cases 21 safe deposit box, 57 holiday branch hours, 59, S3, S6)",
       "still_failing_not_gates": [
         "20",
-        "36",
         "45",
         "S4"
       ]
     },
     "speed_seconds": {
-      "p50": 2.5,
-      "p95": 4.6
+      "p50": 2.6,
+      "p95": 6.4,
+      "note": "p95 was 4.2 s on 1.0.9 with the pinned clock; no change adds work per message. Watch in the beta"
     },
     "cost_usd_per_message": {
-      "english": 0.0002,
-      "arabic": 0.00026,
-      "franco": 0.00027,
-      "per_answered_message": 0.00038,
+      "english": 0.00022,
+      "arabic": 0.00028,
+      "franco": 0.00026,
+      "per_answered_message": 0.00039,
       "fraud_or_junk": 0
     },
-    "retry_rate": 0,
+    "retry_rate": 0.04,
     "prompts": {
-      "understand": "1.0.0#f1d4796f99d8",
-      "answer": "1.0.3#277a43f58fb6",
-      "replies": "1.0.0#ff0e9204e4e6"
+      "understand": "1.0.0#28365d738a62",
+      "answer": "1.0.3#8e4a39da73a1",
+      "replies": "1.0.0#ff0e9204e4e6",
+      "note": "Hashes are of the filled prompts, so they change when nova-policies.md or the taxonomy changes. 1.0.11 added FEE-1.5, GEN-1 and GEN-2."
     }
   }
 }

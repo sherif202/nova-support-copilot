@@ -2,7 +2,7 @@
 
 The PM control panel has an **ROI model** section (PM control panel tab, below the recommendations). It answers four questions from the same log: what the copilot is worth, what it costs, where the cost goes, and when a flat budget stops holding. No model call; everything is a rollup.
 
-**All money figures beyond the token costs are synthetic assumptions** (`lib/roi-config.js`). Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets.
+**All money figures beyond the token costs are synthetic assumptions** (`lib/roi-config.js`). Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets (the last shadow run). Live data uses the current version (1.0.13); the turn log also counts the record picker, and the investigator has its own metrics in the panel.
 
 Screenshot: [`docs/screenshots/12-pm-roi.png`](screenshots/12-pm-roi.png). To see it: run the app, open the PM control panel and tick **Load sample**, or open `http://localhost:3000/?view=pm&sample=1&focus=roi` for the ROI section on its own.
 

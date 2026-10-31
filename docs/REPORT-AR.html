@@ -15,7 +15,7 @@ code{background:var(--surface);border:1px solid var(--line);border-radius:4px;pa
 hr{border:0} strong{color:var(--ink)}
 </style></head><body><div class="wrap"><div class="top"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJOb3ZhIEJhbmsiPgogIDx0aXRsZT5Ob3ZhIEJhbms8L3RpdGxlPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJub3ZhLWJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzE0ODY4YyIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwYjRmNTMiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSJ1cmwoI25vdmEtYmcpIi8+CiAgPCEtLSBBIG5vdmE6IGEgYnJpZ2h0IGZvdXItcG9pbnQgc3RhciB3aXRoIGEgc21hbGwgY29tcGFuaW9uIHN0YXIsIG92ZXIgYSByaXNpbmcgYXJjIC0tPgogIDxwYXRoIGQ9Ik0xMCA0NiBRMzIgMzAgNTQgNDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzlmZTBkYyIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iLjciLz4KICA8cGF0aCBkPSJNMzIgOSBMMzYuMiAyNC44IEw1MiAyOSBMMzYuMiAzMy4yIEwzMiA0OSBMMjcuOCAzMy4yIEwxMiAyOSBMMjcuOCAyNC44IFoiIGZpbGw9IiNmZmZmZmYiLz4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjI5IiByPSIzLjIiIGZpbGw9IiNmMmMwNjMiLz4KICA8cGF0aCBkPSJNNDkgMTAgTDUwLjQgMTQuNiBMNTUgMTYgTDUwLjQgMTcuNCBMNDkgMjIgTDQ3LjYgMTcuNCBMNDMgMTYgTDQ3LjYgMTQuNiBaIiBmaWxsPSIjZjJjMDYzIi8+Cjwvc3ZnPgo=" alt="">بنك نوفا · مساعد خدمة العملاء</div>
 <h1>تقرير مبسّط: إيه اللي اتعمل في مشروع مساعد خدمة عملاء بنك نوفا</h1>
-<p><strong>التاريخ:</strong> 31 أكتوبر 2026
+<p><strong>التاريخ:</strong> 31 أكتوبر 2026 (النسخة الحالية 1.0.13)
 <strong>لمين:</strong> لأي حد مش متخصص في التكنولوجيا
 <strong>ملاحظة مهمة:</strong> بنك نوفا بنك خيالي، وكل البيانات اللي استخدمناها (العملاء، الفلوس، الشكاوى) بيانات مصطنعة للتجربة، مش بيانات ناس حقيقيين.</p>
 <hr />
@@ -57,6 +57,29 @@ hr{border:0} strong{color:var(--ink)}
 </tbody>
 </table>
 <p>وكمان حطّينا <strong>لوجو البنك</strong>، وأسماء منتجات البنك (زي صندوق سنابل وودائع البركة) عشان المساعد يفهمها لما العميل يسأل عليها.</p>
+<p>وبعد كده ضفنا 3 حاجات جديدة:</p>
+<table>
+<thead>
+<tr>
+<th>الإضافة</th>
+<th>بتعمل إيه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>لوحة العائد على الاستثمار (ROI)</strong></td>
+<td>في لوحة المدير: كل رد بيتكلف كام، والقيمة اللي بيوفرها من وقت الموظفين، وإمتى المساعد يغطي تكلفته</td>
+</tr>
+<tr>
+<td><strong>اختيار العملية الصح</strong></td>
+<td>العميل يدوس على العملية أو الكارت أو الاعتراض اللي يقصده من قايمة، والمعلومات المهمة بخط عريض. ولو سؤاله مش واضح، المساعد يسأله "تقصد أنهي واحدة؟" بدل ما يخمّن</td>
+</tr>
+<tr>
+<td><strong>محقق العمليات</strong></td>
+<td>المساعد والعميل يضيّقوا البحث سوا لحد ما يلاقوا العملية، ويشرح خطوة بخطوة ليه هي معلّقة أو اترفضت (مثلاً الرصيد ساعتها كان أقل من المبلغ)، ويشوف لو فيه فلوس في الطريق قبل ما يحوّل لموظف. ولو حوّل، الموظف بياخد ملخص بكل اللي اتعمل</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2>3. المساعد بيشتغل إزاي؟ (خطوة بخطوة)</h2>
 <p>لما العميل يبعت رسالة، بيحصل الآتي بالترتيب:</p>
@@ -83,8 +106,8 @@ hr{border:0} strong{color:var(--ink)}
 </ul>
 <hr />
 <h2>5. اختبرناه إزاي؟</h2>
-<h3>أ) امتحان من 88 سؤال</h3>
-<p>عملنا امتحان ثابت فيه 88 سؤال (بالعربي والإنجليزي والفرانكو)، وكل سؤال له إجابة صحيحة معروفة. وقبل أي تعديل في المساعد بنعيد الامتحان كله.</p>
+<h3>أ) امتحان من 106 سؤال</h3>
+<p>عملنا امتحان ثابت بقى فيه 106 سؤال (بالعربي والإنجليزي والفرانكو)، وكل سؤال له إجابة صحيحة معروفة. وقبل أي تعديل في المساعد بنعيد الامتحان كله.</p>
 <p>وفي <strong>شروط لازم تتحقق كلها</strong> وإلا ممنوع ننزّله:</p>
 <table>
 <thead>
@@ -115,15 +138,23 @@ hr{border:0} strong{color:var(--ink)}
 <td><strong>97%</strong> (المطلوب 90%) ✓</td>
 </tr>
 <tr>
+<td>اختيار العملية الصح</td>
+<td><strong>4 من 4</strong> ✓</td>
+</tr>
+<tr>
+<td>فحوصات محقق العمليات</td>
+<td><strong>9 من 9</strong> ✓</td>
+</tr>
+<tr>
 <td>يعترف لما مايعرفش</td>
 <td><strong>5 من 5</strong> ✓</td>
 </tr>
 </tbody>
 </table>
 <p><strong>القرار: صالح للتجربة (SHIP).</strong></p>
-<h3>ب) طوّرناه 12 مرة</h3>
-<p>أول نسخة <strong>ماكانتش صالحة</strong> (إجاباتها المبنية على مصدر كانت 76% بس). بعد 12 تعديل، كل تعديل مسجّل بنتيجته، وصلنا لـ 97%. ومرة واحدة جرّبنا تعديل خلّى النتيجة أسوأ، <strong>فرجعنا فيه</strong> على طول.</p>
-<h3>ج) تجربة على 200 شكوى قديمة (من غير ما حد يشوف الردود)</h3>
+<h3>ب) طوّرناه 14 مرة</h3>
+<p>أول نسخة <strong>ماكانتش صالحة</strong> (إجاباتها المبنية على مصدر كانت 76% بس). بعد 14 نسخة، كل نسخة مسجّلة بنتيجتها، وصلنا لـ 97%. ومرة واحدة جرّبنا تعديل خلّى النتيجة أسوأ، <strong>فرجعنا فيه</strong> على طول.</p>
+<h3>ج) تجربة على 200 شكوى قديمة (من غير ما حد يشوف الردود، على النسخة 1.0.11)</h3>
 <p>أدّينا المساعد 200 رسالة عملاء قديمة، وقارنّا تصرّفه بتصرّف الموظف:</p>
 <table>
 <thead>
@@ -161,7 +192,7 @@ hr{border:0} strong{color:var(--ink)}
 <h2>6. التكلفة</h2>
 <ul>
 <li><strong>كل رد من المساعد بيكلّف حوالي 2.4 قرش</strong> (أقل من ربع جنيه بكتير). الهدف كان أقل من 3.5 قرش.</li>
-<li><strong>كل التجارب والاختبارات في المشروع كله</strong> كلّفت حوالي <strong>2 دولار</strong> (حوالي 100 جنيه).</li>
+<li><strong>كل التجارب والاختبارات في المشروع كله</strong> كلّفت حوالي <strong>2.2 دولار</strong> (حوالي 110 جنيه). لوحة العائد ومحقق العمليات مش بيستخدموا الذكاء الاصطناعي، فمالهمش تكلفة.</li>
 <li><strong>السرعة:</strong> معظم الردود بتوصل في حوالي ثانيتين ونص. أبطأ الردود بتوصل في حوالي 6 ثواني، ودي على الحد بالظبط، <strong>لازم نراقبها</strong>.</li>
 </ul>
 <hr />
@@ -192,7 +223,15 @@ hr{border:0} strong{color:var(--ink)}
 </tr>
 <tr>
 <td>تثبيت النسخة 1.0.11 كنسخة أساسية</td>
+<td>موافق (وبعدها اتثبتت 1.0.13)</td>
+</tr>
+<tr>
+<td>إضافة لوحة العائد واختيار العملية ومحقق العمليات</td>
 <td>موافق</td>
+</tr>
+<tr>
+<td>اختبار محقق العمليات وتعليم المساعد قواعد العمليات</td>
+<td>موافق (النسخة 1.0.13، صالحة للتجربة)</td>
 </tr>
 <tr>
 <td>الوقوف قبل التجربة على ناس حقيقيين، وتوثيق كل حاجة</td>

@@ -41,6 +41,10 @@ A higher priority always wins. A message that mentions a fee AND a payment the c
 - `card.replace_damaged` My card is broken, scratched or not working.
 - `card.replace_expired` My card is expiring or expired.
 
+**Transactions · P2** (added 1.0.13)
+- `txn.status` Why is my payment pending, declined, reversed or refunded; what happened to one specific payment. Answered from the customer's records and the transaction rules (TXS).
+- `txn.incoming` I'm waiting for money to arrive in my own account: a transfer, InstaPay, a salary, a refund, money from abroad.
+
 **Out of scope · P3**
 - `loan.any` Loans and credit.
 - `transfer.any` Transfers, and any request about another person's account.
@@ -55,6 +59,10 @@ A higher priority always wins. A message that mentions a fee AND a payment the c
 
 | Message | Wrong label | Right label | Why |
 | - | - | - | - |
+| the restaurant didn't take my card at lunch, why? | service.status | txn.status | One specific payment that was declined is explained from the records. A card declined abroad with no specific payment is still service.status (check the notices). Added 1.0.13 |
+| my brother sent me money and it's not here | transfer.any | txn.incoming | Money coming in to the customer's own account is in scope. transfer.any is for sending money, or another person's account. Added 1.0.13 |
+| there's a pending amount from a hotel on my account | fee.explain | txn.status | A pending, declined or reversed payment is txn.status. fee.explain is for Nova's own fees. Added 1.0.13 |
+| a pending payment I never made | txn.status | fraud.unknown_txn | Fraud always wins over a status question. Added 1.0.13 |
 | ana 3ayza badal fa2ed lel kart | card.replace_damaged | fraud.card_lost_stolen | "badal fa2ed" = lost card |
 | el 3amalia di msh ana elly 3amaltha | dispute.open_request | fraud.unknown_txn | "I didn't make this" is fraud, not a dispute |
 | I was charged a fee and there's a payment I didn't make | fee.explain | fraud.unknown_txn | Mixed message: fraud wins |
