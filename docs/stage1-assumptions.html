@@ -1,0 +1,180 @@
+<title>Nova Copilot Assumptions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a working register read top to bottom. The make-or-break five first, then every assumption by area as a table, then the data to request. */
+:root {
+  --bg: #f6f7f7; --surface: #ffffff; --ink: #17201f; --muted: #5a6766; --line: #d8dedd;
+  --accent: #0e6b70; --accent-soft: #e0efee;
+  --break: #a8321f; --break-soft: #fbe9e5; --part: #8a5a00; --part-soft: #f8eed8; --ok: #2b7340; --ok-soft: #e4f2e7;
+  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111716; --surface: #19211f; --ink: #e4ecea; --muted: #9caaa8; --line: #2d3836;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --break: #ff9a85; --break-soft: #3d1f19; --part: #f1c063; --part-soft: #382c12; --ok: #79d18f; --ok-soft: #17311f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111716; --surface: #19211f; --ink: #e4ecea; --muted: #9caaa8; --line: #2d3836;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --break: #ff9a85; --break-soft: #3d1f19; --part: #f1c063; --part-soft: #382c12; --ok: #79d18f; --ok-soft: #17311f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-family: var(--display); font-size: clamp(28px, 4vw, 40px); line-height: 1.15; }
+h2 { font-size: 20px; }
+h3 { font-size: 15px; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); max-width: 72ch; }
+header { display: grid; gap: 10px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); align-items: center; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.untested { color: var(--break); border-color: var(--break); background: var(--break-soft); }
+.partly { color: var(--part); border-color: var(--part); background: var(--part-soft); }
+.shown { color: var(--ok); border-color: var(--ok); background: var(--ok-soft); }
+.top5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.mob { border: 1px solid var(--line); border-left: 4px solid var(--break); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; background: var(--surface); min-width: 0; }
+.mob .id { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.mob p { font-size: 14px; }
+.mob .test { font-size: 13px; color: var(--muted); }
+.scroll { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.id { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+td b { font-weight: 600; }
+.area { display: grid; gap: 10px; }
+.area > p { color: var(--muted); font-size: 14px; max-width: 80ch; }
+ol.req { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+ol.req li { padding-left: 4px; }
+ol.req .why { color: var(--muted); font-size: 14px; display: block; }
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 14px; }
+footer { font-size: 12px; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Nova Bank support copilot · Stage 1 revisited · 31 Oct 2026</span>
+    <h1>What has to be true for the copilot to work</h1>
+    <p class="lede">The copilot is built and passes its own tests (version 1.0.13), but every number so far comes from <b>synthetic data</b>. This page lists the assumptions underneath it: what each one decides, what the build has and hasn't shown, the real data that would test it, and the result that would break it. It's written to agree, with the instructor, which real data to start with.</p>
+    <div class="meta"><span>Prepared by Sherif Hilal</span><span>Nova Bank is a fictional bank from the course brief</span><span>24 assumptions · 6 areas</span></div>
+  </header>
+
+  <section class="panel" aria-labelledby="t5">
+    <h2 id="t5">The five that make or break it</h2>
+    <p class="lede">If any of these turns out false, the product changes shape, not just its numbers. Test these first.</p>
+    <div class="top5">
+      <div class="mob"><span class="id">A1 · Need</span><h3>Most in-scope contacts need information, not an action</h3><p>If customers mostly want something done (block, refund, open a dispute), an answer bot deflects little.</p><span class="test">Test: 3 months of contact reasons with resolution codes, plus one agent interview ("of your last 20 calls, how many needed no action?"). Breaks if over half need an action.</span></div>
+      <div class="mob"><span class="id">B2 · Feasibility</span><h3>The bank can give read-only access to the customer's records</h3><p>Every grounded answer depends on this customer's transactions, disputes and cards, in real time.</p><span class="test">Test: IT's API inventory for core banking, disputes and the card system. Breaks if there's no read-only access within the project window.</span></div>
+      <div class="mob"><span class="id">D1 · Regulation</span><h3>Customer data may be processed by the AI provider</h3><p>Central Bank outsourcing and data-residency rules decide the vendor, the hosting and the cost.</p><span class="test">Test: a written opinion from Compliance. Breaks if no cloud provider is allowed and no in-country option is available.</span></div>
+      <div class="mob"><span class="id">B1 · Feasibility</span><h3>The answer is in the records and the rules</h3><p>The shadow run resolved 23% before the synthetic tickets were linked to the records and 63% after. Real coverage decides the North Star.</p><span class="test">Test: 200 real tickets matched to their records and the policy that answers them. Breaks if over 40% have no source.</span></div>
+      <div class="mob"><span class="id">A3 · Need</span><h3>Callers will use chat</h3><p>The brief says the app is used only for balance checks. If callers aren't app users, the channel is wrong.</p><span class="test">Test: channel mix, app monthly users, and whether in-scope callers use the app. Breaks if most callers don't; then WhatsApp comes first.</span></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="all">
+    <h2 id="all">Every assumption, by area</h2>
+    <div class="legend"><span>Status from the synthetic build:</span><span class="pill untested">Untested</span> nothing in the build speaks to it <span class="pill partly">Partly shown</span> works on synthetic data only <span class="pill shown">Shown in build</span> proven by the build itself</div>
+
+    <div class="area">
+      <h3>A · Customer need (desirability)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">A1</td><td><b>Most in-scope contacts need information, not an action</b></td><td>The whole product is an answer engine</td><td><span class="pill untested">Untested</span> No interview done; simulated labels</td><td>Contact reasons with resolution codes; one agent interview</td><td>Over half need an action: reframe as an agent assistant, or add safe actions</td></tr>
+          <tr><td class="id">A2</td><td><b>Fees, disputes and cards are about 60% of 45,000 contacts a month</b></td><td>Sets the volume the value is built on</td><td><span class="pill untested">Untested</span> From the course brief only</td><td>Contact-reason distribution from the CRM or ticketing system</td><td>Under 30%: the value case shrinks by half</td></tr>
+          <tr><td class="id">A3</td><td><b>Callers will use a chat channel</b></td><td>No users, no deflection</td><td><span class="pill untested">Untested</span> The brief says the app is used for balances only</td><td>Channel mix, app monthly users, WhatsApp availability</td><td>Callers aren't app users: start on WhatsApp</td></tr>
+          <tr><td class="id">A4</td><td><b>Customers trust an AI answer about their money</b></td><td>An untrusted answer becomes a call anyway</td><td><span class="pill partly">Partly shown</span> UX built for trust (sources, honest handoffs); no real users</td><td>Pilot: "Did this solve it?" and repeat contacts within 7 days</td><td>Verified resolution under 25% in the pilot</td></tr>
+          <tr><td class="id">A5</td><td><b>Customers write the way our test data does</b> (about a third Franco-Arabic, typos, mixed scripts)</td><td>Intent accuracy on real phrasing decides routing</td><td><span class="pill partly">Partly shown</span> 98.5% intent on synthetic cases; WhatsApp phrasing simulated</td><td>500 to 1,000 anonymised real chat, WhatsApp or call-transcript messages</td><td>Intent accuracy under 90% on real phrasing</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="area">
+      <h3>B · Can it be built for real (feasibility)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">B1</td><td><b>The answer exists in the customer's records and Nova's rules</b></td><td>No source, no answer: coverage caps resolution</td><td><span class="pill partly">Partly shown</span> Shadow 23% unlinked, 63% linked (synthetic)</td><td>200 real tickets matched to their records and the policy that answers them</td><td>Over 40% of in-scope tickets have no source</td></tr>
+          <tr><td class="id">B2</td><td><b>Read-only, real-time access to transactions, disputes and cards</b></td><td>Grounding needs this customer's data</td><td><span class="pill untested">Untested</span> Synthetic JSON files</td><td>IT API inventory, response times, access approvals</td><td>No access in the project window: a status screen only</td></tr>
+          <tr><td class="id">B3</td><td><b>Policies are written down, consistent and current</b></td><td>The copilot can only quote what exists</td><td><span class="pill partly">Partly shown</span> A synthetic handbook with rule IDs</td><td>The real fee schedule, dispute timelines, card policy, each with an owner and a review date</td><td>Rules conflict or live in people's heads</td></tr>
+          <tr><td class="id">B4</td><td><b>Fraud can be caught with 100% recall on real phrasing</b></td><td>One miss costs a customer money; it stops the release</td><td><span class="pill partly">Partly shown</span> 13/13 synthetic fraud cases; a word list in 3 languages</td><td>A few hundred anonymised real fraud reports, replayed</td><td>Any fraud report not sent to the Fraud team</td></tr>
+          <tr><td class="id">B5</td><td><b>A small, cheap model handles Egyptian Arabic and Franco well enough, fast enough</b></td><td>Cost and speed targets rest on the cheapest tier</td><td><span class="pill partly">Partly shown</span> Haiku 5.5 passes every gate; p95 4.8 to 6.0 s (synthetic)</td><td>Replay real messages through the same eval</td><td>Grounded answers under 90%, or p95 over 6 s</td></tr>
+          <tr><td class="id">B6</td><td><b>Transaction status facts exist</b> (decline codes, hold reasons, expected posting)</td><td>The investigator explains "why pending or declined" from them</td><td><span class="pill partly">Partly shown</span> A synthetic details file</td><td>Card-switch decline codes and authorisation or hold data</td><td>Not available: the investigator shows status without the reason</td></tr>
+          <tr><td class="id">B7</td><td><b>The guardrails work the same on real traffic</b></td><td>Masking, no promises, no other customer's data</td><td><span class="pill shown">Shown in build</span> 18/18 red-team attacks; checks in code</td><td>A red-team session by the bank's security team</td><td>Any leak of another customer's data or a full card number</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="area">
+      <h3>C · Does it pay (viability)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">C1</td><td><b>Agent time costs about EGP 2 a minute</b>, and each in-scope ticket takes the minutes we used</td><td>The whole value figure is minutes × cost</td><td><span class="pill untested">Untested</span> An assumption in the ROI config; minutes from synthetic tickets</td><td>Fully loaded agent cost; average handle time by contact reason (workforce data)</td><td>Payback volume rises above real monthly volume</td></tr>
+          <tr><td class="id">C2</td><td><b>Freed agent time becomes savings</b> (fewer hires for the 15% yearly growth)</td><td>Time saved isn't money saved unless it changes hiring or work</td><td><span class="pill untested">Untested</span> From the brief</td><td>The hiring plan, attrition and how freed time would be used</td><td>No hiring planned and no redeployment: the value stays on paper</td></tr>
+          <tr><td class="id">C3</td><td><b>40% verified resolution is reachable and measurable</b></td><td>It's the North Star; "verified" needs repeat-contact data</td><td><span class="pill partly">Partly shown</span> 63% in the shadow run; "Did this solve it?" built</td><td>A link from a chat to the same customer's calls in the next 7 days (CRM)</td><td>Repeat contacts can't be linked: the North Star can't be measured</td></tr>
+          <tr><td class="id">C4</td><td><b>The AI stays about EGP 0.02 per answer</b></td><td>The cost case depends on the vendor, the hosting and the exchange rate</td><td><span class="pill partly">Partly shown</span> Measured on the pilot vendor; EGP 50 per US$ assumed</td><td>The production vendor's contract, or in-country hosting costs</td><td>Production costs 10 times more and the volume doesn't cover it</td></tr>
+          <tr><td class="id">C5</td><td><b>Fixed running cost is about EGP 5,000 a month</b></td><td>Fixed cost drives the payback volume</td><td><span class="pill untested">Untested</span> An assumption</td><td>IT's real cost for hosting, monitoring, security reviews and support</td><td>Fixed cost is far higher than the value at pilot volume</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="area">
+      <h3>D · Is it allowed (regulation and compliance)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">D1</td><td><b>Customer data may be processed by an AI provider</b>, or an in-country option exists</td><td>Decides the vendor, the hosting and the cost</td><td><span class="pill untested">Untested</span> Synthetic data only; vendor-neutral adapter ready</td><td>A Compliance opinion on Central Bank outsourcing and data residency</td><td>No provider allowed and no local hosting: a self-hosted model and a new bake-off</td></tr>
+          <tr><td class="id">D2</td><td><b>Explaining fees and dispute status is service, not advice</b>, and the complaint route stays intact</td><td>Advice or a broken complaint route is a legal risk</td><td><span class="pill partly">Partly shown</span> Advice is refused; complaints go to a person with a reference</td><td>A legal review of the fixed replies and the scope</td><td>Legal treats any explanation as advice</td></tr>
+          <tr><td class="id">D3</td><td><b>Masked logs kept 5+ years for transaction chats are acceptable</b></td><td>Evaluation and audits need the logs</td><td><span class="pill partly">Partly shown</span> Masking before saving; a retention rule in the policies</td><td>The bank's retention and privacy policy</td><td>Logs can't be kept: no evaluation on real chats</td></tr>
+          <tr><td class="id">D4</td><td><b>Only the logged-in customer's data is ever shown</b> (Banking Law 194/2020)</td><td>A breach of banking secrecy is a crime</td><td><span class="pill shown">Shown in build</span> The customer ID comes from the login; tested</td><td>A security review with the bank's real login</td><td>Any path that reads another customer's records</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="area">
+      <h3>E · Will people adopt it (organisation and incentives)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">E1</td><td><b>Agents will work with it</b>, and their targets won't punish them for harder calls</td><td>When easy calls leave, average handle time rises</td><td><span class="pill untested">Untested</span> Inbox summaries built; Triple Fit incentive score 3/5</td><td>Agent and supervisor interviews; the current agent KPIs</td><td>KPIs aren't reset: agents resist or route around it</td></tr>
+          <tr><td class="id">E2</td><td><b>Compliance signs off the guardrails and fixed replies in time</b></td><td>A late veto stops the launch</td><td><span class="pill untested">Untested</span></td><td>A review slot and a named Compliance owner</td><td>No sign-off before the pilot</td></tr>
+          <tr><td class="id">E3</td><td><b>Someone owns the knowledge every week</b> (policies, examples, the eval)</td><td>Stale rules mean wrong answers</td><td><span class="pill partly">Partly shown</span> The learning loop and CHANGELOG work</td><td>A named PM or operations owner with time for it</td><td>No owner: answers go out of date</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="area">
+      <h3>F · Are we measuring the right thing (evaluation)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>#</th><th>Assumption</th><th>Why it makes or breaks</th><th>What we have now</th><th>Real data to test it</th><th>Breaks if</th></tr></thead>
+        <tbody>
+          <tr><td class="id">F1</td><td><b>The 106 test cases represent real traffic</b></td><td>A test set written by the builder checks what the builder expects</td><td><span class="pill partly">Partly shown</span> Synthetic; the hold-out was written by the same author and used once</td><td>A fresh hold-out from real tickets, written by a second person</td><td>Real tickets score far below the eval</td></tr>
+          <tr><td class="id">F2</td><td><b>"Would have resolved" in the shadow run matches what really happens</b></td><td>The 63% headline depends on it</td><td><span class="pill partly">Partly shown</span> Labels simulated</td><td>Real labelled tickets with their actual outcome</td><td>Agent outcomes disagree with the copilot's routing</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="req">
+    <h2 id="req">The real data to ask for, in order</h2>
+    <p class="lede">Each item tests the assumptions in brackets. All of it can be anonymised: masked customer IDs, no names, card numbers cut to the last 4 digits, under the course's or the bank's confidentiality terms.</p>
+    <ol class="req">
+      <li><b>Three months of contact reasons, with resolution codes and handle time</b><span class="why">Tests A1, A2, C1. The cheapest and most decisive item.</span></li>
+      <li><b>One hour with a contact-center agent and a supervisor</b><span class="why">Tests A1, E1. "Of your last 20 calls, how many needed no action?" and how agents are measured.</span></li>
+      <li><b>500 to 1,000 anonymised customer messages (chat, WhatsApp or call transcripts)</b><span class="why">Tests A5, B4, B5, F1. Replayed through the existing eval at about US$0.03 per 100.</span></li>
+      <li><b>200 tickets with the matching (anonymised) transactions, disputes and cards</b><span class="why">Tests B1, F2. A real shadow run, the same way as the synthetic one.</span></li>
+      <li><b>The real fee schedule, dispute and card policies, with owners</b><span class="why">Tests B3. Replaces the synthetic handbook, rule by rule.</span></li>
+      <li><b>Channel usage: app monthly users, chat and WhatsApp volumes</b><span class="why">Tests A3. Decides chat versus WhatsApp first.</span></li>
+      <li><b>Card decline codes and hold data from the card switch (a sample)</b><span class="why">Tests B6. What the investigator can explain.</span></li>
+      <li><b>A Compliance view on AI providers, data residency and log retention</b><span class="why">Tests D1, D2, D3. Decides the vendor before any real data leaves the bank.</span></li>
+      <li><b>Agent cost, hiring plan and IT running cost</b><span class="why">Tests C1, C2, C5. Turns the ROI model's assumptions into the bank's numbers.</span></li>
+    </ol>
+    <p class="note">Nothing in the build needs rewriting to use real data: the copilot reads its records, policies and test cases from files, so each data set replaces its synthetic version and the same eval, shadow run and ROI model run again.</p>
+  </section>
+
+  <footer>Source: the Nova Bank course brief, the Stage 1 Triple Fit canvas, and the build at version 1.0.13 (github.com/sherif202/nova-support-copilot, docs/PROJECT-STATUS.md). All figures marked synthetic come from invented data.</footer>
+</div>
