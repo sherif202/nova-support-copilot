@@ -4,7 +4,7 @@
 
 **Where the project stands:** built and tested end to end on synthetic data, **stopped before the internal beta**. Everything left needs real people.
 
-- Model: Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7. Anthropic is used for the pilot only; the production vendor is still open (`docs/MODEL-STRATEGY.md`).
+- Model: Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7 (from 0.6 when the message matches one of the customer's records, since 1.0.15). Anthropic is used for the pilot only; the production vendor is still open (`docs/MODEL-STRATEGY.md`).
 - Nova Bank is fictional. All data is synthetic. No real customer has used the copilot.
 
 ## What the copilot does today

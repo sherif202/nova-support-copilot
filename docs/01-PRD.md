@@ -29,7 +29,7 @@ Verified resolution rate: conversations closed by the copilot, with no handoff a
 1. The customer logs in (in the MVP: picks a synthetic customer) and types a message.
 2. Input checks in code: mask card numbers, IDs and codes; fraud words go straight to the fraud reply; empty, junk or overlong input never reaches the model.
 3. Understand (the cheap-tier model picked in Stage 3: claude-haiku-5-5 to start; GPT-6 Luna or Gemini 2.5 Flash-Lite if they win the bake-off): language, category, intent, priority and confidence, as JSON, using nova-taxonomy.md and the approved examples in examples.jsonl.
-4. Route in code: P0 to Fraud, P1 to Complaints, P3 and low confidence to an agent, P2 and P4 on to the answer.
+4. Route in code: P0 to Fraud, P1 to Complaints, P3 to an agent, P2 and P4 on to the answer. If unsure, it shows the records to tap, asks one clear question, and then hands off (since 1.0.14). A nearly sure question that matches a record is answered (since 1.0.15).
 5. Look up the customer's own records only (transactions, disputes), plus any current service notice.
 6. Answer (the same cheap-tier model; a step-up tier only if the cheap one fails a gate) from nova-policies.md and those records, citing rule and record IDs. One rewrite if an output check fails, then a person.
 7. Output checks in code: cited IDs exist, numbers match the sources, no "approved/refunded/waived", same language, last 4 card digits only. A failed check shows a safe message and hands off.

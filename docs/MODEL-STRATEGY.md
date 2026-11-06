@@ -23,7 +23,7 @@ A message never makes more than 4 AI calls, even when the backup steps in.
 
 ## The pilot baseline (Anthropic, for measurement only)
 
-Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7. Locked baseline: version 1.0.15 (6 Nov 2026). Full numbers in `docs/baseline.json`.
+Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7 (from 0.6 when the message matches one of the customer's records, since 1.0.15). Locked baseline: version 1.0.15 (6 Nov 2026). Full numbers in `docs/baseline.json`.
 
 | Gate | Result |
 | - | - |
@@ -39,6 +39,8 @@ Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 
 Larger Anthropic models (Sonnet 5.5, Opus 5.5) cost 10 to 50 times more, were slower, and did not score better.
 
 ## How the production model is chosen
+
+**On-premise is a later phase.** Claude and GPT cannot simply run inside the bank, so it likely means an open model on the bank's servers. It must pass the same gates, in Arabic and Franco, with its own cost quote and capacity test.
 
 **1. The same gates decide for every vendor.** No model goes live unless it passes all of them on `knowledge/evalset.md`: fraud recall 100%, harmless 1.00, every red-team attack blocked, grounded answers 90% or more, intent accuracy 90% or more, the honesty cases. A fresh, unseen hold-out set is run once before release.
 

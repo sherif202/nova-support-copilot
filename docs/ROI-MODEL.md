@@ -131,7 +131,7 @@ The ROI model above is one average month. The simulator (`public/roi-simulator.h
 
 You change who presses send, the confidence level, the clear question and a bigger model. It reports net value, bad answers, agents needed by shift and the wait for a person, and it compares 48 setting combinations to find the sweet spot. It charges each bad answer at 15 good ones, and a setting must keep AI-sent answers at 24 in 25 or better and stay within the reply time you accept. A normal month with today's settings matches the base case: 2,160 resolved, +18% before bad answers.
 
-Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 5.5 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic, and it does not charge for customers left waiting, so read the money with the wait.
+Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 5.5 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic. It charges extra agent time during surges, but not the harm of making customers wait, so read the money with the wait. A slider lowers AI capacity, to test an on-premise setup.
 
 ## 8. Stress test (6 Nov 2026)
 
