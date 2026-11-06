@@ -17,6 +17,8 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | 9 · Iteration & Retraining | https://claude.ai/artifact/Ag4ck7Zewupv2pxSUrBMYb |
 | Telos critique card | https://claude.ai/artifact/UdDFfWZ76qyuptWnLmkEEh |
 | MVP architecture | https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R |
+| Project map, the whole project on one page | https://claude.ai/artifact/NzASaeK4yu8MyVZASLy4fg |
+| ROI model | https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o |
 
 **Status (6 Nov 2026):** version 1.0.14 is shipped and locked (eval SHIP). Features: the ROI model, the record picker, the transaction investigator, chat memory and one clarifying question. The shadow run answered 63% of synthetic tickets on 1.0.11, which is not verified resolution. Stopped before the internal beta. See [PROJECT-STATUS.md](PROJECT-STATUS.md). The GitHub copies in `docs/stages/` and `docs/lifecycle/` are the current version; the published pages above were republished from them on 6 Nov 2026.
 
