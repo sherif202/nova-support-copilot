@@ -22,6 +22,7 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | How we built it, with the technical view (28 slides) | https://claude.ai/artifact/4jfqBLxNvH3goVUb8W22CN |
 | Technical view, earlier separate slides (now merged above) | https://claude.ai/artifact/YLY7gR86udsgNxHgVsfZ59 |
 | Technical view, document | https://claude.ai/artifact/CfNZVYCKDDBzfPAGnWuEaw |
+| Document control map, departments and approvals | https://claude.ai/artifact/VfFS8zUxmeTmhEoYGjrYa4 |
 | AI architecture in one view | https://claude.ai/artifact/TYD2KXddHWin8NPLFcvcj9 |
 | ROI model and load simulator | https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o |
 | Stage 1 assumptions | https://claude.ai/artifact/GoAEwW55p8wyPGjXAmvNfv |

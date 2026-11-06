@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Document Control</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* A bank's departments on the left, one document's life across the top, and what the bot receives at the end. Palette from the project map. */
+:root {
+  --bg: #f4f6f5; --surface: #ffffff; --ink: #16201f; --muted: #5b6867; --line: #d5dcdb;
+  --accent: #0e6b70; --accent-soft: #e0efee; --ai: #4b2ea6; --ai-soft: #ece7fb; --part: #8a5a00; --part-soft: #f8eed8; --risk: #a8321f; --risk-soft: #fbe9e5; --done: #2b7340; --done-soft: #e4f2e7;
+  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 26px 16px 44px; display: grid; gap: 22px; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(26px, 3.6vw, 36px); line-height: 1.15; text-wrap: balance; }
+h2 { margin: 0; font-size: 19px; }
+h3 { margin: 0; font-size: 15px; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 75ch; }
+.note { font-size: 13.5px; color: var(--muted); max-width: 90ch; }
+section { display: grid; gap: 12px; min-width: 0; }
+.tag { font: 500 11.5px var(--mono); padding: 1px 7px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.tag.built { color: var(--done); border-color: var(--done); background: var(--done-soft); }
+.tag.prop { color: var(--part); border-color: var(--part); background: var(--part-soft); }
+.steps { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.step { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; display: grid; gap: 2px; }
+.step b { font-size: 14px; }
+.step span { font-size: 12.5px; color: var(--muted); }
+.step[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.step.gate { border-left: 4px solid var(--risk); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; }
+.two { display: grid; grid-template-columns: minmax(230px, 300px) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+.depts { display: grid; gap: 6px; }
+.dept { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 7px 11px; font-size: 14px; }
+.dept[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+dl { margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; }
+dt { font-size: 13px; color: var(--muted); }
+dd { margin: 0; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13.5px; }
+th, td { padding: 7px 9px; border-bottom: 1px solid var(--line); text-align: center; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+td.A { background: var(--accent-soft); font-weight: 700; color: var(--accent); }
+td.R { font-weight: 600; }
+tr.on td:first-child { font-weight: 700; color: var(--accent); }
+.run { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 800px) { .run { grid-template-columns: 1fr; } }
+.run .panel.in { border-color: var(--ai); }
+.run .panel.no { border-color: var(--risk); background: var(--risk-soft); }
+.run ul { margin: 0; padding-left: 18px; display: grid; gap: 3px; font-size: 14px; }
+.fast { border-left: 4px solid var(--risk); }
+</style></head><body>
+<div class="wrap">
+  <header style="display:grid;gap:8px">
+    <h1>Who controls what the Nova chatbot knows</h1>
+    <p class="lede">This maps how each department sees the bot's documents, how a document gets approved, and what the bot receives while it runs. This is a proposal for a real bank: Nova is fictional. <span class="tag built">Built today</span> means it exists in the MVP. <span class="tag prop">Proposed</span> needs the bank's agreement.</p>
+  </header>
+
+  <section>
+    <h2>One document's life, and its two approval gates</h2>
+    <div class="steps" id="steps"></div>
+    <div class="panel" id="stepbox" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <h2>Each department's point of view</h2>
+    <div class="two">
+      <div class="depts" id="depts"></div>
+      <div class="panel" id="deptbox" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who does what at each step</h2>
+    <div class="scroll"><table id="raci"></table></div>
+    <p class="note"><b>A</b> approves and is accountable. <b>R</b> does the work. <b>C</b> is consulted first. <b>I</b> is told afterwards. Each department approves only the documents it owns. The roles are a proposal, so the bank should map them to its real committees.</p>
+  </section>
+
+  <section>
+    <h2>What the chatbot receives while running</h2>
+    <div class="run">
+      <div class="panel in"><h3>Always loaded, cached</h3><ul><li>44 policy rules, each with an ID</li><li>24 transaction rules</li><li>23 question types and trap rows</li><li>50 approved examples</li><li>Fixed replies, such as fraud</li></ul><p class="note"><span class="tag built">Built today</span> Only approved, live versions should reach this set.</p></div>
+      <div class="panel in"><h3>Fetched for each message</h3><ul><li>The masked message and its rewrite</li><li>This customer's top 5 records</li><li>Service notices live at that moment</li><li>The last 3 turns of this chat, masked</li></ul><p class="note"><span class="tag built">Built today</span> Code fetches these. The AI cannot go and look.</p></div>
+      <div class="panel no"><h3>Never receives</h3><ul><li>Another customer's data</li><li>Full card numbers, PIN, OTP or passwords</li><li>API keys or system secrets</li><li>Drafts or retired documents</li><li>Internal legal advice and audit reports</li><li>Staff-only procedures</li></ul><p class="note">The first three are <span class="tag built">Built today</span>. The rest are <span class="tag prop">Proposed</span> rules for a real document store.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to pull a wrong document fast</h2>
+    <div class="panel fast">
+      <p><b>A wrong fee or rule can't wait for a committee.</b> <span class="tag prop">Proposed</span></p>
+      <p>Fraud, Compliance or the duty lead can disable one rule at once. The bot then hands that topic to a person, and the owner fixes it through the normal path. Every use of this is logged and reviewed. For anything wider, the kill switch sends every message to a person. <span class="tag built">Built today</span></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What exists today, and what is missing</h2>
+    <div class="scroll"><table style="min-width:640px">
+      <thead><tr><th>Control</th><th style="text-align:left">Today in the MVP</th><th style="text-align:left">Needed for a bank</th></tr></thead>
+      <tbody>
+        <tr><td>Adding a document</td><td style="text-align:left">A person edits files in GitHub</td><td style="text-align:left">An admin screen with roles and approvals</td></tr>
+        <tr><td>Version history</td><td style="text-align:left">Git history, and a prompt hash on every turn</td><td style="text-align:left">Which version answered each customer, kept for audit</td></tr>
+        <tr><td>Testing a change</td><td style="text-align:left">Release test of 106 cases and 10 gates</td><td style="text-align:left">Run it automatically before every approval</td></tr>
+        <tr><td>Effective dates</td><td style="text-align:left">Only for service notices</td><td style="text-align:left">Start, end and review dates on every rule</td></tr>
+        <tr><td>Agent corrections</td><td style="text-align:left">Saved, and a person approves new examples</td><td style="text-align:left">A review queue with a named owner</td></tr>
+        <tr><td>Retention</td><td style="text-align:left">Draft privacy policy with a 5-year placeholder</td><td style="text-align:left">Legal sign-off against bank and AML rules</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The legal points come from our own non-lawyer research. They need confirmation by the bank's Legal and Compliance teams, including how Central Bank outsourcing rules and Banking Law 194 of 2020 apply.</p>
+  </section>
+</div>
+<script>
+(function () {
+  var STEPS = [
+    { n: "Request", s: "Someone asks for a change", who: "Any department, or the review queue", what: "Log what should change and why. Agent corrections and repeated handoffs can start this step.", out: "A tracked request with one named owner" },
+    { n: "Draft", s: "Owner writes the rule", who: "The department that owns the content", what: "Write in plain words, with one idea per rule, a rule ID and an effective date.", out: "A draft the bot cannot see" },
+    { n: "Review", s: "Gate 1: Legal and Compliance", who: "Compliance, Legal, and Risk if data or vendors change", what: "Check customer wording, promises, regulation and data use.", out: "Approved wording, or changes requested", gate: 1 },
+    { n: "Test", s: "Run the release test", who: "AI team and QA", what: "Run the full test with the change. Add a test case for the new rule.", out: "SHIP or DO NOT SHIP" },
+    { n: "Approve", s: "Gate 2: Business sign-off", who: "The owner, with Compliance confirming", what: "Accept the test result and set the go-live date. Nothing goes live without this.", out: "A recorded approval: who, when, which version", gate: 1 },
+    { n: "Publish", s: "New version goes live", who: "AI team", what: "Release the version with its date. Keep the old version so it can be restored.", out: "The bot uses the new rule" },
+    { n: "Monitor", s: "Watch real answers", who: "Support lead and AI team", what: "Watch handoffs, thumbs down and complaints on this topic.", out: "Feedback becomes new requests" },
+    { n: "Retire", s: "Review or remove", who: "The owner", what: "Each rule gets a review date. When retired, it leaves the bot but stays in the audit archive.", out: "Nothing out of date stays live" }
+  ];
+  var D = [
+    { n: "Product and Pricing", own: "Fee rules, product terms", fear: "A wrong price or an old fee", need: "Fast updates when a price changes", gets: "Questions customers ask about each fee", r: ["R", "R", "C", "I", "A", "I", "I", "R"] },
+    { n: "Cards and Payments", own: "Card and transaction rules", fear: "Wrong delivery dates or decline reasons", need: "Rules that match the real systems", gets: "Handoffs on cards and payments", r: ["R", "R", "C", "I", "A", "I", "I", "R"] },
+    { n: "Disputes", own: "Dispute rules and timelines", fear: "The bot sounds like it decided a case", need: "Clear words: only the team decides", gets: "Summaries with each dispute handoff", r: ["R", "R", "C", "I", "A", "I", "I", "R"] },
+    { n: "Fraud and Security", own: "Fraud rules, word list, fixed replies", fear: "A new scam the word list misses", need: "Updates the same day", gets: "Every fraud case at once", r: ["R", "R", "C", "C", "A", "I", "R", "R"] },
+    { n: "Customer Service", own: "Question types, examples, tone", fear: "Agents cleaning up after bad answers", need: "A way to report wrong answers", gets: "Handoffs with a summary", r: ["R", "C", "C", "C", "C", "I", "R", "C"] },
+    { n: "Compliance", own: "Regulatory rules and approved wording", fear: "A breach, or an unfair customer outcome", need: "Proof of what was said, and why", gets: "Audit logs and sampled answers", r: ["C", "C", "A", "I", "A", "I", "C", "C"] },
+    { n: "Legal", own: "Terms, disclaimers, privacy notice", fear: "A bot statement treated as a binding promise", need: "No promises, and clear limits", gets: "Disputed wording and complaints", r: ["C", "C", "R", "I", "C", "I", "I", "C"] },
+    { n: "Risk and Data Protection", own: "Vendor risk, retention, data rules", fear: "Customer data leaving the bank", need: "Data location, and vendor terms", gets: "Incident and access reports", r: ["C", "I", "C", "I", "C", "I", "C", "C"] },
+    { n: "IT and Digital", own: "System feeds, service notices", fear: "Outages and stale data", need: "Controlled changes and rollback", gets: "Service health and alerts", r: ["I", "C", "I", "C", "I", "R", "R", "I"] },
+    { n: "AI Product Team", own: "Prompts, tests and releases", fear: "A change that breaks another answer", need: "Clear owners, and test time", gets: "Test results and monitoring", r: ["C", "C", "I", "R", "C", "R", "R", "I"] },
+    { n: "Internal Audit", own: "Nothing: it stays independent", fear: "Unlogged changes", need: "Read-only access to the full trail", gets: "Approvals, versions and logs", r: ["I", "I", "I", "I", "I", "I", "I", "I"] }
+  ];
+  var $ = function (id) { return document.getElementById(id); }, si = 2, di = 5;
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function draw() {
+    $("steps").innerHTML = STEPS.map(function (x, i) { return '<button type="button" class="step' + (x.gate ? " gate" : "") + '" aria-pressed="' + (i === si) + '" data-s="' + i + '"><b>' + (i + 1) + ". " + x.n + "</b><span>" + x.s + "</span></button>"; }).join("");
+    var s = STEPS[si];
+    $("stepbox").innerHTML = "<h3>" + (si + 1) + ". " + s.n + ' <span class="tag prop">Proposed</span></h3><dl><dt>Who</dt><dd>' + esc(s.who) + "</dd><dt>What happens</dt><dd>" + esc(s.what) + "</dd><dt>Result</dt><dd>" + esc(s.out) + "</dd></dl>";
+    $("depts").innerHTML = D.map(function (x, i) { return '<button type="button" class="dept" aria-pressed="' + (i === di) + '" data-d="' + i + '">' + x.n + "</button>"; }).join("");
+    var d = D[di];
+    $("deptbox").innerHTML = "<h3>" + d.n + ' <span class="tag prop">Proposed</span></h3><dl><dt>Owns</dt><dd>' + esc(d.own) + "</dd><dt>Main worry</dt><dd>" + esc(d.fear) + "</dd><dt>Needs</dt><dd>" + esc(d.need) + "</dd><dt>Receives</dt><dd>" + esc(d.gets) + "</dd></dl>";
+    $("raci").innerHTML = "<thead><tr><th>Department</th>" + STEPS.map(function (x) { return "<th>" + x.n + "</th>"; }).join("") + "</tr></thead><tbody>" + D.map(function (x, i) { return '<tr class="' + (i === di ? "on" : "") + '"><td>' + x.n + "</td>" + x.r.map(function (c) { return '<td class="' + c + '">' + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody>";
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (!b) return;
+    if (b.dataset.s !== undefined) { si = +b.dataset.s; draw(); }
+    if (b.dataset.d !== undefined) { di = +b.dataset.d; draw(); }
+  });
+  draw();
+})();
+</script>
+</body></html>
