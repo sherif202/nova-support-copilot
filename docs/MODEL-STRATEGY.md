@@ -96,3 +96,15 @@ A proxy, not a test: no GPT or Gemini model has run on Nova. It takes the tokens
 | OpenAI GPT-6 Astra | 10 · 1 · 50 | 100.0× | 8,100 | 38,211 | +9% |
 
 Cost does not decide the vendor: even the dearest model is under 9% of the EGP 93,333 running and build cost. Accuracy on Arabic and Franco, speed, data residency and contracts decide it, and those can only come from a real test. Token counts, retries and cache use will differ by vendor. Quiet night hours may let a cache expire, which pushes cost toward the "caching fails" column. Google's context cache can also add a storage charge. Prices: developers.openai.com/api/docs/pricing, aistudio.google.com/docs/pricing, `lib/prices.js`.
+
+## Cost proxy for an LLM judge (6 Nov 2026)
+
+The judge is not built, and its cost is not in the ROI model yet. This is an estimate: one judgment reads about 7,000 cached tokens of rules, 500 new tokens and writes 100, at the list prices above, for the base case of 5,400 chats a month.
+
+| Judge model | One judgment, EGP | Every chat, EGP a month | 1 in 10 chats, EGP a month |
+| - | - | - | - |
+| Claude Haiku 5.5 | 0.0085 | 46 | 5 |
+| Claude Sonnet 5.5 | 0.17 | 918 | 92 |
+| Claude Opus 5.5 | 0.27 | 1,458 | 146 |
+
+Recommended if it is built: Sonnet on 1 in 10 chats, after the reply, so it adds no wait. AI spend becomes about EGP 173 a month, inside the EGP 300 budget. The judge only flags answers for a person, and its own accuracy must first be checked against answers people have labelled.
