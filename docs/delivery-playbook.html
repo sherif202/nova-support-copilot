@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Delivery Playbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* A delivery spine: goals, then a clickable roadmap that opens into PRD, stories and decisions, then sprints and releases. Palette from the project map. */
+:root {
+  --bg: #f4f6f5; --surface: #ffffff; --ink: #16201f; --muted: #5b6867; --line: #d5dcdb;
+  --accent: #0e6b70; --accent-soft: #e0efee; --ai: #4b2ea6; --ai-soft: #ece7fb; --part: #8a5a00; --part-soft: #f8eed8; --risk: #a8321f; --risk-soft: #fbe9e5; --done: #2b7340; --done-soft: #e4f2e7; --code: #17302f; --code-ink: #dcebe8;
+  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; --code: #0b1211; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; --code: #0b1211; color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 26px; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(27px, 3.8vw, 38px); line-height: 1.12; text-wrap: balance; }
+h2 { margin: 0; font-size: 21px; }
+h3 { margin: 0; font-size: 16px; }
+h4 { margin: 0; font-size: 12.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 78ch; }
+.note { font-size: 13.5px; color: var(--muted); max-width: 95ch; }
+section { display: grid; gap: 12px; min-width: 0; scroll-margin-top: 12px; }
+nav.jump { display: flex; flex-wrap: wrap; gap: 6px; }
+nav.jump a { text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13.5px; }
+.tag { font: 500 11px var(--mono); padding: 1px 7px; border-radius: 999px; border: 1px solid; white-space: nowrap; vertical-align: 1px; }
+.tag.given { color: var(--done); border-color: var(--done); background: var(--done-soft); }
+.tag.ex { color: var(--part); border-color: var(--part); background: var(--part-soft); }
+.tag.prop { color: var(--ai); border-color: var(--ai); background: var(--ai-soft); }
+abbr { text-decoration: underline dotted var(--muted); cursor: help; }
+abbr:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.adjust { background: var(--part-soft); border: 1px solid var(--part); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+.adjust blockquote { margin: 0; font-style: italic; }
+.adjust .row { display: grid; gap: 2px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.metric { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 3px; align-content: start; }
+.metric b { font-size: 21px; font-variant-numeric: tabular-nums; }
+.metric.north { grid-column: span 2; border-color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 500px) { .metric.north { grid-column: auto; } }
+.board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .board { grid-template-columns: 1fr; } }
+.col { display: grid; gap: 8px; align-content: start; }
+.theme { font: inherit; color: inherit; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px; display: grid; gap: 3px; }
+.theme:hover { border-color: var(--accent); }
+.theme[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); background: var(--accent-soft); }
+.theme span { font-size: 13px; color: var(--muted); }
+.detail { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 14px; }
+.prd { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.prd div { display: grid; gap: 3px; align-content: start; }
+ul { margin: 0; padding-left: 18px; }
+details.story { border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+details.story summary { cursor: pointer; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+details.story .in { padding: 0 12px 12px; display: grid; gap: 8px; }
+.pts { font: 600 12px var(--mono); background: var(--accent); color: var(--surface); border-radius: 6px; padding: 1px 7px; }
+.moscow { font-size: 12px; font-weight: 600; color: var(--muted); }
+.gwt { display: grid; gap: 2px; font-size: 14px; }
+.epic { display: grid; gap: 7px; }
+.dcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; }
+@media (max-width: 420px) { .dcards { grid-template-columns: 1fr; } }
+.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.dcard dl { margin: 0; display: grid; gap: 3px; font-size: 14px; }
+.dcard dt { font-size: 12px; color: var(--muted); }
+.dcard dd { margin: 0 0 3px; }
+pre { margin: 0; background: var(--code); color: var(--code-ink); border-radius: 8px; padding: 9px 11px; font: 500 12.5px/1.5 var(--mono); overflow-x: auto; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; display: grid; gap: 8px; }
+.envs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.env { font-size: 12.5px; text-align: center; padding: 4px 2px; border-radius: 6px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.env.on { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 600; }
+.tworow { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; display: grid; gap: 6px; align-content: start; }
+</style></head><body>
+<div class="wrap">
+  <header style="display:grid;gap:8px">
+    <h1>Nova delivery playbook</h1>
+    <p class="lede">A proposal for taking the Nova Bank support copilot from a tested MVP to a real launch. Nova is fictional. Stage 1 of 3: the main page. Team views follow once you approve this.</p>
+    <p class="note"><span class="tag given">Given</span> came from you or the project. <span class="tag prop">Proposed</span> is my plan. <span class="tag ex">Example</span> is made up to show the shape: every person, date, capacity and target with this tag needs replacing.</p>
+    <nav class="jump" aria-label="Sections"><a href="#adjust">Adjustments</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#decisions">Technical decisions</a><a href="#sprints">Sprints</a><a href="#releases">Releases</a><a href="#quality">Quality bars</a><a href="#next">What's next</a></nav>
+  </header>
+
+  <section id="adjust" class="adjust">
+    <h2>Where I'd adjust your model</h2>
+    <div class="row"><blockquote>“% of conversations resolved without a human”</blockquote><p><b>Better rule:</b> count a chat only when the customer confirms it was solved and doesn't contact us again within 7 days. A customer who gives up also looks “resolved without a human”.</p></div>
+    <div class="row"><blockquote>“Retrieval (RAG) design: chunking, embeddings”</blockquote><p><b>Better rule:</b> choose retrieval by the content. Nova's 68 short rules fit in the prompt, and bank records need exact matches. Add a vector store only when long documents make that necessary.</p></div>
+    <div class="row"><blockquote>“hallucination rate”</blockquote><p><b>Better rule:</b> you can't count what nobody noticed. Measure groundedness on a test set, then sample live answers and track confirmed cases.</p></div>
+    <p class="note"><b>Still missing:</b> your roadmap book wasn't attached, so this page uses common practice. That is an assumption until you send it.</p>
+  </section>
+
+  <section id="goals">
+    <h2>Goals</h2>
+    <div class="cards">
+      <div class="metric north"><span><span class="tag given">Given</span> North star</span><b>40% verified resolution</b><span class="note">Solved in chat, confirmed by the customer, no repeat contact in 7 days. Not measured yet.</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>100%</b><span class="note">fraud recall on the test set</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>≥ 90%</b><span class="note"><abbr tabindex="0" title="The share of answers fully supported by a Nova rule or the customer's own records.">groundedness</abbr> on the test set</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>&lt; 6 s</b><span class="note"><abbr tabindex="0" title="95 out of 100 replies are faster than this. It describes the slow end, not the average.">p95</abbr> reply time</span></div>
+      <div class="metric"><span><span class="tag ex">Example</span> From your template</span><b>≥ 4.2</b><span class="note"><abbr tabindex="0" title="Customer satisfaction score, usually a 1 to 5 rating after a chat.">CSAT</abbr>, no baseline yet</span></div>
+      <div class="metric"><span><span class="tag ex">Example</span></span><b>≤ EGP 45</b><span class="note">total cost per resolved contact, near the base case of EGP 43</span></div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2>Roadmap: click a theme</h2>
+    <p class="lede">Themes become initiatives, then epics, then stories. Status shows what the MVP already does.</p>
+    <div class="board" id="board"></div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+  </section>
+
+  <section id="decisions">
+    <h2>Technical decision cards</h2>
+    <p class="lede">Each card says what was decided, why, and what breaks without it. Snippets show what a developer actually writes.</p>
+    <div class="dcards" id="dcards"></div>
+  </section>
+
+  <section id="sprints">
+    <h2>Sprints</h2>
+    <p class="lede">An example plan of 2-week sprints, Sunday to Thursday, with an example team of 7 and part-time legal. Capacity is an example of 30 points, reduced for holidays.</p>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Sprint</th><th>Dates <span class="tag ex">Example</span></th><th>Goal</th><th>Capacity</th><th>Stories</th><th>Demo</th></tr></thead><tbody id="sprintrows"></tbody></table></div>
+    <p class="note">Check holidays against the official calendar before committing. Expected in this window: Coptic Christmas on 7 January and Revolution Day on 25 January. Ramadan is expected from about 8 February 2027, so plan shorter hours, and the moon sets the exact dates. Sprints can start on a real date once the team is confirmed.</p>
+  </section>
+
+  <section id="releases">
+    <h2>Releases</h2>
+    <p class="lede">The first release stays small, with handoff to a person. Later releases add question types, channels, dialects and actions.</p>
+    <div class="tworow" id="rels"></div>
+  </section>
+
+  <section id="quality">
+    <h2>Quality bars</h2>
+    <div class="tworow">
+      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before the team can start it.">Definition of Ready</abbr></h3><ul><li>User, goal and value are clear</li><li>Passes <abbr tabindex="0" title="Independent, Negotiable, Valuable, Estimable, Small, Testable.">INVEST</abbr>, at 8 points or fewer</li><li>Acceptance criteria are written</li><li>AI behaviour names a test set and threshold</li><li>Data sources and owners are known</li><li>Compliance needs are flagged</li></ul></div>
+      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before anyone calls it finished.">Definition of Done</abbr></h3><ul><li>Code reviewed and merged</li><li>Unit tests and the release test pass</li><li>No gate has regressed</li><li>Arabic right-to-left checked</li><li>Logs stay masked</li><li>Documents and changelog updated</li><li>Demoed to the PM</li></ul></div>
+      <div class="box"><h3>Best practices</h3><ul><li>Change one thing, then run the tests</li><li>Never edit a test case to raise a score</li><li>Put what must never fail in code</li><li>Ship behind a <abbr tabindex="0" title="A switch that turns a feature on for chosen users without a new deployment.">feature flag</abbr></li><li>Keep a person one tap away</li><li>Pin versions, and retest before changing them</li></ul></div>
+    </div>
+  </section>
+
+  <section id="next" class="box">
+    <h2>What's next</h2>
+    <p><b>Stage 2</b> adds seven linked team views: Product, Design, Developer, AI/ML, QA, Support and Compliance. Each gets a step rail, a mock tool screen, a coach card and a picker of 6 features. <b>Stage 3</b> carries the chatbot requirements through every view.</p>
+    <p class="note">Please review this page first. Tell me what to change, send your roadmap book, and confirm the team and dates if you have real ones.</p>
+  </section>
+</div>
+<script>
+(function () {
+  var T = [
+   { id: "t1", h: "Now", n: "Trusted answers", i: "Answer fees, disputes and cards from sources", p: "Customers wait for simple answers, and a wrong answer harms trust.", u: "Customer, agent, compliance officer", inn: ["Fees, disputes, cards and payment status", "Agent approves answers first"], out: ["Decisions on disputes", "Refunds and waivers"], nfr: ["Groundedness ≥ 90% on the 34-case grounded set", "p95 under 6 s", "Arabic, English and Franco quality on the eval set"],
+     e: [{ n: "Grounded answers", s: [{ t: "Cite a source on every answer", p: 5, m: "Must", st: "Built", g: "Given the 65-case main set", w: "the copilot answers", th: "at least 90% are grounded, and every cited ID exists" }, { t: "Block promises in code", p: 3, m: "Must", st: "Built", g: "Given a draft that says “approved” or “refunded”", w: "the output checks run", th: "it is blocked, with one retry, then a person" }] },
+         { n: "Agent-first answers", s: [{ t: "Agent approves each draft", p: 5, m: "Must", st: "Partly built", g: "Given Suggest-only mode", w: "a draft is ready", th: "no customer sees it until an agent approves or edits it" }, { t: "Count wrong answers at confidence 0.6", p: 3, m: "Must", st: "Partly built", g: "Given answers logged as near_sure_answer", w: "agents review them weekly", th: "the wrong-answer rate is reported, and the rule stays only if it meets the agreed limit" }] }] },
+   { id: "t2", h: "Now", n: "Safe handoff", i: "Reach the right person with full context", p: "A bad handoff makes customers repeat themselves, and surges leave them waiting.", u: "Customer, support agent, team lead", inn: ["Summaries", "Queues", "Surge alerts"], out: ["Workforce planning tools"], nfr: ["Fraud goes to a person on 100% of the 13 fraud cases", "Example target: wait under 5 minutes in busy hours"],
+     e: [{ n: "Handoff with context", s: [{ t: "Send a summary with each handoff", p: 3, m: "Must", st: "Built", g: "Given a handoff", w: "the agent opens it", th: "the summary shows the question, records and reason, with no sender account details" }] },
+         { n: "Surge readiness", s: [{ t: "Alert when customers wait too long", p: 5, m: "Should", st: "Proposed", g: "Given waiting time above the agreed limit", w: "it lasts 10 minutes", th: "the team lead is alerted with the agents needed" }] }] },
+   { id: "t3", h: "Now", n: "Real evidence", i: "Prove the concept with people", p: "Every result so far comes from data we wrote.", u: "PM, bank employees, independent tester", inn: ["Interviews", "App reviews", "New hold-out", "Shadow rerun"], out: ["Real customer data before approval"], nfr: ["All data masked", "Handoff rate up to 20% on a new set"],
+     e: [{ n: "Concept evidence", s: [{ t: "Review recent contacts with bank employees", p: 3, m: "Must", st: "Proposed", g: "Given the last 10 contacts an employee remembers", w: "each is classified", th: "we report the share needing information, an action or reassurance" }, { t: "Compare with a no-AI option", p: 3, m: "Should", st: "Proposed", g: "Given a status screen and card tracker", w: "they are roughly costed", th: "the ROI shows what AI adds on top" }] },
+         { n: "Independent tests", s: [{ t: "Write a fresh hold-out", p: 5, m: "Must", st: "Proposed", g: "Given someone who has not seen the eval set", w: "they write 15 cases", th: "the copilot is scored once, with no tuning on them" }, { t: "Rerun the shadow test with reworded tickets", p: 3, m: "Should", st: "Proposed", g: "Given reworded tickets on the current version", w: "the shadow run finishes", th: "the answer rate is reported, and never called resolution" }] }] },
+   { id: "t4", h: "Next", n: "Document control", i: "Let the bank own what the bot knows", p: "Today a person edits files in GitHub.", u: "Policy owners, Legal, Compliance, audit", inn: ["Versions and dates", "Two approval gates", "Fast disable"], out: ["Writing policies", "Long-document search"], nfr: ["Every answer traces to one rule version", "A wrong rule is disabled in minutes"],
+     e: [{ n: "Rule management", s: [{ t: "Add and version a rule", p: 8, m: "Must", st: "Proposed", g: "Given an owner with the right role", w: "they save a rule", th: "it has an ID, owner, effective date and review date, and stays a draft" }, { t: "Two-gate approval", p: 8, m: "Must", st: "Proposed", g: "Given a draft rule", w: "Compliance and the owner approve and the tests pass", th: "it can be published, and the approvals are recorded" }, { t: "Disable one rule fast", p: 5, m: "Must", st: "Proposed", g: "Given a wrong live rule", w: "an authorised person disables it", th: "that topic goes to a person, and the action is logged" }] }] },
+   { id: "t5", h: "Next", n: "Bank connection and reach", i: "Connect real systems, then add channels", p: "The MVP reads JSON files and stands in for login.", u: "Customer, IT, security", inn: ["Signed login", "Read-only APIs", "WhatsApp"], out: ["Actions that change data"], nfr: ["Never reveal another customer's data in 18 attack cases", "Uptime target to be agreed with IT"],
+     e: [{ n: "Bank systems", s: [{ t: "Use the signed bank login", p: 8, m: "Must", st: "Proposed", g: "Given a logged-in customer", w: "a request arrives", th: "the customer ID comes from the signed session, never the browser" }, { t: "Read dispute status from an API", p: 8, m: "Must", st: "Proposed", g: "Given the dispute system is down", w: "a customer asks", th: "the copilot hands off and invents nothing" }] },
+         { n: "WhatsApp", s: [{ t: "Offer chat on WhatsApp", p: 8, m: "Could", st: "Proposed", g: "Given an agreed way to prove identity", w: "a customer writes on WhatsApp", th: "account answers appear only after that check" }] }] },
+   { id: "t6", h: "Later", n: "On-premise and actions", i: "Run inside the bank, then take safe actions", p: "Data location may rule out a foreign cloud, and information alone may not close some contacts.", u: "IT, Risk, Fraud, customer", inn: ["Open-model test", "Capacity test", "Confirmed card block"], out: ["Refunds or payments by AI"], nfr: ["Same 10 gates as today", "Capacity above the busiest expected minute"],
+     e: [{ n: "On-premise", s: [{ t: "Compare open models on bank servers", p: 8, m: "Should", st: "Proposed", g: "Given the 106-case release test", w: "an open model runs on bank servers", th: "it must pass all 10 gates, with a real cost quote" }, { t: "Load test on bank hardware", p: 5, m: "Should", st: "Proposed", g: "Given a simulated outage spike", w: "traffic peaks", th: "replies stay within the agreed p95" }] },
+         { n: "Safe actions", s: [{ t: "Block a card with confirmation", p: 8, m: "Could", st: "Proposed", g: "Given 4 weeks at 100% fraud recall", w: "a customer confirms the block", th: "a person reviews it, and the action is logged" }] }] }
+  ];
+  var D = [
+   ["Model", "Claude Haiku 5.5 for both steps; open model tested later", "It passed every gate at the lowest cost among Anthropic models tested.", "A bigger model adds cost and slow replies without proven gains.", "UNDERSTAND_MODEL=claude-haiku-5-5\nANSWER_MODEL=claude-haiku-5-5", "Built"],
+   ["Retrieval approach", "Rules in the prompt; records by exact lookup", "Banks need exact amounts and dates.", "Similar-looking records could give a customer the wrong answer.", "lookup(customerId, message, intent)\n// amount +5, date +4, merchant +3", "Built"],
+   ["Vector store", "None now; hybrid search if long documents arrive", "68 rules fit in the prompt, so there is nothing to search.", "An extra system to run, secure and explain, with no gain today.", "# proposed only when the log justifies it\nHYBRID_SEARCH=off", "Proposed"],
+   ["Prompt versioning", "Versioned files, with a hash on every turn", "Any answer can be traced to its exact prompt.", "Nobody can explain why an answer changed.", "<!-- prompt: answer · version 1.0.6 -->", "Built"],
+   ["Guardrails", "Code before and after the AI", "Safety must not depend on the model.", "One clever message could bypass the rules.", "fraudCheck(masked)   // before any AI\nrunChecks(answer)    // 8 checks after", "Built"],
+   ["Tool permissions", "Read-only now; any action needs a confirm step and a person", "Nothing may move money unsupervised.", "A tricked model could change data.", "tools: []  // no data-changing tools today", "Built"],
+   ["Eval tooling", "Our release test blocks a release on any failed gate", "A change can't ship on a good demo alone.", "A fix can quietly break another answer.", "node tools/eval.mjs\n# VERDICT: SHIP or DO NOT SHIP", "Built"],
+   ["Observability", "One masked log line per message, plus the PM panel", "Cost, outcomes and versions come from one record.", "Problems stay hidden until customers complain.", "{ prompt_version, cost_egp, outcome,\n  near_sure_answer }", "Built"],
+   ["Fallback when AI or a tool is down", "A safe message and a ticket for a person", "The customer must never see a broken screen.", "Failures become invented or empty answers.", "catch (err) {\n  return handOff(..., \"R-MODEL-DOWN\", \"Agent\");\n}", "Built"]
+  ];
+  var SP = [
+   ["Sprint 1", "15 to 26 Nov 2026", "Get evidence and start the trial", "28 (setup)", "Review contacts 3, No-AI comparison 3, Fresh hold-out 5, Shadow rerun 3, Agent approves 5, Count wrong answers 3", "Interview findings; staff trial live"],
+   ["Sprint 2", "29 Nov to 10 Dec", "Give the bank control of rules", "30", "Add a rule 8, Disable a rule 5, Wait alert 5", "Disable one rule live"],
+   ["Sprint 3", "13 to 24 Dec", "Approve changes, and connect login", "30", "Two-gate approval 8, Signed login 8", "One rule goes through both gates"],
+   ["Sprint 4", "27 Dec to 7 Jan", "Read real dispute status", "27 (Coptic Christmas)", "Dispute API 8, pilot fixes", "A live status from a test API"],
+   ["Sprint 5", "10 to 21 Jan 2027", "Run the agent-first pilot", "30", "Pilot support and fixes", "Pilot results against the 40% target"]
+  ];
+  var R = [
+   ["R0 Staff trial", 2, "Sprint 1", "About 50 chats; agents approve all answers", ["Tests pass", "Fraud and complaint scenarios included", "Logs masked"], "No fraud miss; wrong answers counted"],
+   ["R1 Agent-first pilot", 3, "Sprint 5", "Fees, disputes and cards for 10 to 20 pilot users, with handoff", ["Compliance review done", "Rule owners named", "Kill switch tested", "Rollback rehearsed"], "Verified resolution measured; go or no-go agreed"],
+   ["R2 Customer ramp", 4, "After the go decision", "Easy questions first: 1%, 5%, 25%, 100%", ["Signed login live", "Data location approved", "Support rota agreed"], "Gates hold at each step, with no serious incident"],
+   ["R3 Reach", 2, "Later", "More intents, WhatsApp and dialects", ["Identity on WhatsApp agreed", "Dialect test set added"], "Same gates on the new test sets"],
+   ["R4 Actions and on-premise", 1, "Later", "Confirmed card block; open model on bank servers", ["Passes all 10 gates", "Cost quote and load test"], "Risk and Compliance sign off"]
+  ];
+  var ENV = ["Dev", "Staging", "Beta", "Production"], $ = function (i) { return document.getElementById(i); }, cur = 0;
+  function e(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function list(a) { return "<ul>" + a.map(function (x) { return "<li>" + e(x) + "</li>"; }).join("") + "</ul>"; }
+  function statusTag(s) { return '<span class="tag ' + (s === "Proposed" ? "prop" : "given") + '">' + s + "</span>"; }
+  function board() {
+    $("board").innerHTML = ["Now", "Next", "Later"].map(function (h) {
+      return '<div class="col"><h3>' + h + "</h3>" + T.map(function (t, i) { return t.h !== h ? "" : '<button type="button" class="theme" aria-pressed="' + (i === cur) + '" data-t="' + i + '"><b>' + t.n + "</b><span>" + t.i + "</span></button>"; }).join("") + "</div>";
+    }).join("");
+    var t = T[cur];
+    $("detail").innerHTML = "<div><h3>" + t.n + ' <span class="tag prop">Proposed</span></h3><p class="note">Initiative: ' + e(t.i) + '</p></div><div class="prd"><div><h4>Problem</h4><p>' + e(t.p) + "</p><h4>Users</h4><p>" + e(t.u) + "</p></div><div><h4>In scope</h4>" + list(t.inn) + "<h4>Out of scope</h4>" + list(t.out) + "</div><div><h4>Non-functional requirements</h4>" + list(t.nfr) + "</div></div>" +
+      t.e.map(function (ep) { return '<div class="epic"><h4>Epic: ' + e(ep.n) + "</h4>" + ep.s.map(function (s) {
+        return '<details class="story"><summary><span class="pts">' + s.p + "</span><b>" + e(s.t) + '</b><span class="moscow">' + s.m + "</span>" + statusTag(s.st) + '</summary><div class="in"><div class="gwt"><p><b>Given</b> ' + e(s.g.replace(/^Given /, "")) + "</p><p><b>When</b> " + e(s.w) + "</p><p><b>Then</b> " + e(s.th) + '</p></div><p class="note">Points are an example estimate. Decisions: see the technical cards below.</p></div></details>';
+      }).join("") + "</div>"; }).join("");
+  }
+  $("dcards").innerHTML = D.map(function (d) { return '<div class="dcard"><h3>' + d[0] + " " + statusTag(d[5]) + "</h3><dl><dt>Decided</dt><dd>" + e(d[1]) + "</dd><dt>Why it's needed</dt><dd>" + e(d[2]) + "</dd><dt>What breaks without it</dt><dd>" + e(d[3]) + "</dd></dl><pre>" + e(d[4]) + "</pre></div>"; }).join("");
+  $("sprintrows").innerHTML = SP.map(function (s) { return "<tr><td><b>" + s[0] + '</b></td><td class="n">' + s[1] + "</td><td>" + e(s[2]) + "</td><td>" + e(s[3]) + "</td><td>" + e(s[4]) + "</td><td>" + e(s[5]) + "</td></tr>"; }).join("");
+  $("rels").innerHTML = R.map(function (r) { return '<div class="rel"><h3>' + r[0] + ' <span class="tag prop">Proposed</span></h3><div class="envs">' + ENV.map(function (n, i) { return '<div class="env' + (i < r[1] ? " on" : "") + '">' + n + "</div>"; }).join("") + "</div><p>" + e(r[3]) + '</p><p class="note">When: ' + e(r[2]) + "</p><h4>Checklist</h4>" + list(r[4]) + "<h4>Exit criteria</h4><p>" + e(r[5]) + "</p></div>"; }).join("");
+  document.addEventListener("click", function (ev) { var b = ev.target.closest ? ev.target.closest("[data-t]") : null; if (b) { cur = +b.dataset.t; board(); } });
+  board();
+})();
+</script>
+</body></html>
