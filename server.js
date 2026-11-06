@@ -618,6 +618,7 @@ function writeTurnLog({ customerId, masked, injection_flagged, result, trace, ms
     latency_ms: ms,
     cost_egp: costUsd === null ? null : Number((costUsd * EGP_PER_USD).toFixed(5)),
     outcome: result.priority === "P0" || result.queue === "Fraud" ? "fraud" : answered ? "answered" : result.action === "handoff" ? "handoff" : result.action === "pick" ? "picker" : result.action === "ask" ? "asked" : "fixed_reply",
+    near_sure_answer: Boolean(trace.near_sure_record_match),
     picker_shown: Boolean(trace.picker_shown),
     picked_record_id: trace.picked_record_id || null,
     time: new Date().toISOString(),

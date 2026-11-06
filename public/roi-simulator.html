@@ -29,6 +29,7 @@
         <label class="sim-range"><span>Contacts that use chat: <b id="sim-adoptv"></b></span><input type="range" id="sim-adopt" min="5" max="50" step="5"></label>
         <label class="sim-range"><span>Bigger model rescues: <b id="sim-liftv"></b> of unsure chats</span><input type="range" id="sim-lift" min="0" max="40" step="5"></label>
         <label class="sim-range"><span>One bad answer cancels: <b id="sim-badv"></b> good ones</span><input type="range" id="sim-bad" min="5" max="25" step="5"></label>
+        <label class="sim-range"><span>AI capacity: <b id="sim-capv"></b></span><input type="range" id="sim-cap" min="10" max="370" step="10"></label>
         <label class="sim-range"><span>Slowest reply we accept: <b id="sim-speedv"></b></span><input type="range" id="sim-speed" min="5.5" max="10" step="0.1"></label>
       </div>
       <div class="sim-group"><h3>Count the value as</h3><div class="sim-seg" id="sim-lens"></div></div>
@@ -43,7 +44,7 @@
         <div class="sim-group">
           <h3>Agents on chat duty</h3>
           <div class="sim-scroll" id="sim-rota"></div>
-          <p class="sim-note">The normal rota covers the busy hours of an ordinary month. The AI itself is never the limit: agents are.</p>
+          <p class="sim-note">The normal rota covers the busy hours of an ordinary month. At today's capacity, agents are the limit, not the AI.</p>
         </div>
         <div class="sim-group sim-tri">
           <h3>Cost, quality, speed: pick 2</h3>
@@ -54,7 +55,7 @@
       <div class="sim-group">
         <h3>Where the month's money goes</h3>
         <div class="sim-scroll" id="sim-money"></div>
-        <p class="sim-note">Busier months can show more value here, because more chats get resolved. This table does not charge for red squares, where customers are left waiting, so read it with the map.</p>
+        <p class="sim-note">Surges are charged as extra agent time at EGP 2 a minute. The harm of making customers wait is not charged, so read this table with the map.</p>
       </div>
 
       <div class="sim-group">
@@ -91,6 +92,7 @@
         <tr><td>A clear question rescues</td><td>60% of unsure chats</td><td>Estimate</td></tr>
         <tr><td>Right answer closes the contact</td><td>Set so a normal month gives the ROI base case: 2,160 resolved</td><td>Ties this page to the ROI model</td></tr>
         <tr><td>Hours of the day, weekdays, salary days, events</td><td>Example pattern, Sunday to Thursday work week</td><td>Estimate. Replace with the bank's real contact log</td></tr>
+        <tr><td>AI capacity</td><td>370 messages a minute</td><td>Lowest figure for the pilot cloud account. On the bank's own servers it could be far lower: use the slider</td></tr>
         <tr><td>Agent handling</td><td>9.6 minutes a chat, 1.5 chats at once</td><td>Tickets, and an estimate</td></tr>
       </tbody>
     </table></div>

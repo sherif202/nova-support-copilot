@@ -153,18 +153,19 @@ Sherif Hilal · AI Product Management · 31 October 2026
 - Absorbs about a third of one year's growth, which would otherwise need about 18 more agents
 - Fraud reports no longer wait behind fee questions
 
-**Honest caveat:** this pays only if the bank hires fewer people or moves agents to other work. Every rate and cost here is an assumption; the pilot replaces them.
+**The honest range: −56% to +18%.** It pays only if the bank hires fewer people or moves agents to other work. Small changes can turn the base case negative: 15% chat use gives −11%, and charging bad answers gives −3%. Every rate and cost is an assumption until real data replaces it.
 
 ---
 
 # Roadmap and the ask
 
-1. **Internal beta**, 2 days: 50 chats in Suggest-only mode, where an agent approves every answer
-2. **Pilot**, 5 days: 10 to 20 people measure the North Star ("Did this solve it?") against 40%
-3. **Ramp**: 1% → 5% → 25% → 100% of app users, one question type at a time, with a go/no-go at each step
-4. **Phase 2**: WhatsApp, a fresh hold-out test set, an OpenAI and Gemini bake-off, and a data-residency decision with Compliance
+1. **Evidence first:** bank employee interviews, public bank app reviews, and a new test written by someone else
+2. **Staff trial**, 2 days: 50 chats, with an agent approving every answer
+3. **Agent-first pilot**, 5 days: 10 to 20 people; count wrong answers and "Did this solve it?"
+4. **Customer ramp**: easy questions first, 1% → 5% → 25% → 100%, with a go/no-go at each step
+5. **On-premise phase**: an open model on the bank's servers, with the same tests, a real cost quote and a capacity test
 
 **The ask**
-- 10 to 20 pilot users and one contact-center agent for 2 weeks
-- A Compliance review of the guardrails and the fixed replies
-- A go/no-go decision after the pilot, on the North Star and fraud recall
+- 1 or 2 bank employees for interviews, and one agent for 2 weeks
+- A Compliance review of the guardrails and of where data can go
+- A go/no-go after the pilot, on the North Star and fraud recall

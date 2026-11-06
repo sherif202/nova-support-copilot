@@ -70,7 +70,7 @@ The first ROI of 9,485% was wrong and has been replaced. The new model counts on
 
 ## 5. Risk, law and the bank
 
-These can stop the project even if every other number is good. A missed fraud case costs a customer money, and a data leak is a crime under Banking Law 194 of 2020 (Art. 231).
+These can stop the project even if every other number is good. A later on-premise launch adds one more: an open model on the bank's own servers must pass every test again, with its own cost quote and capacity test. A missed fraud case costs a customer money, and a data leak is a crime under Banking Law 194 of 2020 (Art. 231).
 
 | # | Assumption | Status | Makes it if | Breaks it if | Real data to test it |
 | --- | --- | --- | --- | --- | --- |

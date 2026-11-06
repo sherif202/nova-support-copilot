@@ -66,7 +66,7 @@
   function run(c, on, rota) {
     var chatsMonth = A.contacts * A.inScope * c.adopt, scale = chatsMonth / NORM;
     var S = c.S, V = c.lens === "hire" ? A.hireValue : A.minutes * A.egpMin, hrs = [], backlog = 0;
-    var t = { chats: 0, resolved: 0, value: 0, bad: 0, autoAns: 0, autoBad: 0, hand: 0, asks: 0, big: 0, ai: 0, worstWait: 0, waitHrs: 0, peak: 0, need: [0, 0, 0] };
+    var t = { surge: 0, chats: 0, resolved: 0, value: 0, bad: 0, autoAns: 0, autoBad: 0, hand: 0, asks: 0, big: 0, ai: 0, worstWait: 0, waitHrs: 0, peak: 0, need: [0, 0, 0] };
     for (var d = 0; d < DAYS; d++) for (var h = 0; h < 24; h++) {
       var s = hourShape(d, h, on), chats = base(d, h) * scale * s.vol;
       var e = topic(bandsOf(EASY, s.nov), c, c.mode === 2), m = topic(bandsOf(MED, s.nov), c, c.mode >= 1);
@@ -81,6 +81,7 @@
       t.need[shift] = Math.max(t.need[shift], Math.ceil(load / capPerAgent));
       if (rota) {
         var cap = rota[shift] * capPerAgent;
+        t.surge += Math.max(0, load - cap) / A.concurrency * A.egpMin;
         backlog = Math.max(0, backlog + load - cap);
         wait = backlog / (rota[shift] * A.concurrency * s.staff);
       }
@@ -97,9 +98,9 @@
     t.p95 = A.p95Base + (c.big ? A.p95Big * Math.min(1, t.bigShare / .15) : 0);
     t.badCost = t.bad * c.badEq * V;
     t.cost = t.ai + A.fixed;
-    t.net = t.value - t.badCost - t.cost;
+    t.net = t.value - t.badCost - t.cost - t.surge;
     t.roiBefore = (t.value - t.cost) / t.cost;
-    t.roi = t.net / t.cost;
+    t.roi = t.net / (t.cost + t.surge);
     t.hrs = hrs;
     return t;
   }
@@ -108,7 +109,7 @@
     r.hrs.forEach(function (x) { rows[x.h < 8 ? 0 : x.h < 16 ? 1 : 2].push(x.load); });
     return rows.map(function (a) { a.sort(function (p, q) { return p - q; }); return Math.max(1, Math.ceil(a[Math.floor(a.length * .95)] / (60 * A.concurrency))); });
   }
-  var DEFAULTS = { thr: .7, big: false, ask: true, mode: 0, adopt: .2, lift: .1, badEq: 15, speed: 6, lens: "hire", S: 1 };
+  var DEFAULTS = { capacity: A.capacityPerMin, thr: .7, big: false, ask: true, mode: 0, adopt: .2, lift: .1, badEq: 15, speed: 6, lens: "hire", S: 1 };
   (function calibrate() { var r = run(DEFAULTS, {}, null); S_AT_DEFAULT = (A.contacts * A.inScope * DEFAULTS.adopt * .4) / r.resolved; DEFAULTS.S = S_AT_DEFAULT; })();
   function search(c, on) {
     var out = [];
@@ -153,7 +154,7 @@
     $("sim-presets").appendChild(b);
   });
   [["sim-ask", "ask"], ["sim-big", "big"]].forEach(function (x) { $(x[0]).addEventListener("change", function (e) { cfg[x[1]] = e.target.checked; draw(); }); });
-  [["sim-adopt", "adopt", 100], ["sim-lift", "lift", 100], ["sim-bad", "badEq", 1], ["sim-speed", "speed", 1]].forEach(function (x) {
+  [["sim-adopt", "adopt", 100], ["sim-lift", "lift", 100], ["sim-bad", "badEq", 1], ["sim-speed", "speed", 1], ["sim-cap", "capacity", 1]].forEach(function (x) {
     $(x[0]).addEventListener("input", function (e) { cfg[x[1]] = Number(e.target.value) / x[2]; draw(); });
   });
   var bestNow = null;
@@ -217,6 +218,7 @@
     $("sim-adopt").value = cfg.adopt * 100; $("sim-adoptv").textContent = Math.round(cfg.adopt * 100) + "% of in-scope";
     $("sim-lift").value = cfg.lift * 100; $("sim-liftv").textContent = Math.round(cfg.lift * 100) + "%";
     $("sim-bad").value = cfg.badEq; $("sim-badv").textContent = cfg.badEq;
+    $("sim-cap").value = cfg.capacity; $("sim-capv").textContent = cfg.capacity + " messages a minute";
     $("sim-speed").value = cfg.speed; $("sim-speedv").textContent = cfg.speed.toFixed(1) + " s";
 
     var rota = normalRota(cfg), r = run(cfg, on, rota), top = search(cfg, on), best = top[0] || null;
@@ -227,13 +229,13 @@
       "<b>Sweet spot: " + esc(describe(best.c)) + ".</b> " + egp(best.r.net - r.net) + " a month better than your settings.";
     if (best && best.r.worstWait > 5) $("sim-verdict").innerHTML += " Customers would still wait: add agents as the rota table shows.";
     $("sim-use").style.display = best && !same ? "" : "none";
-    var cap = r.peak / A.capacityPerMin;
+    var cap = r.peak / cfg.capacity;
     $("sim-tiles").innerHTML =
       tile("Net value a month", egp(r.net), "after bad answers and all costs", r.net >= 0 ? "ok" : "bad") +
       tile("Resolved chats", num(r.resolved), "of " + num(r.chats) + " chats") +
       tile("Bad answers reach customers", num(r.bad), "a month") +
       tile("Longest wait for a person", Math.round(r.worstWait) + " min", r.waitHrs + " hours over 5 min", r.worstWait > 5 ? "bad" : "ok") +
-      tile("Busiest minute", r.peak.toFixed(1) + " msgs", (cap * 100).toFixed(1) + "% of AI capacity") +
+      tile("Busiest minute", r.peak.toFixed(1) + " msgs", (cap * 100).toFixed(1) + "% of AI capacity", cap > 1 ? "bad" : "") +
       tile("Slowest 5% of replies", r.p95.toFixed(1) + " s", "pilot limit 6 s", r.p95 > 6 ? "warn" : "ok");
     heat(r);
     var names = ["Night, 00 to 08", "Day, 08 to 16", "Evening, 16 to 24"];
@@ -246,6 +248,7 @@
       "<tr><td>Running and build cost</td><td class=n>" + egp(-A.fixed) + "</td></tr>" +
       "<tr><td>ROI before bad answers (the ROI model's figure)</td><td class=n>" + pct(r.roiBefore) + "</td></tr>" +
       "<tr><td>Bad answers, each cancelling " + cfg.badEq + " good ones</td><td class=n>" + egp(-r.badCost) + "</td></tr>" +
+      "<tr><td>Extra agent time for surges</td><td class=n>" + egp(-r.surge) + "</td></tr>" +
       "<tr><td><b>Net value</b> (ROI " + pct(r.roi) + ")</td><td class=n><b>" + egp(r.net) + "</b></td></tr></tbody></table>";
     $("sim-top").innerHTML = "<table><thead><tr><th>Settings</th><th class=n>Net a month</th><th class=n>Bad answers</th><th class=n>Longest wait</th></tr></thead><tbody>" +
       top.slice(0, 3).map(function (t) { return "<tr><td>" + esc(describe(t.c)) + "</td><td class=n>" + egp(t.r.net) + "</td><td class=n>" + num(t.r.bad) + "</td><td class=n>" + Math.round(t.r.worstWait) + " min</td></tr>"; }).join("") + "</tbody></table>";

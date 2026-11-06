@@ -133,6 +133,28 @@ You change who presses send, the confidence level, the clear question and a bigg
 
 Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 5.5 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic, and it does not charge for customers left waiting, so read the money with the wait.
 
+## 8. Stress test (6 Nov 2026)
+
+The honest result is a range, −56% to +18%, and the base case has only 16% of headroom: it needs 1,824 resolved contacts a month and assumes 2,160.
+
+| If this changes | ROI, base case |
+| - | - |
+| Nothing: hiring really falls | +18% |
+| Bad answers are charged at 15 good ones | −3% |
+| An agent costs EGP 15,000 a month, not EGP 19,200 | −8% |
+| 15% start in chat, not 20% | −11% |
+| 30% of chats are resolved, not 40% | −11% |
+| Build costs EGP 3 million, not EGP 1.2 million | −23% |
+| Running costs EGP 120,000 a month, not EGP 60,000 | −28% |
+| Only minutes saved count | −56% |
+| Only 2% start in chat | −88% |
+
+**Why the two values differ.** 120 agents and 45,000 contacts is 25.6 paid minutes per contact, while the tickets show 9.6 minutes of handling. So agents do other work, or the brief's figures are off. Treat minutes saved as the floor and fewer hires as the ceiling. Real time-use data settles it.
+
+**Not costed yet:** the LLM judge, a security audit, legal work, agent training, change management and a real knowledge owner. Demand the chat creates and repeat contacts are not counted either. There is no priced comparison with a no-AI option, such as a status screen and card tracker.
+
+**On-premise (a later phase).** Claude and GPT cannot simply run inside the bank, so this likely means an open model on the bank's servers. Token costs would give way to servers, hosting and support, and the ROI must be redone from a real quote. The simulator's capacity slider shows what happens if the AI becomes the limit.
+
 ## Files
 
 - `lib/roi.js`: rollups, ROI, tiers, the three tracks, credits, and the ROI recommendations

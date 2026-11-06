@@ -26,8 +26,8 @@
 | 6 | Eval | Table, plus a small bar or big number: **75.9% → 97.1%** | `11-pm-panel-engineering-iterations.jpg` | "106 tests on every change, 10 gates. Fraud recall has been 100% in every run. 16 versions, each scored. I also tested whether it gives up too easily: 2 of 24 new questions went to a person." |
 | 7 | Guardrails | Icon list, 8 items (shield, lock, stop sign, person…) | `03-chat-franco-answer-and-fraud.jpg` | "Safety is layered: in code before the AI, in the prompt, and in code after it." |
 | 8 | Pricing | Two columns ("Per message" / "Per month"), plus a callout for the tiers and credits | `12-pm-roi.png` (crop the size tiers) | "AI is about two piasters per answer. The real cost is running and integrating it, EGP 93,333 a month by my assumptions. Size tiers and credits keep the AI part predictable." |
-| 9 | Business case | Table of low, base and high cases, big number: **1,824** break-even, then the caveat in a note box | `12-pm-roi.png` (crop the ROI tiles) | "This is a modest case, and I show it honestly. It pays only if the bank hires fewer people: plus 18% in the base case. On saved minutes alone it does not. The pilot replaces every assumption." |
-| 10 | Roadmap and ask | **Timeline** (beta → pilot → ramp → phase 2), then "The ask" as three bullets | `16-investigate-narrow.png` (optional) | "We stopped before real users on purpose. What we need is 20 pilot users, a Compliance review, and a go/no-go after the pilot." |
+| 9 | Business case | Table of low, base and high cases, big number: **1,824** break-even, then the caveat in a note box | `12-pm-roi.png` (crop the ROI tiles) | "The honest range is minus 56% to plus 18%. It pays only if the bank hires fewer people, and small changes can turn it negative. Real data replaces every assumption." |
+| 10 | Roadmap and ask | **Timeline** (evidence → staff trial → agent-first pilot → customer ramp → on-premise), then "The ask" as three bullets | `16-investigate-narrow.png` (optional) | "We stopped before real users on purpose. Next comes evidence, then agents first, and customers only when the numbers earn it. On-premise is a later phase with its own test and costs." |
 
 **Visual steps and selections, in short:** steps layout for the system design (slide 4), tables for choices and eval (5, 6), icons for guardrails (7), big numbers for pricing and the business case (8, 9), a timeline for the roadmap (10).
 
@@ -55,4 +55,8 @@ Backup if the Wi-Fi or API fails: use screenshots 13 to 20 and `12-pm-roi.png` i
 - **"Why did the ROI change?"** My first model showed 9,485%, which was wrong: it counted every contact as coming to the chat and left out the real running and build costs. I rebuilt it on a funnel, with three cases.
 - **"Won't it hand everything to a person?"** It did on my first test: 16 of 34. I added chat memory and one clarifying question, and 2 of 24 new questions went to a person. That set is small and I wrote it, so the pilot has to confirm it.
 - **"Data leaving Egypt?"** The pilot uses synthetic data only. Production needs Central Bank approval or a provider hosted in Egypt, and the vendor-neutral adapter makes switching a setting.
+- **"Which job goes away?"** None is promised. The base case frees about 5.8 agents' workload, and it becomes money only through fewer hires. Finance has to agree that rule first.
+- **"Why not a status screen?"** It may solve part of this with no AI. It is on the roadmap as a comparison, and I have not priced it yet.
+- **"Why agents first?"** It lowers the risk of a bad answer while we count wrong answers. Customers come when the numbers earn it.
+- **"Can it run on-premise?"** Not as built. It likely needs an open model on the bank's servers, which must pass every test again, with a real cost quote.
 - **"What did it cost to build?"** About US$2.46 in AI calls for all tests to date.

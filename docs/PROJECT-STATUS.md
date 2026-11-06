@@ -143,6 +143,7 @@ The ROI model and the investigator screens make no model calls.
 | Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt |
 | Fix the weak chat results (6 Nov) | Owner said continue | 1.0.15: SHIP on 2 runs |
 | Lock 1.0.15 and update everything (6 Nov) | Owner said ok | 1.0.15 is the baseline |
+| Apply the devil's advocate review (6 Nov): agents first; keep the 0.6 rule with an agent approving; evidence from interviews, app reviews and a classmate test; show ROI as a range; compare a no-AI option; on-premise as a later phase | Owner asked to update from the review; the recommended choices were applied | Roadmap, ROI and simulator updated |
 | Lock 1.0.14 and republish the claude.ai pages (6 Nov) | Owner said ok | 1.0.14 is the baseline, accepting p95 6.3 s as an item to watch |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.
@@ -151,6 +152,8 @@ Earlier decisions (Round 0, model choice, threshold, automation modes, product n
 
 - **All data is synthetic:** customers, transactions, disputes, tickets, policies, transaction rules, fees, branch hours and the cheque book price. The WhatsApp phrasing sheet is simulated, not real replies.
 - **No real users yet.** The 63% is an answer rate on synthetic tickets, last measured on 1.0.11. The North Star (verified resolution rate) has not been measured with real people.
+- **The 0.6 rule is unproven:** 1.0.15 answers at confidence 0.6 when a message matches a record, while labels at 0.60 to 0.69 were right only 13 of 32 times. These answers are now logged as `near_sure_answer`, so wrong ones can be counted.
+- **Small samples:** 13/13 fraud could really be about 77%, 33/34 grounded about 85%, and 2/24 handoffs up to about 25%.
 - **The ROI rests on assumptions:** chat adoption, resolution, agent cost, and the running and build costs are all estimates. It is positive only if hiring really falls, or in the high case.
 - **The hold-out was used once** (against 1.0.8: 6/7 grounded, a strict DO NOT SHIP because of one safe handoff). The next release check needs a fresh hold-out written by someone who hasn't seen the eval set.
 - **Not built or not run:** the LLM judge (a second model scoring answers), and the usability test with 5 Arabic or Franco-Arabic speakers.
@@ -167,9 +170,12 @@ Earlier decisions (Round 0, model choice, threshold, automation modes, product n
 
 Everything left needs people; none of it can be finished by the build alone.
 
+0. **Evidence before people use it:** 1 or 2 bank employee interviews, public bank app reviews, and a rough cost comparison with a no-AI status screen.
 1. **Internal beta (stage 7):** 5 to 10 classmates or colleagues, about 50 conversations in Suggest-only mode, including the pickers and the investigator, with fraud and complaint scenarios on purpose. About 2 days.
-2. **Pilot (stage 7):** 10 to 20 people with the scenario cards in Auto-answer mode, to measure "Did this solve your question?" against the 40% target. About 5 days. Present it as evidence, not statistical proof.
+2. **Agent-first pilot (stage 7):** 10 to 20 people with the scenario cards in Suggest-only mode, to count wrong answers and measure "Did this solve your question?" against the 40% target. About 5 days. Present it as evidence, not statistical proof.
 3. **Before or during the beta:** a fresh hold-out from a second person, and a shadow run on the current version with reworded tickets (about US$0.06).
-4. **Case study (portfolio):** the two-page write-up, best written after the pilot so it has a real result.
+4. **Customer ramp:** easy questions first, only when the pilot numbers earn it.
+5. **On-premise phase:** an open model on the bank's servers, the same tests, a real cost quote and a capacity test.
+6. **Case study (portfolio):** the two-page write-up, best written after the pilot so it has a real result.
 
 To restart: follow the README to run the app (`node server.js`), reset the demo as the README says, then follow `docs/DEMO-SCRIPT.md` and the beta plan on the stage 7 page.
