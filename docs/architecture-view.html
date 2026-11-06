@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova AI Architecture</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* One message read left to right across four lanes: who sees it, what code does, what AI does, what data it touches. Palette from the project map. */
+:root {
+  --bg: #f4f6f5; --surface: #ffffff; --ink: #16201f; --muted: #5b6867; --line: #d5dcdb; --wire: #6f8886;
+  --accent: #0e6b70; --accent-soft: #e0efee; --ai: #4b2ea6; --ai-soft: #ece7fb; --on-ai: #ffffff; --part-soft: #f8eed8; --risk: #a8321f; --risk-soft: #fbe9e5;
+  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735; --wire: #7f9896;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --on-ai: #15102b; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735; --wire: #7f9896;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --on-ai: #15102b; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 22px 16px 28px; display: grid; gap: 14px; }
+h1 { margin: 0; font-family: var(--display); font-size: clamp(24px, 3.2vw, 34px); line-height: 1.15; text-wrap: balance; }
+p { margin: 0; color: var(--muted); max-width: 86ch; }
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+.tile { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; display: grid; align-content: start; }
+.tile b { font-size: 23px; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 13px; color: var(--muted); }
+.tile.big { border-color: var(--ai); background: var(--ai-soft); }
+.arrow { align-self: center; color: var(--muted); }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 6px; }
+svg { display: block; width: 100%; min-width: 980px; height: auto; font-family: var(--sans); }
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figcaption { font-size: 13.5px; color: var(--muted); }
+.lane { stroke: var(--line); fill: none; }
+.lane.code { fill: var(--accent-soft); stroke: none; }
+.lane.ai { fill: var(--ai-soft); stroke: none; }
+.lane.data { fill: var(--part-soft); stroke: none; }
+.box { fill: var(--surface); stroke: var(--wire); }
+.box.ai { fill: var(--ai); stroke: var(--ai); }
+.box.alert { fill: var(--risk-soft); stroke: var(--risk); }
+.ln { fill: none; stroke: var(--wire); stroke-width: 2; }
+.ln.alert { stroke: var(--risk); stroke-dasharray: 6 4; }
+.chip { fill: var(--surface); stroke: var(--wire); }
+.chip.ai { stroke: var(--ai); stroke-width: 1.6; }
+text { fill: var(--ink); }
+text.t { font-size: 14px; font-weight: 600; }
+text.t.ai, text.file.ai { fill: var(--on-ai); }
+text.file { fill: var(--muted); font: 500 11px var(--mono); }
+text.lane-n { font-size: 15px; font-weight: 700; }
+text.lane-s { fill: var(--muted); font-size: 12.5px; }
+text.lane-s2 { fill: var(--muted); font: 500 11px var(--mono); letter-spacing: .04em; }
+text.lb { fill: var(--muted); font-size: 12.5px; font-style: italic; }
+text.chip-t { font-size: 12.5px; font-weight: 500; }
+text.n { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+text.n2 { fill: var(--muted); font-size: 11.5px; }
+</style></head><body>
+<div class="wrap">
+  <h1>How Nova's AI works, one message at a time</h1>
+  <p>Read from left to right. Only 2 of 7 steps use AI. Code decides, checks and protects. The AI only reads what code hands it and writes a draft.</p>
+  <div class="flow"><div class="tile"><b>45,000</b><span>contacts a month</span></div><span class="arrow" aria-hidden="true">→</span><div class="tile"><b>27,000</b><span>fees, disputes, cards</span></div><span class="arrow" aria-hidden="true">→</span><div class="tile"><b>5,400</b><span>start in chat (base case)</span></div><span class="arrow" aria-hidden="true">→</span><div class="tile"><b>0.6 to 2.1</b><span>messages in the busiest minute: normal month, then outage</span></div><span class="arrow" aria-hidden="true">→</span><div class="tile big"><b>370+</b><span>messages a minute the AI can take</span></div></div>
+  <figure>
+    <div class="scroll"><svg viewBox="0 0 1240 620" role="img" aria-label="A message passes from the customer through input checks and the fraud check in code, to the AI for understanding, back to code for routing and lookup, to the AI for the answer, back to code for checks, then to the customer. Fraud, complaints, unsure cases and failed checks go to people.">
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
+<rect x="10" y="20" width="1220" height="110" rx="10" class="lane people"/>
+<text x="22" y="54" class="lane-n" text-anchor="start">PEOPLE</text>
+<text x="22" y="74" class="lane-s" text-anchor="start">see it</text>
+<text x="22" y="92" class="file" text-anchor="start">browser</text>
+<rect x="10" y="150" width="1220" height="120" rx="10" class="lane code"/>
+<text x="22" y="184" class="lane-n" text-anchor="start">CODE</text>
+<text x="22" y="204" class="lane-s" text-anchor="start">decides</text>
+<text x="22" y="222" class="file" text-anchor="start">our server</text>
+<rect x="10" y="285" width="1220" height="110" rx="10" class="lane ai"/>
+<text x="22" y="319" class="lane-n" text-anchor="start">AI</text>
+<text x="22" y="339" class="lane-s" text-anchor="start">reads and writes</text>
+<text x="22" y="357" class="file" text-anchor="start">lib/model.js</text>
+<rect x="10" y="410" width="1220" height="100" rx="10" class="lane data"/>
+<text x="22" y="444" class="lane-n" text-anchor="start">DATA</text>
+<text x="22" y="464" class="lane-s" text-anchor="start">stored</text>
+<text x="22" y="482" class="file" text-anchor="start">bank systems</text>
+<path d="M190 108V210H256" class="ln" marker-end="url(#a)"/>
+<path d="M364 210H376" class="ln" marker-end="url(#a)"/>
+<path d="M434 177V112" class="ln alert" marker-end="url(#a)"/>
+<path d="M434 243V340H500" class="ln" marker-end="url(#a)"/>
+<path d="M608 340H678V247" class="ln" marker-end="url(#a)"/>
+<path d="M678 177V112" class="ln alert" marker-end="url(#a)"/>
+<path d="M730 210H744" class="ln" marker-end="url(#a)"/>
+<path d="M800 427V247" class="ln" marker-end="url(#a)"/>
+<path d="M852 210H922V303" class="ln" marker-end="url(#a)"/>
+<path d="M922 427V377" class="ln" marker-end="url(#a)"/>
+<path d="M556 427V377" class="ln" marker-end="url(#a)"/>
+<path d="M974 340H1044V247" class="ln" marker-end="url(#a)"/>
+<path d="M1096 210H1166V112" class="ln" marker-end="url(#a)"/>
+<path d="M1070 243V460H1110" class="ln" marker-end="url(#a)"/>
+<path d="M1044 177V75H734" class="ln alert" marker-end="url(#a)"/>
+<text x="442" y="148" class="lb" text-anchor="start">fraud words</text>
+<text x="686" y="148" class="lb" text-anchor="start">unsure or complaint</text>
+<text x="884" y="68" class="lb" text-anchor="middle">a check fails</text>
+<rect x="138.0" y="42" width="104" height="66" rx="8" class="box "/>
+<text x="190" y="70" class="t " text-anchor="middle">Customer asks</text>
+<text x="190" y="89" class="file " text-anchor="middle">public/app.js</text>
+<rect x="382.0" y="42" width="104" height="66" rx="8" class="box alert"/>
+<text x="434" y="70" class="t alert" text-anchor="middle">Fraud team</text>
+<text x="434" y="89" class="file alert" text-anchor="middle">instant, no AI</text>
+<rect x="626.0" y="42" width="104" height="66" rx="8" class="box alert"/>
+<text x="678" y="70" class="t alert" text-anchor="middle">Agent inbox</text>
+<text x="678" y="89" class="file alert" text-anchor="middle">with summary</text>
+<rect x="1114.0" y="42" width="104" height="66" rx="8" class="box "/>
+<text x="1166" y="70" class="t " text-anchor="middle">Reply in chat</text>
+<text x="1166" y="89" class="file " text-anchor="middle">public/app.js</text>
+<rect x="260.0" y="177" width="104" height="66" rx="8" class="box "/>
+<text x="312" y="205" class="t " text-anchor="middle">Check input</text>
+<text x="312" y="224" class="file " text-anchor="middle">lib/guard.js</text>
+<rect x="382.0" y="177" width="104" height="66" rx="8" class="box "/>
+<text x="434" y="205" class="t " text-anchor="middle">Fraud first</text>
+<text x="434" y="224" class="file " text-anchor="middle">lib/fraud.js</text>
+<rect x="626.0" y="177" width="104" height="66" rx="8" class="box "/>
+<text x="678" y="205" class="t " text-anchor="middle">Route</text>
+<text x="678" y="224" class="file " text-anchor="middle">server.js</text>
+<rect x="748.0" y="177" width="104" height="66" rx="8" class="box "/>
+<text x="800" y="205" class="t " text-anchor="middle">Look up</text>
+<text x="800" y="224" class="file " text-anchor="middle">lib/lookup.js</text>
+<rect x="992.0" y="177" width="104" height="66" rx="8" class="box "/>
+<text x="1044" y="205" class="t " text-anchor="middle">Check reply</text>
+<text x="1044" y="224" class="file " text-anchor="middle">lib/checks.js</text>
+<rect x="504.0" y="307" width="104" height="66" rx="8" class="box ai"/>
+<text x="556" y="335" class="t ai" text-anchor="middle">Understand</text>
+<text x="556" y="354" class="file ai" text-anchor="middle">prompts/</text>
+<rect x="870.0" y="307" width="104" height="66" rx="8" class="box ai"/>
+<text x="922" y="335" class="t ai" text-anchor="middle">Answer</text>
+<text x="922" y="354" class="file ai" text-anchor="middle">prompts/</text>
+<rect x="504.0" y="427" width="104" height="66" rx="8" class="box "/>
+<text x="556" y="455" class="t " text-anchor="middle">Topic list</text>
+<text x="556" y="474" class="file " text-anchor="middle">knowledge/</text>
+<rect x="748.0" y="427" width="104" height="66" rx="8" class="box "/>
+<text x="800" y="455" class="t " text-anchor="middle">Records</text>
+<text x="800" y="474" class="file " text-anchor="middle">data/*.json</text>
+<rect x="870.0" y="427" width="104" height="66" rx="8" class="box "/>
+<text x="922" y="455" class="t " text-anchor="middle">Bank rules</text>
+<text x="922" y="474" class="file " text-anchor="middle">knowledge/</text>
+<rect x="1114.0" y="427" width="104" height="66" rx="8" class="box "/>
+<text x="1166" y="455" class="t " text-anchor="middle">Masked log</text>
+<text x="1166" y="474" class="file " text-anchor="middle">logs/*.jsonl</text>
+<text x="22" y="545" class="lane-s2" text-anchor="start">DATA BECOMES</text>
+<text x="22" y="595" class="lane-s2" text-anchor="start">NUMBERS</text>
+<rect x="138" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="190" y="546" class="chip-t" text-anchor="middle">Text</text>
+<text x="190" y="590" class="n" text-anchor="middle">5,400 chats</text>
+<text x="190" y="608" class="n2" text-anchor="middle">a month</text>
+<rect x="260" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="312" y="546" class="chip-t" text-anchor="middle">Masked text</text>
+<text x="312" y="590" class="n" text-anchor="middle">20 messages</text>
+<text x="312" y="608" class="n2" text-anchor="middle">a minute, each</text>
+<rect x="382" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="434" y="546" class="chip-t" text-anchor="middle">Masked text</text>
+<text x="434" y="590" class="n" text-anchor="middle">0 AI calls</text>
+<text x="434" y="608" class="n2" text-anchor="middle">for fraud</text>
+<rect x="504" y="528" width="104" height="26" rx="13" class="chip ai"/>
+<text x="556" y="546" class="chip-t ai" text-anchor="middle">JSON label</text>
+<text x="556" y="590" class="n" text-anchor="middle">1 AI call</text>
+<text x="556" y="608" class="n2" text-anchor="middle">label, confidence</text>
+<rect x="626" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="678" y="546" class="chip-t" text-anchor="middle">Decision</text>
+<text x="678" y="590" class="n" text-anchor="middle">890 asked</text>
+<text x="678" y="608" class="n2" text-anchor="middle">1,100 to a person</text>
+<rect x="748" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="800" y="546" class="chip-t" text-anchor="middle">JSON records</text>
+<text x="800" y="590" class="n" text-anchor="middle">Top 5</text>
+<text x="800" y="608" class="n2" text-anchor="middle">own records only</text>
+<rect x="870" y="528" width="104" height="26" rx="13" class="chip ai"/>
+<text x="922" y="546" class="chip-t ai" text-anchor="middle">JSON answer</text>
+<text x="922" y="590" class="n" text-anchor="middle">1 AI call</text>
+<text x="922" y="608" class="n2" text-anchor="middle">1 retry at most</text>
+<rect x="992" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="1044" y="546" class="chip-t" text-anchor="middle">Checked text</text>
+<text x="1044" y="590" class="n" text-anchor="middle">8 checks</text>
+<text x="1044" y="608" class="n2" text-anchor="middle">numbers, sources</text>
+<rect x="1114" y="528" width="104" height="26" rx="13" class="chip"/>
+<text x="1166" y="546" class="chip-t" text-anchor="middle">Text + log</text>
+<text x="1166" y="590" class="n" text-anchor="middle">2,160</text>
+<text x="1166" y="608" class="n2" text-anchor="middle">resolved a month</text>
+</svg></div>
+    <figcaption><b>Plain words</b> in bold, with the code location under each box. A reply takes 2.9 s typically and 5.5 s for the slowest 5%, and costs about EGP 0.015 a chat. The AI can take over 170 times the busiest minute today, so agents are the limit: 1 per shift in a normal month. Capacity is for the pilot cloud account; on the bank's own servers it needs a new test. Volumes are base-case assumptions, and all data is synthetic.</figcaption>
+  </figure>
+</div>
+</body></html>
