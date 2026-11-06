@@ -1,254 +1,256 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nova Project Map</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* One transit map: the 9 stages are the line, the copilot is the central station, proof and hand-over hang below it.
-   Palette and type follow the Nova stage reports. */
 :root {
-  --bg: #f5f6f8; --surface: #ffffff; --ink: #15202b; --muted: #59677a; --line: #c5cdd6;
-  --lin: #4b2ea6; --lin-soft: #ece7fb; --on-lin: #ffffff;
-  --cont: #0e6b70; --cont-soft: #dff0ef;
-  --gate: #1e7a3a; --warn: #8a5a00; --risk: #b42318; --risk-soft: #fdecea;
-  --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --bg: #f4f6f5; --surface: #ffffff; --ink: #16201f; --muted: #5b6867; --line: #d5dcdb; --wire: #9fb5b3;
+  --accent: #0e6b70; --accent-soft: #e0efee;
+  --done: #2b7340; --done-soft: #e4f2e7; --part: #8a5a00; --part-soft: #f8eed8; --wait: #6b5d8f; --wait-soft: #ece8f5; --risk: #a8321f; --risk-soft: #fbe9e5;
+  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #3a4653;
-  --lin: #b3a0ff; --lin-soft: #2a2247; --on-lin: #15102b;
-  --cont: #5cc3c4; --cont-soft: #15383a; --gate: #6fd08a; --warn: #f2c063; --risk: #ff8a80; --risk-soft: #3d1c1a;
-  color-scheme: dark; } }
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735; --wire: #3f5553;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --done: #79d18f; --done-soft: #17311f; --part: #f1c063; --part-soft: #382c12; --wait: #b9a9e8; --wait-soft: #2a2440; --risk: #ff9a85; --risk-soft: #3d1f19; color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --bg: #0f141a; --surface: #171e26; --ink: #e5eaf0; --muted: #9aa7b6; --line: #3a4653;
-  --lin: #b3a0ff; --lin-soft: #2a2247; --on-lin: #15102b;
-  --cont: #5cc3c4; --cont-soft: #15383a; --gate: #6fd08a; --warn: #f2c063; --risk: #ff8a80; --risk-soft: #3d1c1a;
-  color-scheme: dark; }
+  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735; --wire: #3f5553;
+  --accent: #5fc2c4; --accent-soft: #163a3a; --done: #79d18f; --done-soft: #17311f; --part: #f1c063; --part-soft: #382c12; --wait: #b9a9e8; --wait-soft: #2a2440; --risk: #ff9a85; --risk-soft: #3d1f19; color-scheme: dark; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
-.wrap { max-width: 1280px; margin: 0 auto; padding: 24px 16px 32px; display: grid; gap: 14px; }
-h1 { margin: 0; font-size: clamp(24px, 3vw, 32px); letter-spacing: -0.01em; text-wrap: balance; }
-p { margin: 0; color: var(--muted); max-width: 75ch; }
-figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
-.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
-svg { display: block; width: 100%; min-width: 980px; height: auto; font-family: var(--sans); }
-figcaption { font-size: 13px; color: var(--muted); }
-.key { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin: 0 5px 0 12px; vertical-align: -1px; }
-.key:first-child { margin-left: 0; }
-a:focus-visible circle { stroke: var(--ink); stroke-width: 3; }
-.bx { fill: var(--bg); stroke: var(--line); }
-.core { fill: var(--cont-soft); stroke: var(--cont); stroke-width: 2; }
-.next { fill: none; stroke: var(--warn); stroke-dasharray: 6 5; stroke-width: 1.5; }
-.step { fill: var(--surface); stroke: var(--cont); }
-.step.ai { fill: var(--lin); stroke: var(--lin); }
-.oc { fill: var(--surface); stroke: var(--cont); }
-.oc.pers { stroke: var(--risk); fill: var(--risk-soft); }
-.chip { fill: var(--surface); stroke: var(--line); }
-.ln { fill: none; stroke: var(--muted); stroke-width: 1.6; }
-.ln.ai { stroke: var(--lin); stroke-width: 2; }
-.ln.tiny { stroke-width: 1.2; }
-.ln.dash { stroke: var(--warn); stroke-dasharray: 5 4; }
-.ln.stopl { stroke: var(--risk); }
-.track { fill: none; stroke: var(--ink); stroke-width: 6; }
-.track.later { stroke: var(--line); stroke-dasharray: 2 9; stroke-linecap: round; }
-.stn { stroke: var(--surface); stroke-width: 3; }
-.stn.ok { fill: var(--gate); }
-.stn.wa { fill: var(--warn); }
-.num { fill: var(--surface); font: 600 15px var(--mono); }
-.num.sm { font-size: 13px; }
-text { fill: var(--ink); }
-text.k { fill: var(--muted); font: 500 12px var(--mono); letter-spacing: .05em; }
-text.h { font-size: 17px; font-weight: 700; }
-text.h2 { font-size: 15px; font-weight: 600; }
-text.s { fill: var(--muted); font-size: 14px; }
-text.s2 { fill: var(--muted); font-size: 12px; }
-text.b { font-size: 15px; }
-text.b2 { font-size: 14px; }
-text.lb { fill: var(--muted); font-size: 13px; font-style: italic; }
-text.st { font-size: 13px; font-weight: 600; }
-text.st2 { fill: var(--muted); font-size: 11.5px; }
-text.st.ai, text.st2.ai { fill: var(--on-lin); }
-text.oc-t, text.chip-t { font-size: 13.5px; }
-text.stop { fill: var(--risk); font-size: 14px; font-weight: 700; }
-</style></head><body>
-<div class="wrap">
-  <h1>Nova Bank support copilot: the whole project on one map</h1>
-  <p>Built and tested end to end on synthetic data, and stopped before real users. Nova Bank is fictional. Read it from the top; tap a numbered station to open that stage.</p>
-  <figure>
-    <div class="scroll">
-<svg viewBox="0 0 1240 880" role="img" aria-label="A map of the Nova project. The problem leads to a line of 9 lifecycle stages. The data, model, prompts and screens stages feed the copilot, a 7-step path with 2 AI steps. Tests, a shadow run, the PM panel with ROI and improvement form a loop under it. Below are the finished materials and the next steps that need real people.">
-<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
-<rect x="20" y="16" width="380" height="92" rx="10" class="bx"/>
-<text x="36" y="40" class="k" text-anchor="start">THE PROBLEM</text>
-<text x="36" y="66" class="h" text-anchor="start">45,000 contacts a month</text>
-<text x="36" y="90" class="s" text-anchor="start">27,000 are about fees, disputes and cards</text>
-<rect x="430" y="16" width="380" height="92" rx="10" class="bx"/>
-<text x="446" y="40" class="k" text-anchor="start">THE BET</text>
-<text x="446" y="66" class="h" text-anchor="start">Answer those 3 topics in chat</text>
-<text x="446" y="90" class="s" text-anchor="start">Arabic, English, Franco. Fraud always goes to a person</text>
-<rect x="840" y="16" width="380" height="92" rx="10" class="bx"/>
-<text x="856" y="40" class="k" text-anchor="start">THE ONE NUMBER</text>
-<text x="856" y="66" class="h" text-anchor="start">Verified resolution: target 40%</text>
-<text x="856" y="90" class="s" text-anchor="start">Measured only by real customers, not yet</text>
-<path d="M400 62H426" class="ln" marker-end="url(#a)"/>
-<path d="M810 62H836" class="ln" marker-end="url(#a)"/>
-<path d="M80 108V145" class="ln" marker-end="url(#a)"/>
-<path d="M80 165H890" class="track"/><path d="M890 165H1160" class="track later"/>
-<path d="M350 232V270H838" class="ln ai"/>
-<path d="M485 232V270" class="ln ai"/>
-<text x="548" y="262" class="lb" text-anchor="start">model and prompts steer the 2 AI steps</text>
-<path d="M215 232V296" class="ln" marker-end="url(#a)"/>
-<text x="225" y="262" class="lb" text-anchor="start">feeds</text>
-<path d="M755 232V248H1125V296" class="ln" marker-end="url(#a)"/>
-<text x="905" y="241" class="lb" text-anchor="start">what people see and use</text>
-<a href="https://claude.ai/artifact/FvT86SqEcuLC6KVfzQ6BNy" target="_blank" rel="noopener"><circle cx="80" cy="165" r="18" class="stn ok"/><text x="80" y="170" class="num" text-anchor="middle">1</text></a>
-<text x="80" y="204" class="h2" text-anchor="middle">Problem</text>
-<text x="80" y="222" class="s2" text-anchor="middle">done</text>
-<a href="https://claude.ai/artifact/FBBRS3vAxXKeoyuHYAvfmV" target="_blank" rel="noopener"><circle cx="215" cy="165" r="18" class="stn ok"/><text x="215" y="170" class="num" text-anchor="middle">2</text></a>
-<text x="215" y="204" class="h2" text-anchor="middle">Data</text>
-<text x="215" y="222" class="s2" text-anchor="middle">done</text>
-<a href="https://claude.ai/artifact/4FM2y9GX6SNPWAsczpxaqP" target="_blank" rel="noopener"><circle cx="350" cy="165" r="18" class="stn ok"/><text x="350" y="170" class="num" text-anchor="middle">3</text></a>
-<text x="350" y="204" class="h2" text-anchor="middle">Model</text>
-<text x="350" y="222" class="s2" text-anchor="middle">done</text>
-<a href="https://claude.ai/artifact/NhdfWzDawYvz2Lmz5kWJpe" target="_blank" rel="noopener"><circle cx="485" cy="165" r="18" class="stn ok"/><text x="485" y="170" class="num" text-anchor="middle">4</text></a>
-<text x="485" y="204" class="h2" text-anchor="middle">Prompts</text>
-<text x="485" y="222" class="s2" text-anchor="middle">done</text>
-<a href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM" target="_blank" rel="noopener"><circle cx="620" cy="165" r="18" class="stn ok"/><text x="620" y="170" class="num" text-anchor="middle">5</text></a>
-<text x="620" y="204" class="h2" text-anchor="middle">Tests</text>
-<text x="620" y="222" class="s2" text-anchor="middle">SHIP</text>
-<a href="https://claude.ai/artifact/Awz9kYQoouNCUxLtV9Vt8J" target="_blank" rel="noopener"><circle cx="755" cy="165" r="18" class="stn wa"/><text x="755" y="170" class="num" text-anchor="middle">6</text></a>
-<text x="755" y="204" class="h2" text-anchor="middle">Screens</text>
-<text x="755" y="222" class="s2" text-anchor="middle">built, no user test</text>
-<a href="https://claude.ai/artifact/W9iVJro6RubTC5YLv3q5p9" target="_blank" rel="noopener"><circle cx="890" cy="165" r="18" class="stn wa"/><text x="890" y="170" class="num" text-anchor="middle">7</text></a>
-<text x="890" y="204" class="h2" text-anchor="middle">Launch</text>
-<text x="890" y="222" class="s2" text-anchor="middle">shadow run only</text>
-<a href="https://claude.ai/artifact/7kcLoCA3NiVNtwt7TARBXD" target="_blank" rel="noopener"><circle cx="1025" cy="165" r="18" class="stn wa"/><text x="1025" y="170" class="num" text-anchor="middle">8</text></a>
-<text x="1025" y="204" class="h2" text-anchor="middle">Monitor</text>
-<text x="1025" y="222" class="s2" text-anchor="middle">no real data yet</text>
-<a href="https://claude.ai/artifact/Ag4ck7Zewupv2pxSUrBMYb" target="_blank" rel="noopener"><circle cx="1160" cy="165" r="18" class="stn wa"/><text x="1160" y="170" class="num" text-anchor="middle">9</text></a>
-<text x="1160" y="204" class="h2" text-anchor="middle">Improve</text>
-<text x="1160" y="222" class="s2" text-anchor="middle">on tests only</text>
-<text x="890" y="131" class="stop" text-anchor="middle">We stopped here</text>
-<path d="M890 137V144" class="ln stopl" marker-end="url(#a)"/>
-<rect x="20" y="300" width="230" height="240" rx="10" class="bx"/>
-<text x="36" y="326" class="k" text-anchor="start">THE DATA (synthetic)</text>
-<text x="36" y="356" class="b" text-anchor="start">50 customers</text>
-<text x="36" y="384" class="b" text-anchor="start">520 transactions</text>
-<text x="36" y="412" class="b" text-anchor="start">15 disputes</text>
-<text x="36" y="440" class="b" text-anchor="start">200 labelled tickets</text>
-<text x="36" y="468" class="b" text-anchor="start">20 policy documents</text>
-<text x="36" y="496" class="b" text-anchor="start">50 approved examples</text>
-<rect x="280" y="300" width="720" height="240" rx="14" class="core"/>
-<text x="296" y="328" class="h" text-anchor="start">The copilot, version 1.0.14</text>
-<rect x="292" y="345" width="92" height="62" rx="8" class="step"/>
-<text x="338" y="372" class="st" text-anchor="middle">Check input</text>
-<text x="338" y="391" class="st2" text-anchor="middle">masks cards</text>
-<path d="M384 376H391" class="ln tiny" marker-end="url(#a)"/>
-<rect x="392" y="345" width="92" height="62" rx="8" class="step"/>
-<text x="438" y="372" class="st" text-anchor="middle">Fraud first</text>
-<text x="438" y="391" class="st2" text-anchor="middle">word list</text>
-<path d="M484 376H491" class="ln tiny" marker-end="url(#a)"/>
-<rect x="492" y="345" width="92" height="62" rx="8" class="step ai"/>
-<text x="538" y="372" class="st ai" text-anchor="middle">Understand</text>
-<text x="538" y="391" class="st2 ai" text-anchor="middle">AI</text>
-<path d="M584 376H591" class="ln tiny" marker-end="url(#a)"/>
-<rect x="592" y="345" width="92" height="62" rx="8" class="step"/>
-<text x="638" y="372" class="st" text-anchor="middle">Route</text>
-<text x="638" y="391" class="st2" text-anchor="middle">rules in code</text>
-<path d="M684 376H691" class="ln tiny" marker-end="url(#a)"/>
-<rect x="692" y="345" width="92" height="62" rx="8" class="step"/>
-<text x="738" y="372" class="st" text-anchor="middle">Look up</text>
-<text x="738" y="391" class="st2" text-anchor="middle">own records</text>
-<path d="M784 376H791" class="ln tiny" marker-end="url(#a)"/>
-<rect x="792" y="345" width="92" height="62" rx="8" class="step ai"/>
-<text x="838" y="372" class="st ai" text-anchor="middle">Answer</text>
-<text x="838" y="391" class="st2 ai" text-anchor="middle">AI</text>
-<path d="M884 376H891" class="ln tiny" marker-end="url(#a)"/>
-<rect x="892" y="345" width="92" height="62" rx="8" class="step"/>
-<text x="938" y="372" class="st" text-anchor="middle">Check reply</text>
-<text x="938" y="391" class="st2" text-anchor="middle">8 checks</text>
-<path d="M250 442H738V411" class="ln" marker-end="url(#a)"/>
-<text x="296" y="435" class="lb" text-anchor="start">only this customer&#x27;s records and Nova&#x27;s rules</text>
-<rect x="292" y="462" width="170" height="32" rx="16" class="oc"/>
-<text x="377.0" y="483" class="oc-t" text-anchor="middle">Answer, with its sources</text>
-<rect x="470" y="462" width="150" height="32" rx="16" class="oc"/>
-<text x="545.0" y="483" class="oc-t" text-anchor="middle">Tap your record</text>
-<rect x="628" y="462" width="170" height="32" rx="16" class="oc"/>
-<text x="713.0" y="483" class="oc-t" text-anchor="middle">One clear question</text>
-<rect x="806" y="462" width="182" height="32" rx="16" class="oc pers"/>
-<text x="897.0" y="483" class="oc-t" text-anchor="middle">A person, with a summary</text>
-<text x="296" y="522" class="s" text-anchor="start">Only 2 of 7 steps use AI. Whatever must never go wrong is plain code.</text>
-<path d="M1000 400H1026" class="ln" marker-end="url(#a)"/>
-<path d="M838 270V341" class="ln ai" marker-end="url(#a)"/>
-<path d="M538 270V341" class="ln ai" marker-end="url(#a)"/>
-<rect x="1030" y="300" width="190" height="240" rx="10" class="bx"/>
-<text x="1046" y="326" class="k" text-anchor="start">THE SCREENS</text>
-<text x="1046" y="356" class="b" text-anchor="start">Customer chat</text>
-<text x="1046" y="384" class="b" text-anchor="start">Agent inbox</text>
-<text x="1046" y="412" class="b" text-anchor="start">PM control panel</text>
-<text x="1046" y="440" class="b" text-anchor="start">Record picker</text>
-<text x="1046" y="468" class="b" text-anchor="start">Investigator screens</text>
-<text x="1046" y="496" class="b" text-anchor="start">Talk to a person</text>
-<rect x="20" y="596" width="285" height="116" rx="10" class="bx"/>
-<circle cx="46" cy="620" r="13" class="stn ok"/><text x="46" y="625" class="num sm" text-anchor="middle">5</text>
-<text x="68" y="626" class="h" text-anchor="start">Tests</text>
-<text x="36" y="652" class="b2" text-anchor="start">106 cases, 10 gates: SHIP</text>
-<text x="36" y="673" class="b2" text-anchor="start">Fraud 13/13, attacks 18/18</text>
-<text x="36" y="694" class="b2" text-anchor="start">Handoff test: 1 of 27 (small set)</text>
-<rect x="325" y="596" width="285" height="116" rx="10" class="bx"/>
-<circle cx="351" cy="620" r="13" class="stn wa"/><text x="351" y="625" class="num sm" text-anchor="middle">7</text>
-<text x="373" y="626" class="h" text-anchor="start">Shadow run</text>
-<text x="341" y="652" class="b2" text-anchor="start">200 synthetic tickets</text>
-<text x="341" y="673" class="b2" text-anchor="start">63% answered, not proof of solved</text>
-<text x="341" y="694" class="b2" text-anchor="start">0 of 16 fraud cases missed</text>
-<rect x="630" y="596" width="285" height="116" rx="10" class="bx"/>
-<circle cx="656" cy="620" r="13" class="stn wa"/><text x="656" y="625" class="num sm" text-anchor="middle">8</text>
-<text x="678" y="626" class="h" text-anchor="start">PM panel and ROI</text>
-<text x="646" y="652" class="b2" text-anchor="start">Base case: 2,160 resolved a month</text>
-<text x="646" y="673" class="b2" text-anchor="start">+18% if hiring falls, -56% if not</text>
-<text x="646" y="694" class="b2" text-anchor="start">Break-even: 1,824 to 4,869</text>
-<rect x="935" y="596" width="285" height="116" rx="10" class="bx"/>
-<circle cx="961" cy="620" r="13" class="stn wa"/><text x="961" y="625" class="num sm" text-anchor="middle">9</text>
-<text x="983" y="626" class="h" text-anchor="start">Improve</text>
-<text x="951" y="652" class="b2" text-anchor="start">15 versions, each scored</text>
-<text x="951" y="673" class="b2" text-anchor="start">1 rejected and rolled back</text>
-<text x="951" y="694" class="b2" text-anchor="start">AI spend so far: about US$2.28</text>
-<path d="M305 654H323" class="ln" marker-end="url(#a)"/>
-<path d="M610 654H628" class="ln" marker-end="url(#a)"/>
-<path d="M915 654H933" class="ln" marker-end="url(#a)"/>
-<path d="M300 540V568H162V592" class="ln" marker-end="url(#a)"/>
-<text x="310" y="560" class="lb" text-anchor="start">every version is tested</text>
-<path d="M860 540V568H772V592" class="ln" marker-end="url(#a)"/>
-<text x="870" y="560" class="lb" text-anchor="start">every chat is logged and costed</text>
-<path d="M1077 712V736H162V716" class="ln" marker-end="url(#a)"/>
-<text x="620" y="730" class="lb" text-anchor="middle">every change goes back through the tests</text>
-<rect x="20" y="760" width="780" height="104" rx="10" class="bx"/>
-<text x="36" y="784" class="k" text-anchor="start">READY TO SHOW</text>
-<rect x="36" y="796" width="196" height="26" rx="13" class="chip"/>
-<text x="134.0" y="814" class="chip-t" text-anchor="middle">Gamma deck, 10 slides</text>
-<rect x="242" y="796" width="150" height="26" rx="13" class="chip"/>
-<text x="317.0" y="814" class="chip-t" text-anchor="middle">Presenter guide</text>
-<rect x="402" y="796" width="134" height="26" rx="13" class="chip"/>
-<text x="469.0" y="814" class="chip-t" text-anchor="middle">Arabic report</text>
-<rect x="546" y="796" width="150" height="26" rx="13" class="chip"/>
-<text x="621.0" y="814" class="chip-t" text-anchor="middle">Live local demo</text>
-<rect x="36" y="830" width="150" height="26" rx="13" class="chip"/>
-<text x="111.0" y="848" class="chip-t" text-anchor="middle">Lifecycle pages</text>
-<rect x="196" y="830" width="182" height="26" rx="13" class="chip"/>
-<text x="287.0" y="848" class="chip-t" text-anchor="middle">Stage 1 assumptions</text>
-<rect x="388" y="830" width="110" height="26" rx="13" class="chip"/>
-<text x="443.0" y="848" class="chip-t" text-anchor="middle">ROI page</text>
-<rect x="508" y="830" width="170" height="26" rx="13" class="chip"/>
-<text x="593.0" y="848" class="chip-t" text-anchor="middle">GitHub repository</text>
-<rect x="830" y="760" width="390" height="104" rx="10" class="next"/>
-<text x="846" y="784" class="k" text-anchor="start">NEXT: NEEDS REAL PEOPLE</text>
-<text x="846" y="812" class="b2" text-anchor="start">Staff trial, about 50 chats</text>
-<text x="1034" y="812" class="b2" text-anchor="start">A new test by someone else</text>
-<text x="846" y="840" class="b2" text-anchor="start">Pilot, 10 to 20 people</text>
-<text x="1034" y="840" class="b2" text-anchor="start">Two-page case study</text>
-<path d="M1180 712V756" class="ln dash" marker-end="url(#a)"/>
-</svg>
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14.5px; line-height: 1.5; }
+a { color: var(--accent); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 26px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-family: var(--display); font-size: clamp(26px, 4vw, 38px); line-height: 1.15; }
+h2 { font-size: 13px; font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+header { display: grid; gap: 10px; }
+.lede { color: var(--muted); max-width: 70ch; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { font-family: var(--mono); font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.pill.ok { color: var(--done); border-color: var(--done); background: var(--done-soft); }
+.pill.warn { color: var(--part); border-color: var(--part); background: var(--part-soft); }
+
+/* Lifecycle spine */
+.spine { position: relative; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 8px; }
+.spine::before { content: ""; position: absolute; left: 4%; right: 4%; top: 19px; height: 3px; background: var(--wire); border-radius: 2px; }
+.stage { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; text-decoration: none; color: var(--ink); min-width: 0; }
+.dot { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-weight: 600; font-size: 15px; border: 3px solid; background: var(--surface); position: relative; z-index: 1; }
+.stage.done .dot { color: var(--done); border-color: var(--done); background: var(--done-soft); }
+.stage.part .dot { color: var(--part); border-color: var(--part); background: var(--part-soft); }
+.stage.wait .dot { color: var(--wait); border-color: var(--wait); background: var(--wait-soft); }
+.stage b { font-size: 12.5px; line-height: 1.25; }
+.stage small { font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+.stage:hover b { text-decoration: underline; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.phases { display: grid; grid-template-columns: 4fr 2fr 3fr; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; }
+.phases span { border-top: 1px dashed var(--line); padding-top: 4px; }
+
+/* The map */
+.map { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: "prod safe qual" "docs hub biz" "learn hub next"; gap: 22px 26px; }
+.map svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.map svg.wires path { fill: none; stroke: var(--wire); stroke-width: 2; stroke-dasharray: 5 5; }
+.card { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card h3 { font-size: 15.5px; display: flex; align-items: center; gap: 8px; }
+.card h3 .ic { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 14px; flex: none; }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.card li { font-size: 13.5px; }
+.card .from { display: flex; flex-wrap: wrap; gap: 5px; }
+.card .from span { font-family: var(--mono); font-size: 10.5px; padding: 1px 6px; border-radius: 5px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+.num { font-family: var(--mono); font-weight: 600; }
+.hub { grid-area: hub; align-self: center; background: var(--accent); color: #fff; border: 0; text-align: center; justify-items: center; padding: 26px 20px; border-radius: 16px; gap: 12px; }
+:root[data-theme="dark"] .hub, :root:not([data-theme="light"]) .hub { color: #fff; }
+.hub h3 { font-family: var(--display); font-size: 24px; justify-content: center; color: #fff; }
+.hub p { font-size: 13.5px; opacity: .92; max-width: 34ch; }
+.hub .flow { display: grid; gap: 4px; width: 100%; max-width: 300px; text-align: left; }
+.hub .flow div { display: flex; gap: 8px; align-items: center; font-size: 12.5px; background: rgba(255,255,255,.12); border-radius: 7px; padding: 4px 9px; }
+.hub .flow em { font-style: normal; font-family: var(--mono); font-size: 10.5px; padding: 0 6px; border-radius: 4px; background: rgba(255,255,255,.22); margin-left: auto; }
+.prod { grid-area: prod; } .safe { grid-area: safe; } .qual { grid-area: qual; } .docs { grid-area: docs; } .biz { grid-area: biz; } .learn { grid-area: learn; } .next { grid-area: next; }
+.card.next { border-color: var(--part); }
+.card.next h3 .ic { background: var(--part-soft); color: var(--part); }
+.links { display: grid; gap: 3px; font-size: 13.5px; }
+.links a { text-decoration: none; } .links a:hover { text-decoration: underline; }
+.warnline { font-size: 12.5px; color: var(--risk); background: var(--risk-soft); border-radius: 7px; padding: 6px 9px; }
+footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; max-width: 90ch; }
+
+@media (max-width: 900px) {
+  .map { grid-template-columns: minmax(0, 1fr); grid-template-areas: "hub" "prod" "safe" "qual" "biz" "docs" "learn" "next"; gap: 14px; }
+  .map svg.wires { display: none; }
+  .map::before { content: ""; position: absolute; left: 22px; top: 20px; bottom: 20px; width: 2px; background: var(--wire); }
+  .card:not(.hub) { margin-left: 40px; }
+}
+@media (max-width: 760px) {
+  .spine { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .spine::before { left: 19px; right: auto; top: 10px; bottom: 10px; width: 3px; height: auto; }
+  .stage { grid-template-columns: 40px minmax(0, 1fr); justify-items: start; text-align: left; column-gap: 12px; row-gap: 0; }
+  .stage .dot { grid-row: span 2; }
+  .phases { display: none; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header>
+  <p class="eyebrow">Nova Bank support copilot · project map · 6 Nov 2026</p>
+  <h1>Everything built, tested and written, on one page</h1>
+  <p class="lede">An AI copilot that answers three repeat banking questions (fees, disputes, cards) in Arabic, English and Franco-Arabic, from the customer's own records, and hands everything else to a person. Built along a 9-stage lifecycle. Nova Bank is fictional and all data is synthetic.</p>
+  <div class="pills">
+    <span class="pill ok">Version 1.0.14 · locked baseline</span>
+    <span class="pill ok">Release test: SHIP, 106 cases</span>
+    <span class="pill warn">Synthetic data only</span>
+    <span class="pill warn">Stopped before the staff trial</span>
+    <span class="pill">AI spend to date ≈ US$2.28</span>
+  </div>
+</header>
+
+<section style="display:grid;gap:14px" aria-labelledby="h-spine">
+  <h2 id="h-spine">The lifecycle: 9 stages, each one links to its report</h2>
+  <nav class="spine" aria-label="Lifecycle stages">
+    <a class="stage done" href="https://claude.ai/artifact/FvT86SqEcuLC6KVfzQ6BNy"><span class="dot">1</span><b>Problem framing</b><small>Go, narrowly. Triple Fit 4/4/3</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/FBBRS3vAxXKeoyuHYAvfmV"><span class="dot">2</span><b>Data prep</b><small>50 customers, 520 transactions</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/4FM2y9GX6SNPWAsczpxaqP"><span class="dot">3</span><b>Model choice</b><small>Claude Haiku 5.5, vendor-neutral</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/NhdfWzDawYvz2Lmz5kWJpe"><span class="dot">4</span><b>Prompt design</b><small>15 scored versions</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM"><span class="dot">5</span><b>Evaluation</b><small>SHIP on 1.0.14</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/Awz9kYQoouNCUxLtV9Vt8J"><span class="dot">6</span><b>Integration &amp; UX</b><small>Chat, inbox, pickers</small></a>
+    <a class="stage part" href="https://claude.ai/artifact/W9iVJro6RubTC5YLv3q5p9"><span class="dot">7</span><b>Staged launch</b><small>Shadow run done; trial needs people</small></a>
+    <a class="stage wait" href="https://claude.ai/artifact/7kcLoCA3NiVNtwt7TARBXD"><span class="dot">8</span><b>Monitoring</b><small>Panel built; no live traffic</small></a>
+    <a class="stage wait" href="https://claude.ai/artifact/Ag4ck7Zewupv2pxSUrBMYb"><span class="dot">9</span><b>Iteration</b><small>Fix loop built; waits on users</small></a>
+  </nav>
+  <div class="phases" aria-hidden="true"><span>Frame &amp; build</span><span>Prove</span><span>Ship &amp; run</span></div>
+  <div class="legend"><span><i style="background:var(--done)"></i>Done</span><span><i style="background:var(--part)"></i>Partly done</span><span><i style="background:var(--wait)"></i>Built, waiting for real users</span><span><a href="https://claude.ai/artifact/EBrZY2HKgRuvSn2qruGPkh">Full lifecycle plan ›</a></span></div>
+</section>
+
+<section style="display:grid;gap:14px" aria-labelledby="h-map">
+  <h2 id="h-map">How the parts connect</h2>
+  <div class="map" id="map">
+    <svg class="wires" id="wires" aria-hidden="true"></svg>
+
+    <div class="card hub" id="hub">
+      <h3>The copilot</h3>
+      <p>A fixed 7-step workflow. The AI is used at only 2 steps; code checks everything around it.</p>
+      <div class="flow">
+        <div>1 · Mask personal data<em>code</em></div>
+        <div>2 · Fraud check first<em>code</em></div>
+        <div>3 · Understand the question<em>AI</em></div>
+        <div>4 · Look up own records + rules<em>code</em></div>
+        <div>5 · Write the answer<em>AI</em></div>
+        <div>6 · Check every number &amp; word<em>code</em></div>
+        <div>7 · Reply, ask, or hand to a person<em>code</em></div>
+      </div>
     </div>
-    <figcaption><span class="key" style="background:var(--gate)"></span>finished <span class="key" style="background:var(--warn)"></span>started, waits for real people <span class="key" style="background:var(--lin)"></span>AI step. All results are from synthetic data; ROI rates and costs are assumptions until the bank or the pilot replaces them. Figures as of 6 Nov 2026.</figcaption>
-  </figure>
-</div>
-</body></html>
+
+    <div class="card prod" data-wire>
+      <h3><span class="ic">◎</span>What the customer and agent get</h3>
+      <ul>
+        <li>Chat in Arabic, English and Franco, with "Why this answer?"</li>
+        <li>Pickers: tap the exact transaction, card or dispute</li>
+        <li>Transaction investigator: why pending or declined, "waiting for money"</li>
+        <li>Chat memory and one clarifying question (1.0.14)</li>
+        <li>Agent inbox with a handoff summary; modes Off / Suggest / Auto</li>
+      </ul>
+      <div class="from"><span>Stage 6</span><span>Stage 4</span></div>
+    </div>
+
+    <div class="card safe" data-wire>
+      <h3><span class="ic">⛨</span>Guardrails</h3>
+      <ul>
+        <li>Fraud goes first, to a person, with no AI</li>
+        <li>No source, no answer: no guessed amounts or dates</li>
+        <li>Never says "approved", "refunded" or "waived"</li>
+        <li>Only the logged-in customer's data (Banking Law 194/2020)</li>
+        <li>Card numbers masked; 20 messages a minute per customer</li>
+      </ul>
+      <div class="from"><span>Stage 1</span><span>Stage 5</span></div>
+    </div>
+
+    <div class="card qual" data-wire>
+      <h3><span class="ic">✓</span>Proof so far</h3>
+      <ul>
+        <li>Release test <span class="num">106</span> cases: fraud <span class="num">13/13</span>, security <span class="num">18/18</span>, intent <span class="num">98.5%</span>, grounded <span class="num">94.1%</span></li>
+        <li>Fresh handoff test: <span class="num">1 of 27</span> to a person</li>
+        <li>Shadow run: <span class="num">63%</span> answered (an answer rate, not resolution), <span class="num">0 of 16</span> fraud missed</li>
+      </ul>
+      <p class="warnline">Today's harder mix handed off more, and replies at the slow end take 6.3 s (limit 6 s).</p>
+      <div class="from"><span>Stage 5</span><span>Stage 7</span></div>
+    </div>
+
+    <div class="card biz" data-wire>
+      <h3><span class="ic">£</span>Cost and business case</h3>
+      <ul>
+        <li>About <span class="num">EGP 0.02</span> per answer; capacity ≈ <span class="num">3,100</span> messages a minute</li>
+        <li>ROI, base case: <span class="num">+18%</span> if hiring falls, <span class="num">−56%</span> on minutes alone</li>
+        <li>Break-even: <span class="num">1,824 to 4,869</span> resolved contacts a month</li>
+        <li>The first figure of 9,485% was wrong and is withdrawn</li>
+      </ul>
+      <div class="links"><a href="https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o">ROI model page ›</a></div>
+      <div class="from"><span>Stage 3</span><span>Stage 8</span></div>
+    </div>
+
+    <div class="card docs" data-wire>
+      <h3><span class="ic">▤</span>Documents and pages</h3>
+      <div class="links">
+        <a href="https://claude.ai/artifact/1fmpoF6c2CenqNq957s61n">Stage reports hub</a>
+        <a href="https://claude.ai/artifact/UdDFfWZ76qyuptWnLmkEEh">Telos UX critique</a>
+        <a href="https://claude.ai/artifact/QpNi4oSstWvDX9yPijBGMg">Stage 1: 44 assumptions to test (doc)</a>
+        <a href="https://claude.ai/artifact/CztGFYHK1NEWe8HGruTLDU">Test sheet for the live app</a>
+        <a href="https://claude.ai/artifact/54J4dNWjcLxdyaFYGrhqjc">Arabic plain-language report</a>
+        <a href="https://gamma.app/docs/eral37qipt0tdck">Gamma deck (10 slides)</a>
+        <a href="https://github.com/sherif202/nova-support-copilot">GitHub repository</a>
+      </div>
+    </div>
+
+    <div class="card learn" data-wire>
+      <h3><span class="ic">↻</span>How it keeps improving</h3>
+      <ul>
+        <li>Every failure becomes a test case, and its fix goes into Nova's own files</li>
+        <li>No release unless the release test says SHIP; 1.0.10 was rolled back</li>
+        <li>PM panel: quality, cost per request, handoff reasons, alerts</li>
+      </ul>
+      <div class="from"><span>Stage 8</span><span>Stage 9</span></div>
+    </div>
+
+    <div class="card next" data-wire>
+      <h3><span class="ic">→</span>What's next (needs real people)</h3>
+      <ul>
+        <li>Fix today's weak cases, then rerun the tests</li>
+        <li>Real anonymised data from the instructor (see the 44 assumptions)</li>
+        <li>Staff trial in Suggest-only mode, then a small pilot</li>
+        <li>A fresh test set written by someone else</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>Every figure comes from synthetic data in this project. It shows the pipeline works, not how real customers behave. Business figures use placeholder costs until the bank's numbers replace them.</footer>
+</main>
+
+<script>
+(function () {
+  var map = document.getElementById('map'), svg = document.getElementById('wires'), hub = document.getElementById('hub');
+  function draw() {
+    if (getComputedStyle(svg).display === 'none') { svg.innerHTML = ''; return; }
+    var m = map.getBoundingClientRect(), h = hub.getBoundingClientRect();
+    var hx = h.left + h.width / 2 - m.left, hy = h.top + h.height / 2 - m.top;
+    var out = '';
+    map.querySelectorAll('[data-wire]').forEach(function (c) {
+      var r = c.getBoundingClientRect();
+      var cx = r.left + r.width / 2 - m.left, cy = r.top + r.height / 2 - m.top;
+      var mx = (hx + cx) / 2;
+      out += '<path d="M' + hx + ' ' + hy + ' C ' + mx + ' ' + hy + ', ' + mx + ' ' + cy + ', ' + cx + ' ' + cy + '"/>';
+    });
+    svg.setAttribute('viewBox', '0 0 ' + m.width + ' ' + m.height);
+    svg.innerHTML = out;
+  }
+  window.addEventListener('resize', draw);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  draw();
+})();
+</script>
+</body>
+</html>
