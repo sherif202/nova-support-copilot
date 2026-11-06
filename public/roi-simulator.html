@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Load Simulator</title>
+<link rel="stylesheet" href="roi-simulator.css">
+</head><body><div class="shell">
+<p><a href="/?view=pm&amp;focus=roi">Back to the ROI model</a></p>
+<section class="sim" id="sim">
+  <div class="sim-group">
+    <h2>A month at the bank, hour by hour: find the sweet spot</h2>
+    <p class="sim-lede">This simulates 720 hours of chat, day and night, weekends and special events. Turn on an event or change a setting to see what happens to the load, the agents, the bad answers and the money. The month is an example and the rates are assumptions, so it shows how the choices trade off, not a forecast. The same settings always give the same result.</p>
+  </div>
+
+  <div class="sim-verdict"><div id="sim-verdict"></div><button type="button" id="sim-use">Use the sweet spot</button></div>
+  <div class="sim-tiles" id="sim-tiles"></div>
+
+  <div class="sim-cols">
+    <div class="sim-panel">
+      <div class="sim-group"><h3>Try a month</h3><div class="sim-seg" id="sim-presets"></div></div>
+      <div class="sim-group"><h3>Special events</h3><div id="sim-events" class="sim-group"></div></div>
+      <div class="sim-group"><h3>Who presses send?</h3><div class="sim-seg" id="sim-mode"></div></div>
+      <div class="sim-group"><h3>Answer only when confidence is at least</h3><div class="sim-seg" id="sim-thr"></div></div>
+      <div class="sim-group">
+        <h3>When it is unsure</h3>
+        <label class="sim-check"><input type="checkbox" id="sim-ask"><span>Ask one clear question first</span></label>
+        <label class="sim-check"><input type="checkbox" id="sim-big"><span>Try a bigger model first</span></label>
+      </div>
+      <div class="sim-group">
+        <h3>Assumptions you can move</h3>
+        <label class="sim-range"><span>Contacts that use chat: <b id="sim-adoptv"></b></span><input type="range" id="sim-adopt" min="5" max="50" step="5"></label>
+        <label class="sim-range"><span>Bigger model rescues: <b id="sim-liftv"></b> of unsure chats</span><input type="range" id="sim-lift" min="0" max="40" step="5"></label>
+        <label class="sim-range"><span>One bad answer cancels: <b id="sim-badv"></b> good ones</span><input type="range" id="sim-bad" min="5" max="25" step="5"></label>
+        <label class="sim-range"><span>Slowest reply we accept: <b id="sim-speedv"></b></span><input type="range" id="sim-speed" min="6.3" max="10" step="0.1"></label>
+      </div>
+      <div class="sim-group"><h3>Count the value as</h3><div class="sim-seg" id="sim-lens"></div></div>
+    </div>
+
+    <div class="sim-panel">
+      <h3>Chats in each hour of the month</h3>
+      <div class="sim-map" id="sim-map"></div>
+      <p class="sim-note">Darker means more chats. A red square means customers wait over 5 minutes for a person. Hover a square for the numbers.</p>
+
+      <div class="sim-two">
+        <div class="sim-group">
+          <h3>Agents on chat duty</h3>
+          <div class="sim-scroll" id="sim-rota"></div>
+          <p class="sim-note">The normal rota covers the busy hours of an ordinary month. The AI itself is never the limit: agents are.</p>
+        </div>
+        <div class="sim-group sim-tri">
+          <h3>Cost, quality, speed: pick 2</h3>
+          <div id="sim-tri"></div>
+        </div>
+      </div>
+
+      <div class="sim-group">
+        <h3>Where the month's money goes</h3>
+        <div class="sim-scroll" id="sim-money"></div>
+        <p class="sim-note">Busier months can show more value here, because more chats get resolved. This table does not charge for red squares, where customers are left waiting, so read it with the map.</p>
+      </div>
+
+      <div class="sim-group">
+        <h3>Best settings for this month</h3>
+        <div class="sim-scroll" id="sim-top"></div>
+        <p class="sim-note" id="sim-rule"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-group">
+    <h3>The product-sense rules behind it</h3>
+    <div class="sim-prin">
+      <div><b>Ask who presses send</b>Suggest-only needs about 6 in 10 right. When the AI acts alone the bar here is 24 in 25.</div>
+      <div><b>One bad answer undoes 15 good</b>Every bad answer is charged at 15 good ones in the money table.</div>
+      <div><b>Make being wrong cheaper</b>The clear question, the record cards and "Talk to a person" let the customer fix it.</div>
+      <div><b>If checking takes as long as doing, it fails</b>Suggest-only counts 1.5 agent minutes for each check, so it saves less.</div>
+      <div><b>Cost, quality, latency: pick 2</b>A bigger model may lift quality, but it costs more and slows the reply.</div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Every assumption in this simulator</summary>
+    <div class="sim-scroll sim-top8"><table>
+      <thead><tr><th>Assumption</th><th>Value</th><th>Where it comes from</th></tr></thead>
+      <tbody>
+        <tr><td>Contacts, in scope, agents, agent cost</td><td>45,000 · 60% · 120 · EGP 2 a minute</td><td>Nova brief and the ROI model</td></tr>
+        <tr><td>Running and build cost</td><td>EGP 93,333 a month</td><td>ROI model assumption</td></tr>
+        <tr><td>AI cost</td><td>EGP 0.015 a chat; bigger model EGP 0.10</td><td>Shadow run and bake-off on synthetic data</td></tr>
+        <tr><td>Slowest 5% of replies</td><td>6.3 s, up to 2.2 s more with a bigger model</td><td>6.3 s measured in the eval; the extra is an estimate</td></tr>
+        <tr><td>Bigger model rescues</td><td>10% of unsure chats</td><td>Estimate. In our tests bigger models scored no better, so this could be 0</td></tr>
+        <tr><td>Answers right, confidence 0.6 to 0.69</td><td>41%</td><td>Measured: 13 of 32 labels right. Other bands are estimates</td></tr>
+        <tr><td>Safety checks catch a wrong answer</td><td>80%; a person catches 90% of the rest</td><td>Estimate</td></tr>
+        <tr><td>A clear question rescues</td><td>60% of unsure chats</td><td>Estimate</td></tr>
+        <tr><td>Right answer closes the contact</td><td>Set so a normal month gives the ROI base case: 2,160 resolved</td><td>Ties this page to the ROI model</td></tr>
+        <tr><td>Hours of the day, weekdays, salary days, events</td><td>Example pattern, Sunday to Thursday work week</td><td>Estimate. Replace with the bank's real contact log</td></tr>
+        <tr><td>Agent handling</td><td>9.6 minutes a chat, 1.5 chats at once</td><td>Tickets, and an estimate</td></tr>
+      </tbody>
+    </table></div>
+  </details>
+  <div class="sim-tip" id="sim-tip"></div>
+</section>
+</div>
+<script src="roi-simulator.js"></script>
+</body></html>

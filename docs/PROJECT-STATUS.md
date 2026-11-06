@@ -12,6 +12,7 @@
 | Feature | Since | Where to read |
 | - | - | - |
 | Answers fee, dispute, card and maintenance questions from the customer's own records and Nova's rules, in Arabic, English and Franco-Arabic; fraud, complaints and anything unsure go to a person | 1.0.0 to 1.0.11 | `prompts/CHANGELOG.md`, stage pages 5 and 6 |
+| Load simulator: a month hour by hour with events, agents needed and the sweet spot | 6 Nov | `docs/ROI-MODEL.md` section 7, `public/roi-simulator.html` |
 | Chat memory (3 turns, 30 minutes, masked) and one clarifying question before a handoff | 1.0.14 | Stage 6 page, `tools/handoff-test.mjs` |
 | Customer chat, agent inbox and PM control panel; the 3 UX pillars; Telos critique | Stage 6 | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | ROI model in the PM panel, with request-level cost attribution | 31 Oct | `docs/ROI-MODEL.md` |

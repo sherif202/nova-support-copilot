@@ -60,6 +60,7 @@ Version **1.0.14** (6 Nov 2026): eval SHIP on 106 cases (fraud 13/13, security 1
 | `lib/investigate.js` · `knowledge/nova-transaction-rules.md` · `data/transaction-details.json` | The transaction investigator (1.0.13; on by default, `INVESTIGATE=off` turns it off): guided narrowing, one transaction explained, "I'm waiting for money", handoff with a summary. See `docs/INVESTIGATOR.md`. |
 | `lib/picker.js` | The record picker: the customer's own transactions, cards and disputes as cards to tap, key facts in bold (1.0.12). |
 | `docs/ROI-MODEL.md` · `lib/roi.js` · `lib/roi-config.js` | The ROI model in the PM panel: request-level cost attribution, low, base and high scenarios, break-even, size tiers, what to track, credits (assumptions until the bank replaces them). |
+| `public/roi-simulator.html` | The load simulator: 720 hours of chat with special events, and the sweet spot (assumptions, no AI calls). See `docs/ROI-MODEL.md`. |
 | `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |
 | `docs/stages/` | Visual stage reports 5 to 9 (open `docs/stages/index.html`). |
 | `docs/telos/critique-card.html` | The screens critiqued against Nova's Key Results with the Telos method. |

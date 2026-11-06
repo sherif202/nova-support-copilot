@@ -80,6 +80,10 @@
       : "Live data from the turn log; resolved = the customer said \"solved\".";
     const s = section("ROI model", `${source} Assumptions to replace with the bank's numbers (lib/roi-config.js): agent time EGP ${a.agent_egp_per_minute.toFixed(2)} a minute, running cost EGP ${a.fixed_monthly_egp.toLocaleString("en-US")} a month, build EGP ${a.build_egp.toLocaleString("en-US")}, EGP ${a.egp_per_usd} per US$.`);
     s.id = "roi";
+    const simLink = document.createElement("a");
+    simLink.href = "/roi-simulator.html";
+    simLink.textContent = "Open the load simulator: a month hour by hour, events, and the sweet spot";
+    s.appendChild(simLink);
     if (!R.conversations) {
       s.append(el("p", "hint", "No conversations yet. Tick \"Load sample\" to see the model on the 1.0.11 shadow run."));
       return s;

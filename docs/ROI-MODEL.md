@@ -125,6 +125,14 @@ The cost measures below come from the 1.0.11 shadow run on 200 conversations. Th
 
 The most expensive conversations are single messages (no long loops); the very first one in the run cost the most because it wrote the prompt cache.
 
+## 7. The load simulator
+
+The ROI model above is one average month. The simulator (`public/roi-simulator.html`, linked from the ROI section of the PM panel and included in the published ROI page) plays 720 hours of chat, with the day and night pattern, weekends, salary days and 8 events: Ramadan, the yearly fee day, new fee rules, a phishing wave, Eid, a card network outage, an app outage and a White Friday sale.
+
+You change who presses send, the confidence level, the clear question and a bigger model. It reports net value, bad answers, agents needed by shift and the wait for a person, and it compares 48 setting combinations to find the sweet spot. It charges each bad answer at 15 good ones, and a setting must keep AI-sent answers at 24 in 25 or better and stay within the reply time you accept. A normal month with today's settings matches the base case: 2,160 resolved, +18% before bad answers.
+
+Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 6.3 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic, and it does not charge for customers left waiting, so read the money with the wait.
+
 ## Files
 
 - `lib/roi.js`: rollups, ROI, tiers, the three tracks, credits, and the ROI recommendations
@@ -132,3 +140,4 @@ The most expensive conversations are single messages (no long loops); the very f
 - `data/roi-sample.json`: the sample (no message text), rebuilt with `node tools/build_roi_sample.mjs`
 - `server.js`: the attribution fields in the turn log
 - `public/pm.js`: the ROI section and the "Load sample" switch
+- `public/roi-simulator.html`, `.css`, `.js`: the load simulator (separate files because the app's security policy blocks inline code)
