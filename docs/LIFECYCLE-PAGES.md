@@ -18,6 +18,7 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | Telos critique card | https://claude.ai/artifact/UdDFfWZ76qyuptWnLmkEEh |
 | MVP architecture | https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R |
 | Project map, the whole project on one page | https://claude.ai/artifact/4xyA3HqMUM8vH4puF5xmnH |
+| Demo Day slides | https://claude.ai/artifact/F1hLyH87E8sr3tjxhxsghW |
 | AI architecture in one view | https://claude.ai/artifact/TYD2KXddHWin8NPLFcvcj9 |
 | ROI model and load simulator | https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o |
 | Stage 1 assumptions | https://claude.ai/artifact/GoAEwW55p8wyPGjXAmvNfv |
