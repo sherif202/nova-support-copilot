@@ -348,7 +348,7 @@ for (const id of ["S3", "S6"]) {
 const JUNK_REPLY = { J1: "Please type your question.", J3: "Please keep your message under 1,000 characters." };
 for (const c of cases.filter((c) => c.kind === "junk")) {
   const r = c.reply;
-  c.pass = JUNK_REPLY[c.id] ? r.answer_text === JUNK_REPLY[c.id] : (r.action === "handoff" || r.answer_text === "Please type your question.") && !(r.sources || []).length;
+  c.pass = JUNK_REPLY[c.id] ? r.answer_text === JUNK_REPLY[c.id] : (r.action === "handoff" || r.reply_id === "R-ASK" || r.answer_text === "Please type your question.") && !(r.sources || []).length;
   if (!c.pass) fail(c, `got "${r.answer_text.slice(0, 80)}"`);
 }
 

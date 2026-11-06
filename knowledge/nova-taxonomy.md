@@ -59,6 +59,8 @@ A higher priority always wins. A message that mentions a fee AND a payment the c
 
 | Message | Wrong label | Right label | Why |
 | - | - | - | - |
+| the machine stopped me taking out the rest of my cash | general.info | txn.status | A limit or a refused withdrawal is about one of the customer's own transactions. Added 1.0.14 |
+| the shop cancelled my order, where's that money now? | dispute.status | txn.status | No dispute was opened: this asks about a cancelled or reversed payment. Added 1.0.14 |
 | the restaurant didn't take my card at lunch, why? | service.status | txn.status | One specific payment that was declined is explained from the records. A card declined abroad with no specific payment is still service.status (check the notices). Added 1.0.13 |
 | my brother sent me money and it's not here | transfer.any | txn.incoming | Money coming in to the customer's own account is in scope. transfer.any is for sending money, or another person's account. Added 1.0.13 |
 | there's a pending amount from a hotel on my account | fee.explain | txn.status | A pending, declined or reversed payment is txn.status. fee.explain is for Nova's own fees. Added 1.0.13 |

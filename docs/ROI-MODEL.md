@@ -2,7 +2,9 @@
 
 The PM control panel has an **ROI model** section (PM control panel tab, below the recommendations). It answers four questions from the same log: what the copilot is worth, what it costs, where the cost goes, and when a flat budget stops holding. No model call; everything is a rollup.
 
-**All money figures beyond the token costs are synthetic assumptions** (`lib/roi-config.js`). Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets (the last shadow run). Live data uses the current version (1.0.13); the turn log also counts the record picker, and the investigator has its own metrics in the panel.
+**All money figures beyond the token costs are assumptions** (`lib/roi-config.js`) until the bank or the pilot replaces them. Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets (the last shadow run). Live data uses the current version (1.0.14); the turn log also counts the record picker, and the investigator has its own metrics in the panel.
+
+**Correction, 6 Nov 2026.** The first version of this model showed an ROI of 9,485%. That number was wrong, and the mistake was mine. It multiplied the shadow's 63% by all 45,000 contacts, as if every contact came to the chat, was in scope and was resolved. It set the running cost at EGP 5,000 a month and left out building and connecting to the bank. This page replaces it.
 
 Screenshot: [`docs/screenshots/12-pm-roi.png`](screenshots/12-pm-roi.png). To see it: run the app, open the PM control panel and tick **Load sample**, or open `http://localhost:3000/?view=pm&sample=1&focus=roi` for the ROI section on its own.
 
@@ -20,29 +22,60 @@ Every customer message is logged once in `logs/messages.jsonl`, with stable fiel
 | `model_ids`, `provider`, `deployment` | Which models ran, the vendor, and the mode (off, suggest, auto) |
 | `tokens`, `retries`, `latency_ms` | Tokens in and out, answer retries, time to reply |
 | `cost_usd`, `cost_egp` | Cost of the request, at the exchange rate in `lib/prices.js` |
-| `outcome` | answered, handoff, fraud or fixed_reply |
+| `outcome` | answered, handoff, fraud, fixed_reply or asked (a clarifying question) |
 | `verified_resolved` | Joined at rollup time from `logs/feedback.jsonl` ("Did this solve your question?"), because the log is append-only |
 
 The message text stays masked as before (no full card number is ever saved), and no key is ever logged. Lines written before these fields existed are filled in from the older fields, so old logs still roll up (`lib/roi.js`, `recordsFromTurns`).
 
 **Rollups from the same records:** cost per customer, per workflow, per conversation (to spot long loops and runaway retries), per prompt version, and cost per successful answer (AI cost ÷ resolved conversations).
 
-## 2. The ROI formula
+## 2. The ROI model
 
-- **Value** = resolved conversations × agent minutes for that workflow × agent cost per minute.
-  Agent minutes per workflow are the averages of `resolution_minutes` in the 200 labelled tickets, the same minutes the shadow script counts as saved.
-- **ROI** = (value − AI cost − fixed cost) ÷ (AI cost + fixed cost), per month, projected to the monthly volume in the config.
-- **Payback volume** = fixed monthly cost ÷ (value per conversation − AI cost per conversation): the conversations a month needed to cover the fixed cost.
+**The funnel.** Not every contact reaches the copilot, and not every chat ends the problem:
 
-| Assumption (synthetic) | Value |
+45,000 contacts → 60% in scope (27,000) → share that start in chat → share of those chats resolved with no repeat contact in 7 days
+
+| Case | Start in chat | Resolved | Resolved contacts a month |
+| - | - | - | - |
+| Low | 10% | 25% | 675 |
+| Base | 20% | 40% | 2,160 |
+| High | 35% | 55% | 5,198 |
+
+The 40% is the North Star target. None of these three rates has been measured; the pilot measures them. The shadow's 63% is not used here, because it is an answer rate on synthetic tickets.
+
+**Two ways to count the value**, because the question is what the bank really gets:
+
+- **Talk time only:** resolved contacts × 9.6 agent minutes × EGP 2 a minute = EGP 19.19 for each one. This counts only the minutes spent on the contact.
+- **If hiring really falls:** each contact resolved is 1 of the 375 contacts an agent handles a month (45,000 ÷ 120 agents). At EGP 19,200 a month for an agent (160 hours at EGP 2 a minute), that is EGP 51.2 for each one. This counts the whole paid month, and it is true only if the bank hires fewer people.
+
+**ROI** = (value − cost) ÷ cost, per month. **Break-even** = the resolved contacts a month where the value covers the cost.
+
+| Assumption | Value |
 | - | - |
-| Agent cost | EGP 2.00 a minute |
-| Fixed monthly cost (hosting, monitoring, a person reviewing the weekly report) | EGP 5,000 |
-| Monthly contacts for the projection (Nova brief) | 45,000 |
-| Committed monthly AI budget (flat tier) | EGP 1,000 |
+| Agent cost, with salary, seat and overhead | EGP 2.00 a minute |
+| Agent minutes per resolved contact (average of the labelled tickets) | 9.6 |
+| Agents, hours a month | 120, 160 |
+| Fixed monthly cost: hosting, monitoring, a part-time knowledge owner, quality review and compliance | EGP 60,000 |
+| Build, bank integration, security and compliance work | EGP 1,200,000, spread over 36 months |
+| Monthly contacts (Nova brief), share in scope | 45,000, 60% |
+| Committed monthly AI budget | EGP 300 |
 | Exchange rate (`lib/prices.js`) | EGP 50 per US$ |
 
-**Caveat for the panel:** the value is agent time freed, not cash saved. It becomes cash only if it replaces hiring (the brief expects 15% more contacts a year), or if the freed time is used elsewhere. The result is very sensitive to the agent cost per minute, which is an assumption.
+Fixed and build together come to EGP 93,333 a month. AI is about EGP 81 a month in the base case, so AI cost barely matters: the case depends on how many contacts are resolved, and on whether hiring falls.
+
+| Per month | Low | Base | High |
+| - | - | - | - |
+| Resolved contacts | 675 | 2,160 | 5,198 |
+| Agents' workload freed | 1.8 | 5.8 | 13.9 |
+| Value, talk time only | EGP 12,951 | EGP 41,445 | EGP 99,726 |
+| Value, if hiring falls | EGP 34,560 | EGP 110,592 | EGP 266,112 |
+| Cost, with AI | EGP 93,374 | EGP 93,414 | EGP 93,475 |
+| **ROI, talk time only** | **−86%** | **−56%** | **+7%** |
+| **ROI, if hiring falls** | **−63%** | **+18%** | **+185%** |
+
+**Break-even: 1,824 resolved contacts a month if hiring falls, 4,869 on minutes alone.** That is 6.8% and 18% of in-scope contacts.
+
+**The honest reading:** this is a modest case that pays only if the bank really hires fewer people, or moves agents to other paid work. Saved minutes alone don't pay for it unless the high case comes true. The brief expects 15% more contacts a year, about 18 more agents, so the base case would absorb about a third of one year's growth. All costs are assumptions to replace with the bank's figures.
 
 ## 3. Size tiers and the tenets
 
@@ -72,29 +105,25 @@ Each conversation is put in a size by its AI cost. The limits come from the samp
 
 ## 5. Credits (internal unit)
 
-1 credit = the AI cost of a median S conversation that called a model (EGP 0.0068 on the sample). Each business line has a monthly budget in credits (Retail 100,000, Business 45,000: about the EGP 1,000 budget, split 70/30 by contact share). When model prices change, only the EGP value of a credit changes; the budgets stay the same. Credits are easy to understand (one credit is about one simple question) and affordable to use.
+1 credit = the AI cost of a median S conversation that called a model (EGP 0.0068 on the sample). Each business line has a monthly budget in credits (Retail 30,000, Business 14,000: about the EGP 300 budget, split 70/30 by contact share). When model prices change, only the EGP value of a credit changes; the budgets stay the same. Credits are easy to understand (one credit is about one simple question) and affordable to use.
 
-## 6. Sample results (1.0.11 shadow run, 200 conversations)
+## 6. Sample results
+
+The cost measures below come from the 1.0.11 shadow run on 200 conversations. They are real measurements on synthetic tickets. The scenario results are in section 2.
 
 | Measure | Result |
 | - | - |
-| Resolved | 126 of 200 (63%) |
-| Value on the data set | EGP 2,418 (1,209 agent minutes) |
+| Answered with the right intent | 126 of 200 (63%), an answer rate, not verified resolution |
 | AI cost on the data set | EGP 3.00 |
 | Cost per successful answer | EGP 0.0238 |
-| ROI on the data set alone, with a full month's fixed cost | −52% |
-| **Payback volume** | **415 conversations a month** |
-| Projected value per month (45,000 contacts) | EGP 543,960 |
-| Projected AI cost per month | EGP 675, plus EGP 5,000 fixed |
-| **Projected ROI per month** | **9,485%** |
 | Within S to L | 80.0% |
 | XL and XXL charged back | Retail 29 conversations (EGP 0.78), Business 11 (EGP 0.33) |
-| Credits a month (projected) | Retail 66,035 of 100,000 (66%), Business 32,850 of 45,000 (73%) |
-| Demand | Growth 13.5% over 4 weeks; projected AI spend EGP 766 against the EGP 1,000 budget |
+| Credits a month (projected) | Retail 7,924 of 30,000 (26%), Business 3,942 of 14,000 (28%) |
+| Demand | Growth 13.5% over 4 weeks; projected AI spend EGP 92 against the EGP 300 budget |
 | Negative-margin customers | 3 |
 | Workloads | Optimise: dispute.status, card.replace_damaged, fee.overdraft. No sunset candidates |
 
-Reading it: on 200 conversations the copilot doesn't cover a month's fixed cost (−52%), but it pays back from about 415 conversations a month, and at Nova's volume the value of the freed agent time is far larger than the cost. The most expensive conversations are single messages (no long loops); the very first one in the run cost the most because it wrote the prompt cache.
+The most expensive conversations are single messages (no long loops); the very first one in the run cost the most because it wrote the prompt cache.
 
 ## Files
 

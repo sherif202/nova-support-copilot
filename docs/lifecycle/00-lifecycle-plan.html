@@ -170,7 +170,7 @@ footer { font-size: 12px; color: var(--muted); }
     <span><i class="dot lin"></i> Linear stage: finish it, pass its gate, move on</span>
     <span><i class="dot cont"></i> Continuous stage: starts once, never fully finishes</span>
   </div>
-  <p class="lede"><b>Status, 31 Oct 2026:</b> version 1.0.13 is shipped and locked; the eval says SHIP on 106 cases (fraud 13/13, security 18/18, grounded 33/34). Features: grounded answers, the ROI model, the record picker and the transaction investigator. The shadow run on 200 synthetic tickets (on 1.0.11) would resolve 63% with 0 of 16 fraud cases missed. Stopped before the internal beta; everything left needs real people. <a href="https://claude.ai/artifact/1fmpoF6c2CenqNq957s61n" target="_blank" rel="noopener">Open the stage reports hub ›</a></p>
+  <p class="lede"><b>Status, 6 Nov 2026:</b> version 1.0.14 says SHIP on 106 cases (fraud 13/13, security 18/18, grounded 32/34); the locked baseline stays 1.0.13 until the owner locks 1.0.14. Features: grounded answers, the ROI model, the record picker, the transaction investigator, chat memory and one clarifying question. A fresh handoff test sends 1 of 27 questions to a person. The shadow run on 200 synthetic tickets (on 1.0.11) answered 63%, which is not verified resolution, with 0 of 16 fraud cases missed. Stopped before the internal beta; everything left needs real people. <a href="https://claude.ai/artifact/1fmpoF6c2CenqNq957s61n" target="_blank" rel="noopener">Open the stage reports hub ›</a></p>
 </header>
 
 <!-- Overview -->
@@ -461,7 +461,7 @@ footer { font-size: 12px; color: var(--muted); }
     <span class="num">4</span>
     <div class="st-title">
       <h2 id="h4s">Prompt &amp; System Design</h2>
-      <div class="meta"><span class="tag lin">Linear</span><span class="tag">Phase 2 · Build</span><span class="tag">Week 2</span><a class="tag" style="color:var(--gate);border-color:var(--gate);background:var(--gate-soft)" href="https://claude.ai/artifact/NhdfWzDawYvz2Lmz5kWJpe" target="_blank" rel="noopener">Done · now v1.0.13 ›</a></div>
+      <div class="meta"><span class="tag lin">Linear</span><span class="tag">Phase 2 · Build</span><span class="tag">Week 2</span><a class="tag" style="color:var(--gate);border-color:var(--gate);background:var(--gate-soft)" href="https://claude.ai/artifact/NhdfWzDawYvz2Lmz5kWJpe" target="_blank" rel="noopener">Done · now v1.0.14 ›</a></div>
     </div>
   </div>
   <div class="docatch">
@@ -528,7 +528,7 @@ footer { font-size: 12px; color: var(--muted); }
     <span class="num c">5</span>
     <div class="st-title">
       <h2 id="h5s">Evaluation</h2>
-      <div class="meta"><span class="tag cont">Continuous</span><span class="tag">Phase 3 · Prove &amp; Ship</span><span class="tag">From week 2, never stops</span><a class="tag" style="color:var(--gate);border-color:var(--gate);background:var(--gate-soft)" href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM" target="_blank" rel="noopener">SHIP on 1.0.13 · report ›</a></div>
+      <div class="meta"><span class="tag cont">Continuous</span><span class="tag">Phase 3 · Prove &amp; Ship</span><span class="tag">From week 2, never stops</span><a class="tag" style="color:var(--gate);border-color:var(--gate);background:var(--gate-soft)" href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM" target="_blank" rel="noopener">SHIP on 1.0.14 · report ›</a></div>
     </div>
   </div>
   <div class="docatch">
@@ -659,7 +659,7 @@ footer { font-size: 12px; color: var(--muted); }
     <span class="num">7</span>
     <div class="st-title">
       <h2 id="h7s">Staged Launch</h2>
-      <div class="meta"><span class="tag lin">Linear</span><span class="tag">Phase 3 · Prove &amp; Ship</span><span class="tag">End of week 3 to week 4</span><a class="tag" style="color:var(--warn);border-color:var(--warn);background:var(--warn-soft)" href="https://claude.ai/artifact/W9iVJro6RubTC5YLv3q5p9" target="_blank" rel="noopener">Shadow done, 63% · stopped before beta ›</a></div>
+      <div class="meta"><span class="tag lin">Linear</span><span class="tag">Phase 3 · Prove &amp; Ship</span><span class="tag">End of week 3 to week 4</span><a class="tag" style="color:var(--warn);border-color:var(--warn);background:var(--warn-soft)" href="https://claude.ai/artifact/W9iVJro6RubTC5YLv3q5p9" target="_blank" rel="noopener">Shadow done · stopped before beta ›</a></div>
     </div>
   </div>
   <div class="docatch">
@@ -671,7 +671,7 @@ footer { font-size: 12px; color: var(--muted); }
     <div class="col">
       <h3>Tasks</h3>
       <ol class="tasks">
-        <li><span><b>Shadow mode (days 1–2).</b> Run the copilot on the 200 labelled tickets. Nobody sees its answers; compare them with how agents actually closed each ticket. Report how many it would have resolved and where it went wrong. <span class="when">Week 3</span></span></li>
+        <li><span><b>Shadow mode (days 1–2).</b> Run the copilot on the 200 labelled tickets. Nobody sees its answers; compare them with how agents actually closed each ticket. Report how many it would have answered and where it went wrong. <span class="when">Week 3</span></span></li>
         <li><span><b>Internal beta (days 3–4).</b> Teammates and classmates use it for 50 conversations, including fraud and complaint scenarios on purpose. <span class="when">Week 3–4</span></span></li>
         <li><span><b>Pilot with 10–20 people (days 5–9).</b> Give each person a scenario card (a customer, a problem, no script) so they write in their own words. Only the 3 in-scope intents get answers; everything else goes to a person. <span class="when">Week 4</span></span></li>
         <li><span><b>Optional A/B test on fee questions:</b> fixed FAQ answers against AI answers. With 20 people the result is a direction, not proof, so say that. It does answer the panel's "why AI?" <span class="when">Week 4</span></span></li>

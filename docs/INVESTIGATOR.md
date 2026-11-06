@@ -1,8 +1,8 @@
-# Transaction investigator (1.0.13)
+# Transaction investigator (1.0.13, improved in 1.0.14)
 
 The copilot works **with** the customer to find the exact transaction they mean, explains its status and history step by step, and checks for money on its way before anything goes to a person. When a person is needed, the agent gets the full picture.
 
-**Status:** shipped in 1.0.13 (eval SHIP, 31 Oct 2026). On by default; set `INVESTIGATE=off` to turn it off. It was first built as a draft without an eval at the owner's request, then tested: 9 investigator checks in the eval (V1 to V9, all pass), 15 free unit checks (`node tools/test-investigator.mjs`, all pass), and 5 typed questions (cases 61 to 65) now that the AI knows the transaction rules.
+**Status:** shipped in 1.0.13 (eval SHIP, 31 Oct 2026). On by default; set `INVESTIGATE=off` to turn it off. It was first built as a draft without an eval at the owner's request, then tested: 9 investigator checks in the eval (V1 to V9, all pass), 15 free unit checks (`node tools/test-investigator.mjs`, all pass), and 5 typed questions (cases 61 to 65) now that the AI knows the transaction rules. Version 1.0.14 includes fees in the search, shows the closest transactions when nothing matches, explains a transfer the customer sent, and suggests a person only when a transfer is overdue.
 
 **How it stays safe:** the screens are deterministic. Narrowing, matching, status reasons, timelines and expected dates are built by code from the logged-in customer's own records and the rule text, with no model call. Since 1.0.13 the AI also has the transaction rules (TXS) and each record's status facts, so a typed question ("why was my payment declined?", "I'm waiting for money from Ahmed") gets the same answer as the screens, with the usual output checks.
 
@@ -95,7 +95,7 @@ The PM control panel has a "Transaction investigator" section, from `logs/invest
 - % resolved without an agent
 - top decline and pending reasons
 
-## Tests (1.0.13)
+## Tests (1.0.14)
 
 - Eval V1 to V9 (`knowledge/evalset.md`): narrowing finds the right record; declined shows the right reason and rule; a pending hold shows its expected date; "waiting for money" finds the pending InstaPay; with nothing found it explains the normal timing and hands off only after it; "I didn't make this" goes to Fraud; privacy; the handoff summary with no sender account details. All pass.
 - Eval cases 61 to 65: typed questions about a declined payment, a hotel hold, an InstaPay under review, an ATM daily limit and a transfer after the cut-off. All answered and grounded.

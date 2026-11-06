@@ -1,0 +1,332 @@
+{
+"what": "Unnecessary-handoff test (1.0.14). Every direct, follow-up and vague message can be answered or clarified; controls must reach a person. dev guided the fixes; fresh was written before any result was seen.",
+"dev": [
+[
+"direct",
+"C-0012",
+"فلوسي نقصت 25 جنيه وأنا كل اللي عملته إني سحبت من ماكينة بنك تاني، ده طبيعي؟"
+],
+[
+"direct",
+"C-0012",
+"hwa el bank by5sem mny 120 kol sana leh aslan?"
+],
+[
+"direct",
+"C-0012",
+"my balance dropped by 50 in September even though I bought nothing that day"
+],
+[
+"direct",
+"C-0012",
+"the thing I reported about the 1200 payment, is anyone even looking at it?"
+],
+[
+"direct",
+"C-0026",
+"بقالي كام أسبوع مستني رد بخصوص فلوس نون، فيه جديد؟"
+],
+[
+"direct",
+"C-0026",
+"do you guys need anything else from me for the Noon thing?"
+],
+[
+"direct",
+"C-0005",
+"الكاشير في كارفور قالي العملية مرفوضة، ليه؟ أنا فاكر إن كان معايا فلوس"
+],
+[
+"direct",
+"C-0005",
+"the cashier at Carrefour said the card failed but then it worked later, did you charge me twice?"
+],
+[
+"direct",
+"C-0010",
+"the hotel took a big chunk of my available balance, what's going on"
+],
+[
+"direct",
+"C-0010",
+"amazon wouldn't let me pay last night, is something wrong with my card?"
+],
+[
+"direct",
+"C-0010",
+"Ahmed says he sent me 2000 on InstaPay, I can't see it"
+],
+[
+"direct",
+"C-0010",
+"uber took money for a trip that got cancelled, do I get it back?"
+],
+[
+"direct",
+"C-0003",
+"مرتبي منزلش لحد دلوقتي والشركة بتقول بعتوه"
+],
+[
+"direct",
+"C-0003",
+"why couldn't I take out more cash on Thursday?"
+],
+[
+"direct",
+"C-0003",
+"ma3raftesh as7ab el 10000 mn el makana yom el 5amis, leh?"
+],
+[
+"direct",
+"C-0042",
+"طلبت كارت جديد من أسبوع، هيوصل إمتى؟"
+],
+[
+"direct",
+"C-0042",
+"still no card, when will it get here?"
+],
+[
+"direct",
+"C-0040",
+"what's the 15 pounds you keep taking every month?"
+],
+[
+"direct",
+"C-0040",
+"el 50 geneh et5asamo 3ashan el rased 2al?"
+],
+[
+"direct",
+"C-0012",
+"my card ends soon, am I supposed to go to a branch or something?"
+],
+[
+"direct",
+"C-0012",
+"is the branch open on Thursday afternoon?"
+],
+[
+"direct",
+"C-0012",
+"بكام دفتر الشيكات وأجيبه منين؟"
+],
+[
+"direct",
+"C-0012",
+"how much do you charge per page for a printed statement?"
+],
+[
+"followup-1",
+"C-0012",
+"What is this 120 pound charge on my account?"
+],
+[
+"followup-2",
+"C-0012",
+"which card is that for?"
+],
+[
+"followup-1",
+"C-0026",
+"Where is my Noon dispute?"
+],
+[
+"followup-2",
+"C-0026",
+"and how long will that take?"
+],
+[
+"followup-1",
+"C-0010",
+"Why is my Hilton payment pending?"
+],
+[
+"followup-2",
+"C-0010",
+"what if the final bill is lower?"
+],
+[
+"followup-1",
+"C-0005",
+"why was my Carrefour payment declined?"
+],
+[
+"followup-2",
+"C-0005",
+"so was the money taken?"
+],
+[
+"vague",
+"C-0010",
+"something is wrong with a payment"
+],
+[
+"vague",
+"C-0003",
+"فين فلوسي؟"
+],
+[
+"vague",
+"C-0012",
+"I have a problem with my card"
+]
+],
+"fresh": [
+[
+"direct",
+"C-0012",
+"ليه سحبوا مني 25 جنيه يوم 14 سبتمبر؟ دي كانت ماكينة CIB"
+],
+[
+"direct",
+"C-0012",
+"is the yearly card thing 120 every single year?"
+],
+[
+"direct",
+"C-0012",
+"el overdraft bta3 20/9 da 7asal leh?"
+],
+[
+"direct",
+"C-0012",
+"any news on the 1200 pound case I opened?"
+],
+[
+"direct",
+"C-0026",
+"I'm still waiting to hear on Noon, it's been ages"
+],
+[
+"direct",
+"C-0028",
+"لسه ناقص إيه في موضوع Vox؟"
+],
+[
+"direct",
+"C-0005",
+"my groceries payment bounced on Friday evening, why"
+],
+[
+"direct",
+"C-0005",
+"فلوس من كريم فتحي من بره لسه موصلتش"
+],
+[
+"direct",
+"C-0010",
+"why's 1,250 not gone through at amazon"
+],
+[
+"direct",
+"C-0010",
+"did uber give my 180 back?"
+],
+[
+"direct",
+"C-0010",
+"there's 4200 held by a hotel, when does that clear"
+],
+[
+"direct",
+"C-0003",
+"b.tech payment still showing pending, normal?"
+],
+[
+"direct",
+"C-0003",
+"salary from Delta, where is it?"
+],
+[
+"direct",
+"C-0017",
+"hany ba3atli flos w lessa mawaseltesh"
+],
+[
+"direct",
+"C-0009",
+"refund bta3 jumia fein?"
+],
+[
+"direct",
+"C-0009",
+"ليه الكارت اترفض في سعودي الزمالك؟"
+],
+[
+"direct",
+"C-0042",
+"my replacement is late, isn't it?"
+],
+[
+"direct",
+"C-0012",
+"do branches open on Saturday?"
+],
+[
+"followup-1",
+"C-0028",
+"what's happening with my Vox Cinemas dispute?"
+],
+[
+"followup-2",
+"C-0028",
+"when should I expect a decision?"
+],
+[
+"followup-1",
+"C-0009",
+"where's my Jumia refund?"
+],
+[
+"followup-2",
+"C-0009",
+"can you speed it up?"
+],
+[
+"followup-1",
+"C-0003",
+"why was my ATM withdrawal refused on Thursday?"
+],
+[
+"followup-2",
+"C-0003",
+"when can I try again?"
+],
+[
+"vague",
+"C-0005",
+"عندي مشكلة في فلوسي"
+],
+[
+"vague",
+"C-0010",
+"my transfer"
+],
+[
+"vague",
+"C-0040",
+"charge problem"
+],
+[
+"control-fraud",
+"C-0012",
+"someone took money I never spent"
+],
+[
+"control-person",
+"C-0012",
+"I want to file a formal complaint about your staff"
+],
+[
+"control-person",
+"C-0012",
+"let me talk to a real person please"
+],
+[
+"control-person",
+"C-0012",
+"can I get a car loan?"
+]
+]
+}

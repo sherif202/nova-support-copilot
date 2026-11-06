@@ -1,4 +1,4 @@
-# Demo script, Nova Bank support copilot (5 to 6 minutes, version 1.0.13)
+# Demo script, Nova Bank support copilot (5 to 6 minutes, version 1.0.14)
 
 Typed live in the browser, logged in as **C-0012 Karim Samir**. All data is synthetic.
 
@@ -88,7 +88,7 @@ The three pillars in `docs/UX-PRINCIPLES.md`.
 
 ## 6d. The PM control panel and ROI (30 s)
 
-Open **PM control panel**, tick **Load sample**. Point at the ROI tiles (projected ROI, payback volume of about 415 conversations a month, 80% within the S to L sizes), then the **Record picker** tile and the **Transaction investigator** section. Say: "All money figures are assumptions in one config file; the panel recomputes everything."
+Open **PM control panel**, tick **Load sample**. Point at the ROI tiles (the low, base and high cases, break-even of 1,824 to 4,869 resolved contacts a month, 80% within the S to L sizes), then the **Record picker** tile and the **Transaction investigator** section. Say: "All money figures are assumptions in one config file; the panel recomputes everything."
 
 ## 7. Model strategy: vendor-neutral by design (30 s)
 

@@ -6,6 +6,8 @@
 const $ = (id) => document.getElementById(id);
 let lastMessage = "";
 let customers = [];
+// One chat, for short-term memory on the server. A new login or a page reload starts a new chat.
+let chatSession = String(Date.now()) + Math.random().toString(36).slice(2);
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -29,6 +31,7 @@ const SUGGESTIONS = {
 };
 
 function showWelcome() {
+  chatSession = String(Date.now()) + Math.random().toString(36).slice(2);
   const customer = customers.find((c) => c.customer_id === $("customer").value) || {};
   const arabic = isArabic(customer.preferred_language);
   const card = el("section", "banner");
@@ -370,12 +373,18 @@ async function openFinder(arabic, text, chipText) {
       c.dataset.id = item.id;
       results.append(c);
     }
-    if (!data.count) results.append(el("p", "hint", arabic ? "مفيش عملية بالمواصفات دي. جرّب تشيل اختيار." : "Nothing matches all of these. Try removing a choice."));
+    if (!data.count) {
+      results.append(el("p", "hint", arabic ? "مفيش عملية مطابقة لكل اختياراتك. دي أقرب العمليات:" : "Nothing matches all of these. These are the closest:"));
+      for (const item of data.closest || []) {
+        const c = recordCard(item, arabic, () => openDetail(item.id, arabic, { ...ctx(), steps: state.steps }, box));
+        c.dataset.id = item.id;
+        results.append(c);
+      }
+    }
     footer.replaceChildren();
     const missing = el("button", "secondary small", arabic ? "مش لاقيها هنا" : "It isn't here");
     missing.type = "button";
     missing.addEventListener("click", () => {
-      postInv("log", { flow: "find", steps: state.steps, found: false, outcome: "handoff" });
       investigationHandoff(arabic, ctx(), arabic ? "العميل مش لاقي العملية في النتايج" : "the customer couldn't find it in the results", box);
     });
     footer.append(missing, personButton(arabic));
@@ -503,10 +512,10 @@ function openWaiting(arabic, chipText, preset = {}) {
     if (w.suggest_handoff) {
       const trace = el("button", "small", arabic ? "زميل يتتبعها" : "A colleague will trace it");
       trace.type = "button";
-      trace.addEventListener("click", () => investigationHandoff(arabic, ctx, w.overdue ? (arabic ? "الميعاد العادي عدّى ومفيش فلوس في الطريق" : "the normal time has passed and nothing is on its way") : arabic ? "العميل مش متأكد من ميعاد الإرسال ومفيش حاجة في الطريق" : "nothing on its way and the customer isn't sure when it was sent", box));
+      trace.addEventListener("click", () => investigationHandoff(arabic, ctx, arabic ? "الميعاد العادي عدّى ومفيش فلوس في الطريق" : "the normal time has passed and nothing is on its way", box));
       actions.append(trace);
     } else if (!w.pending.length && !w.posted.length) {
-      actions.append(el("span", "hint", arabic ? "لسه في الميعاد العادي، فالأفضل نستنى شوية." : "It's still within the normal time, so it's best to wait a little."));
+      actions.append(el("span", "hint", w.sent_unknown ? (arabic ? "لو عرفت تقريباً اتبعتت إمتى، اختارها فوق وأشوف لو الميعاد العادي عدّى." : "If you can find out roughly when it was sent, pick it above and I'll check whether the normal time has passed.") : arabic ? "لسه في الميعاد العادي، فالأفضل نستنى شوية." : "It's still within the normal time, so it's best to wait a little."));
     }
     out.append(actions, invFeedback(arabic, { log }, (reason) => investigationHandoff(arabic, ctx, reason, box)));
     scrollDown();
@@ -527,6 +536,7 @@ function addUser(text) {
 function statusBadge(data, arabic) {
   if (data.priority === "P0") return el("div", "badge badge-risk", arabic ? "⚠ حماية من الاحتيال: وصلناك بفريق الاحتيال" : "⚠ Fraud protection: sent to our Fraud team");
   if (data.reply_id === "R-DRAFT") return el("div", "badge badge-wait", arabic ? "⏳ في انتظار مراجعة موظف" : "⏳ Waiting for a colleague to review");
+  if (data.action === "ask") return el("div", "badge badge-info", arabic ? "ℹ سؤال واحد عشان أفهمك صح، من غير تخمين" : "ℹ One question so I get it right, no guessing");
   if (data.action === "pick") return el("div", "badge badge-info", arabic ? "ℹ اختار واحدة عشان أجاوبك عنها بالظبط، من غير تخمين" : "ℹ Pick one so I answer about exactly that one, no guessing");
   if (data.action === "handoff") return el("div", "badge badge-wait", arabic ? "↪ اتحوّلت لموظف" : "↪ Passed to a colleague");
   if (data.reply_id === "R-WAIT" || data.reply_id === "R-EMPTY" || data.reply_id === "R-TOO-LONG") return el("div", "badge badge-info", arabic ? "ℹ مفيش استخدام للذكاء الاصطناعي في الرد ده" : "ℹ No AI was used for this reply");
@@ -604,7 +614,7 @@ function personButton(arabic) {
 // Pillar 3: "Did you mean…" when the copilot isn't sure and the guesses are low-risk.
 function didYouMean(data, original, arabic) {
   const box = el("div", "choices");
-  box.append(el("p", "", arabic ? "مش متأكد قوي من قصدك. تقصد…" : "I'm not completely sure what you mean. Did you mean…"));
+  if (data.ticket_id) box.append(el("p", "", arabic ? "مش متأكد قوي من قصدك. تقصد…" : "I'm not completely sure what you mean. Did you mean…"));
   for (const c of data.choices) {
     const b = el("button", "chip-btn", pick(c, arabic));
     b.type = "button";
@@ -615,7 +625,7 @@ function didYouMean(data, original, arabic) {
     box.append(b);
   }
   box.append(personButton(arabic));
-  box.append(el("p", "hint", arabic ? `زميل عنده طلبك برضه (${data.ticket_id}) لو حبيت تستنى.` : `A colleague also has your request (${data.ticket_id}) if you'd rather wait.`));
+  if (data.ticket_id) box.append(el("p", "hint", arabic ? `زميل عنده طلبك برضه (${data.ticket_id}) لو حبيت تستنى.` : `A colleague also has your request (${data.ticket_id}) if you'd rather wait.`));
   return box;
 }
 
@@ -675,6 +685,7 @@ function addBot(data, original) {
   }
   if (data.action === "pick" && data.picker) wrap.append(whichOne(data, original, arabic));
   else if (data.choices && data.choices.length) wrap.append(didYouMean(data, original, arabic));
+  else if (data.action === "ask") wrap.append(personButton(arabic));
   else if (data.action === "handoff" && data.priority !== "P0" && data.reply_id !== "R-PERSON") wrap.append(personButton(arabic));
   if (data.block_card) wrap.append(blockCard(arabic));
   $("messages").append(wrap);
@@ -690,7 +701,7 @@ async function send(text, extra = {}) {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ customerId: $("customer").value, message: text, chosenIntent: extra.chosenIntent, ticketId: extra.ticketId, recordId: extra.recordId }),
+      body: JSON.stringify({ customerId: $("customer").value, message: text, chosenIntent: extra.chosenIntent, ticketId: extra.ticketId, recordId: extra.recordId, sessionId: chatSession }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Request failed");

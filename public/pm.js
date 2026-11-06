@@ -76,27 +76,31 @@
     const R = r.roi;
     const a = r.assumptions;
     const source = r.source === "sample"
-      ? "Sample data: the 1.0.11 shadow run on 200 synthetic tickets (\"would have resolved\" stands in for the customer's answer)."
+      ? "Sample data: the 1.0.11 shadow run on 200 synthetic tickets, used for costs and sizes. Its 63% is an answer rate, not verified resolution, so ROI uses the scenarios below."
       : "Live data from the turn log; resolved = the customer said \"solved\".";
-    const s = section("ROI model", `${source} Synthetic assumptions (lib/roi-config.js): agent time EGP ${a.agent_egp_per_minute.toFixed(2)} a minute, fixed cost EGP ${a.fixed_monthly_egp.toLocaleString("en-US")} a month, ${a.monthly_contacts.toLocaleString("en-US")} contacts a month, EGP ${a.egp_per_usd} per US$.`);
+    const s = section("ROI model", `${source} Assumptions to replace with the bank's numbers (lib/roi-config.js): agent time EGP ${a.agent_egp_per_minute.toFixed(2)} a minute, running cost EGP ${a.fixed_monthly_egp.toLocaleString("en-US")} a month, build EGP ${a.build_egp.toLocaleString("en-US")}, EGP ${a.egp_per_usd} per US$.`);
     s.id = "roi";
     if (!R.conversations) {
       s.append(el("p", "hint", "No conversations yet. Tick \"Load sample\" to see the model on the 1.0.11 shadow run."));
       return s;
     }
-    const roiPct = (x) => (x === null ? "—" : `${Math.round(x * 100).toLocaleString("en-US")}%`);
+    const roiPct = (x) => (x === null ? "—" : `${x > 0 ? "+" : ""}${Math.round(x * 100).toLocaleString("en-US")}%`);
+    const state = (x) => (x > 0 ? "ok" : "warn");
+    const B = R.base;
     const tiles = el("div", "tiles");
     tiles.append(
-      tile("ROI per month (projected)", roiPct(R.monthly.roi), `(value − AI − fixed) ÷ (AI + fixed) at ${R.monthly.contacts.toLocaleString("en-US")} contacts`, R.monthly.roi === null ? "" : R.monthly.roi > 0 ? "ok" : "bad"),
-      tile("Value per month", egp(R.monthly.value_egp, 0), `agent time freed: ${pct(R.resolution_rate)} resolved × minutes × EGP a minute`),
-      tile("AI cost per month", egp(R.monthly.ai_cost_egp, 0), `plus EGP ${R.monthly.fixed_egp.toLocaleString("en-US")} fixed`),
-      tile("Payback volume", R.payback_conversations === null ? "—" : `${R.payback_conversations.toLocaleString("en-US")} a month`, "conversations needed to cover the fixed cost"),
+      tile("ROI, base case, if hiring falls", roiPct(B.roi_hires), `about ${B.agents_equivalent.toFixed(1)} agents' workload, real only if the bank hires fewer people`, state(B.roi_hires)),
+      tile("ROI, base case, saved minutes only", roiPct(B.roi_time), "the cautious view: minutes are not cash", state(B.roi_time)),
+      tile("Resolved contacts a month (base)", num(Math.round(B.resolved)), `${Math.round(B.adoption * 100)}% of in-scope contacts use chat, ${Math.round(B.resolution * 100)}% resolved`),
+      tile("Cost a month", egp(B.cost_egp, 0), `running, build over ${a.build_months} months, AI ${egp(B.ai_cost_egp, 0)}`),
+      tile("Break-even", `${num(R.breakeven_hires)} to ${num(R.breakeven_time)}`, "resolved contacts a month: if hiring falls, to saved minutes only"),
       tile("Within S to L", pct(r.within_s_to_l), "of conversations · target 80% or more", r.within_s_to_l >= 0.8 ? "ok" : "bad"),
-      tile("Cost per successful answer", egp(R.cost_per_successful_answer_egp, 4), "AI cost ÷ resolved conversations"),
-      tile("This data set", `${egp(R.value_egp, 0)} value`, `${egp(R.ai_cost_egp, 2)} AI cost · ${R.conversations} conversations, ${R.resolved} resolved`),
-      tile("This data set, with a month's fixed cost", roiPct(R.data_set_roi), "why the payback volume matters", R.data_set_roi > 0 ? "ok" : "warn")
+      tile("Cost per answered conversation", egp(R.cost_per_successful_answer_egp, 4), r.source === "sample" ? "sample: answered, not verified as solved" : "AI cost ÷ conversations the customer said were solved")
     );
     s.append(tiles);
+    s.append(el("h4", "", "ROI scenarios (a month, all assumptions until the pilot)"));
+    s.append(table(["Case", "In-scope contacts using chat", "Resolved of those", "Resolved contacts", "Cost", "ROI, saved minutes only", "ROI, if hiring falls"], R.scenarios.map((x) => [x.name, pct(x.adoption), pct(x.resolution), num(Math.round(x.resolved)), egp(x.cost_egp, 0), roiPct(x.roi_time), roiPct(x.roi_hires)])));
+    s.append(el("p", "hint", `Funnel: ${num(a.monthly_contacts)} contacts → ${num(R.in_scope_contacts)} in scope → chat → resolved. A resolved contact is worth ${egp(R.talk_value_per_contact_egp, 0)} in talk time or ${egp(R.hire_value_per_contact_egp, 0)} in loaded agent cost.`));
 
     s.append(el("h4", "", "Request-level cost attribution"));
     s.append(el("p", "hint", "Every request is logged once with the same fields: request, conversation, customer, segment, business line, workflow, prompt version, model IDs, mode, tokens, retries, latency, cost in US$ and EGP, outcome, and whether the customer said it was solved. Every view below is a rollup of those records."));

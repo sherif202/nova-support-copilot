@@ -3,7 +3,7 @@
 ### An AI copilot that answers Nova's three most common questions, and hands everything else to the right person
 
 - 45,000 contacts a month; 27,000 are about **fees, disputes and cards**
-- Built and tested end to end on synthetic data: **version 1.0.13, eval SHIP**
+- Built and tested end to end on synthetic data: **version 1.0.14, eval SHIP**
 - Arabic, English and Franco-Arabic
 
 Sherif Hilal · AI Product Management · 31 October 2026
@@ -60,8 +60,8 @@ Sherif Hilal · AI Product Management · 31 October 2026
 1. **Check the input** (code): mask card numbers, block junk, apply a rate limit
 2. **Fraud first** (code): a word list in 3 languages sends fraud to the Fraud team before any AI
 3. **Understand** (AI · Claude Haiku 5.5): language, intent, priority, confidence
-4. **Route** (code): complaints, out of scope, low confidence or "talk to a person" go to a person
-5. **Look up** (code): only this customer's records, top 3; a picker if the question is vague
+4. **Route** (code): complaints, out of scope or "talk to a person" go to a person; if unsure, show the records to tap, then ask one question, then hand off
+5. **Look up** (code): only this customer's records, plus what this chat already discussed
 6. **Answer** (AI · Claude Haiku 5.5): only from the records and Nova's rules, citing each one
 7. **Check the answer** (code): 8 checks (numbers, sources, promises, language, card digits, secrets, links, prompt leaks); one retry, then a person
 
@@ -86,19 +86,21 @@ Sherif Hilal · AI Product Management · 31 October 2026
 
 **106 test cases, run on every change, with 10 gates that all must pass**
 
-| Gate | Result, version 1.0.13 |
+| Gate | Result, version 1.0.14 |
 | - | - |
 | Fraud recall | **13/13** |
 | Harmless | **7/7** |
 | Red-team attacks blocked | **18/18** |
 | Honesty: says "I don't know" | **5/5** |
 | Intent accuracy | **98.5%** (target 90%) |
-| Grounded answers | **97.1%** (target 90%) |
+| Grounded answers | **94.1%** (target 90%, stricter check) |
 | Record picker and investigator checks | **4/4 · 9/9** |
 
-**14 versions, each scored:** grounded answers went from 75.9% to 97.1%. One version that broke a gate was rolled back.
+**15 versions, each scored:** grounded answers went from 75.9% to 94.1%. One version that broke a gate was rolled back.
 
-**Shadow run on 200 past tickets:** 63% would have been resolved, 0 of 16 fraud cases missed, and 0 answers where an agent was needed.
+**Does it give up too easily?** A new test: 16 of 34 questions went to a person. After the fixes, on 27 fresh questions, **1 did** (target 20% or less), and none of the 19 answers invented a fact.
+
+**Shadow run on 200 synthetic tickets:** 63% answered (an answer rate, not verified resolution), 0 of 16 fraud cases missed, and 0 answers where an agent was needed.
 
 ---
 
@@ -122,32 +124,36 @@ Sherif Hilal · AI Product Management · 31 October 2026
 - Fraud, junk, the pickers and the investigator screens: **free** (code only)
 
 **Per month at Nova's volume (45,000 contacts)**
-- AI: about **EGP 675**
-- Fixed (hosting, monitoring, weekly review): **EGP 5,000**
+- AI: about **EGP 81** in the base case, against a budget of EGP 300
+- Running (hosting, monitoring, knowledge owner, quality and compliance review): **EGP 60,000**
+- Build and bank integration: **EGP 1.2 million**, spread over 3 years: **EGP 33,333**
+- All costs are assumptions until the bank replaces them
 
 **How we keep it predictable**
 - **Size tiers:** 80% of conversations stay within the S, M and L sizes; XL and XXL are reviewed and charged back to the business line
 - **Credits:** budgets set in credits, so a model price change doesn't change the budgets
 
-**Building and testing it, so far:** about **US$2.21** in total
+**Building and testing it, so far:** about **US$2.28** in total
 
 ---
 
 # Business case
 
-**Value:** agent time freed by resolved conversations
+**The funnel:** 45,000 contacts → 27,000 in scope → share that start in chat → share resolved
 
-| Per month, at 45,000 contacts | |
-| - | - |
-| Value of agent time freed | **EGP 543,960** |
-| AI and fixed cost | **EGP 5,675** |
-| Projected ROI | **about 95×** |
-| Payback | **415 conversations a month** |
+| Per month | Low | Base | High |
+| - | - | - | - |
+| Start in chat · resolved | 10% · 25% | 20% · 40% | 35% · 55% |
+| Resolved contacts | 675 | **2,160** | 5,198 |
+| Agents' workload freed | 1.8 | **5.8 of 120** | 13.9 |
+| ROI, minutes saved only | −86% | **−56%** | +7% |
+| ROI, if hiring really falls | −63% | **+18%** | +185% |
 
-- Absorbs the 15% yearly growth without hiring about **18 more agents** a year
+- **Break-even: 1,824 resolved contacts a month** if hiring falls; 4,869 on minutes alone
+- Absorbs about a third of one year's growth, which would otherwise need about 18 more agents
 - Fraud reports no longer wait behind fee questions
 
-**Honest caveat:** the value is agent time, not cash; it becomes cash only by avoiding hires. The agent cost (EGP 2 a minute) and the 63% shadow rate are assumptions to confirm in the pilot.
+**Honest caveat:** this pays only if the bank hires fewer people or moves agents to other work. Every rate and cost here is an assumption; the pilot replaces them.
 
 ---
 

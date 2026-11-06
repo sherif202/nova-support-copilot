@@ -1,6 +1,6 @@
 # Project status
 
-**Current version: 1.0.13** (31 October 2026), eval **SHIP**, locked as the baseline in `docs/baseline.json`. 1.0.12 was never locked, because 1.0.13 contains it. 1.0.11 is kept there as the previous baseline.
+**Current version: 1.0.14** (6 November 2026), eval **SHIP**. The baseline locked in `docs/baseline.json` stays **1.0.13** until the owner locks 1.0.14. 1.0.12 was never locked, because 1.0.13 contains it. 1.0.11 is kept there as the previous baseline.
 
 **Where the project stands:** built and tested end to end on synthetic data, **stopped before the internal beta**. Everything left needs real people.
 
@@ -12,6 +12,7 @@
 | Feature | Since | Where to read |
 | - | - | - |
 | Answers fee, dispute, card and maintenance questions from the customer's own records and Nova's rules, in Arabic, English and Franco-Arabic; fraud, complaints and anything unsure go to a person | 1.0.0 to 1.0.11 | `prompts/CHANGELOG.md`, stage pages 5 and 6 |
+| Chat memory (3 turns, 30 minutes, masked) and one clarifying question before a handoff | 1.0.14 | Stage 6 page, `tools/handoff-test.mjs` |
 | Customer chat, agent inbox and PM control panel; the 3 UX pillars; Telos critique | Stage 6 | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | ROI model in the PM panel, with request-level cost attribution | 31 Oct | `docs/ROI-MODEL.md` |
 | Record picker: the customer taps the exact transaction, card or dispute; a vague question gets "Which one do you mean?" | 1.0.12 | Stage 6 page, screenshots 13 to 15 |
@@ -24,8 +25,8 @@
 | 1 · Problem Framing | Done | Scope, North Star (verified resolution rate, target 40%), fraud gate | Planning pages (`docs/LIFECYCLE-PAGES.md`), `docs/01-PRD.md` |
 | 2 · Data Collection & Prep | Done | 50 synthetic customers, 520 transactions (16 added for the investigator), 15 disputes, policies and transaction rules by rule ID, 200 labelled tickets linked to the records, eval set, a 15-case hold-out | `docs/04-DATA-GUIDE.md`, `docs/lifecycle/` |
 | 3 · Model Selection | Done for Anthropic | Bake-off runs A to D, T, U. OpenAI and Gemini runs are scripted but not run (no keys) | `docs/MODEL-STRATEGY.md` |
-| 4 · Prompt & System Design | Done | 8-section prompts (answer prompt 1.0.4), fixed replies, retry note, 50 approved examples, CHANGELOG 1.0.0 to 1.0.13 | `prompts/CHANGELOG.md` |
-| 5 · Evaluation | Done, with open items | 1.0.13 says SHIP on 106 cases and 10 gates; hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
+| 4 · Prompt & System Design | Done | 8-section prompts (answer prompt 1.0.5, understand prompt 1.0.1), fixed replies, retry note, 50 approved examples, CHANGELOG 1.0.0 to 1.0.14 | `prompts/CHANGELOG.md` |
+| 5 · Evaluation | Done, with open items | 1.0.14 says SHIP on 106 cases and 10 gates; handoff test added; hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
 | 6 · Integration & UX | Partly done | Chat, inbox, PM panel with the ROI model, record picker, transaction investigator, the 3 UX pillars. Usability test with 5 people not run | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | 7 · Staged Launch | Partly done | Shadow run done (3 runs, last on 1.0.11). **Stopped before the internal beta.** Pilot not started | [stage-7-staged-launch.html](stages/stage-7-staged-launch.html), [shadow-run-results.md](stages/shadow-run-results.md) |
 | 8 · Monitoring & Feedback | Built, no real data | PM control panel, automatic recommendations, ROI and investigator metrics, weekly report format | [stage-8-monitoring.html](stages/stage-8-monitoring.html) |
@@ -35,7 +36,7 @@ All stage reports: [docs/stages/index.html](stages/index.html).
 
 ## Key numbers
 
-### Eval, version 1.0.13 (fixed eval date): SHIP
+### Eval, version 1.0.14 (fixed eval date): SHIP
 
 106 cases: 65 main questions (5 new typed transaction questions), 6 service status, 4 junk, 18 red-team, 4 record-picker and 9 investigator checks.
 
@@ -46,17 +47,28 @@ All stage reports: [docs/stages/index.html](stages/index.html).
 | Security (red team) | 18/18 | all must pass |
 | Honesty | 5/5 (cases 21, 57, 59, S3, S6) | 21, 57, 59 must pass |
 | Intent accuracy | 98.5% (64/65) | 90% |
-| Grounded answers | 97.1% (33/34) | 90% |
+| Grounded answers | 94.1% (32/34), on a stricter check: an answer with no sources now fails | 90% |
 | Recall@3, notice match | 100%, 100% | 95%, 100% |
 | Record picker | 4/4 | all must pass |
 | Investigator checks | 9/9 | all must pass |
-| Citation recall, precision | 100%, 64.1% | 90%, 90% (precision not a gate, below target) |
-| Speed | p50 2.5 s, p95 4.8 s | 6 s in the pilot |
-| Cost | US$0.029 for the run, US$0.00044 per answered message | |
+| Citation recall, precision | 96.3%, 64.2% | 90%, 90% (precision not a gate, below target) |
+| Speed | p50 2.7 s, p95 **6.3 s, over the gate** | 6 s in the pilot |
+| Cost | US$0.030 for the run, US$0.00045 per answered message (about EGP 0.02) | |
 
-Still failing, none of them a gate: case 20 (an injection attempt handed to a person instead of answered), 45 (account takeover read as phishing, still sent to Fraud) and S4 (card declined abroad read as a payment question, handed to a person). The free unit checks of the investigator (`node tools/test-investigator.mjs`) pass 15/15.
+Still failing, none of them a gate: case 7 (asks a question instead of answering), 31 (citations), 45 (account takeover read as phishing, still sent to Fraud) and S4 (card declined abroad read as a payment question, handed to a person). Case 20 now passes. Junk cases J2 and J4 now pass, after I changed the grader to accept the clarifying question, which is what the eval set asks for. The free unit checks of the investigator (`node tools/test-investigator.mjs`) pass 15/15.
 
 1.0.13 took 2 eval runs. Run 1: DO NOT SHIP, grounded 30/34. A bug in my retry link connected cards to every transaction (case 37), and the scope rule DIG-4 still listed only fees, disputes and cards (case 61). Both were fixed. Run 2: SHIP.
+
+### Handoff test: does it give up too easily? (1.0.14)
+
+The owner felt the copilot always handed off, and it did: 16 of 34 questions on the first test, written in messy phrasing. The causes: no clarifying question (5), no memory of the chat (4), overcautious answers (3), frustration read as asking for a person (2), a delivery bug of mine (1) and a fraud alarm (1).
+
+| Set | Handed to a person | Notes |
+| - | - | - |
+| First set (34 questions), used to guide the fixes | 16 → 3 (9%) | The 3 left are cautious fraud alarms |
+| **Fresh set (27 questions), written after the fixes, plus 4 controls** | **1 of 27 (4%)**, target 20% or less | 19 answered, 5 clarified, 2 picked a record; controls 4/4; I read all 19 answers: no invented facts or promises |
+
+The sets are small, self-written and synthetic, so this is evidence and not proof. Known weakness: a follow-up like "when should I expect a decision?" repeats the rule without computing the date.
 
 ### Shadow run on 200 tickets (last run on 1.0.11)
 
@@ -70,16 +82,29 @@ Still failing, none of them a gate: case 20 (an injection attempt handed to a pe
 | Cost per answered message | EGP 0.018 | EGP 0.025 | EGP 0.024 |
 | p95 | 5.7 s | 5.2 s | 6.0 s |
 
-63% of all tickets is 89% of the 142 tickets an agent would have given the copilot. The shadow run has not been repeated on 1.0.13. Details: [shadow-run-results.md](stages/shadow-run-results.md).
+63% of all tickets is 89% of the 142 tickets an agent would have given the copilot. **This is an answer rate, not verified resolution:** "would have resolved" means it answered, the intent was right and an agent would have sent it to the copilot, and nothing checks the customer stopped contacting us. It also runs high: 33 of the 50 approved examples appear word for word in these tickets, and the tickets were built to have records. The shadow run has not been repeated since 1.0.11, and the next one needs reworded tickets. Details: [shadow-run-results.md](stages/shadow-run-results.md).
 
-**Speed:** p95 was 4.8 s in the 1.0.13 eval and 6.0 s in the last shadow run, against a 6 s pilot gate. If the beta shows over 6 s, the planned fix is the Telos recommendation: hand off after 6 s.
+**Speed:** p95 was 6.3 s in the 1.0.14 eval (4.8 s on 1.0.13), over the 6 s pilot gate, because the answer step now reads more records and the chat. It is not an eval gate, but it needs watching. If the beta shows over 6 s, the planned fix is the Telos recommendation: hand off after 6 s.
+
+### ROI, corrected
+
+The first model showed 9,485%, which was my mistake: it treated all 45,000 contacts as chats, used the 63% as resolution, and left out real running and build costs. The new model uses a funnel (`docs/ROI-MODEL.md`). All rates and costs are assumptions until the bank or the pilot replaces them.
+
+| Per month | Low | Base | High |
+| - | - | - | - |
+| Resolved contacts | 675 | 2,160 | 5,198 |
+| ROI, minutes saved only | −86% | −56% | +7% |
+| ROI, if hiring really falls | −63% | +18% | +185% |
+
+Break-even: 1,824 resolved contacts a month if hiring falls, 4,869 on minutes alone. The base case frees the workload of about 5.8 of 120 agents.
 
 ### Spend
 
-About **US$2.21** in eval, bake-off and shadow runs for the whole project:
+About **US$2.28** in eval, bake-off, handoff and shadow runs for the whole project:
 - US$2.05 to the 1.0.11 baseline
 - US$0.10 for the four 1.0.12 runs
 - US$0.06 for the two 1.0.13 runs
+- about US$0.07 for the 1.0.14 runs
 - under US$0.01 for demo messages
 
 The ROI model and the investigator screens make no model calls.
@@ -100,15 +125,18 @@ The ROI model and the investigator screens make no model calls.
 | Build the transaction investigator (31 Oct) | Owner | First as a draft without an eval, at the owner's request |
 | Test the investigator, put the TXS rules into the AI, keep every document consistent, lock 1.0.13 (31 Oct) | Owner, via the project assistant | 1.0.13: SHIP on run 2; locked as the baseline (1.0.12 skipped) |
 
+| Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt; not locked until the owner says so |
+
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.
 
 ## What is synthetic, and what is not proven yet
 
 - **All data is synthetic:** customers, transactions, disputes, tickets, policies, transaction rules, fees, branch hours and the cheque book price. The WhatsApp phrasing sheet is simulated, not real replies.
-- **No real users yet.** The 63% is a shadow number on synthetic tickets, last measured on 1.0.11. The North Star (verified resolution rate) has not been measured with real people.
+- **No real users yet.** The 63% is an answer rate on synthetic tickets, last measured on 1.0.11. The North Star (verified resolution rate) has not been measured with real people.
+- **The ROI rests on assumptions:** chat adoption, resolution, agent cost, and the running and build costs are all estimates. It is positive only if hiring really falls, or in the high case.
 - **The hold-out was used once** (against 1.0.8: 6/7 grounded, a strict DO NOT SHIP because of one safe handoff). The next release check needs a fresh hold-out written by someone who hasn't seen the eval set.
 - **Not built or not run:** the LLM judge (a second model scoring answers), and the usability test with 5 Arabic or Franco-Arabic speakers.
-- **English is the weakest language:** all three failing eval cases are in English.
+- **English is the weakest language:** three of the four failing eval cases are in English.
 - **Citation precision is about 64%:** answers cite extra rules. Not a gate, but below the 90% target.
 - **Known gaps:**
   - The copilot doesn't infer "closed on Saturday" from the Sunday-to-Thursday hours.
@@ -124,7 +152,7 @@ Everything left needs people; none of it can be finished by the build alone.
 
 1. **Internal beta (stage 7):** 5 to 10 classmates or colleagues, about 50 conversations in Suggest-only mode, including the pickers and the investigator, with fraud and complaint scenarios on purpose. About 2 days.
 2. **Pilot (stage 7):** 10 to 20 people with the scenario cards in Auto-answer mode, to measure "Did this solve your question?" against the 40% target. About 5 days. Present it as evidence, not statistical proof.
-3. **Before or during the beta:** a fresh hold-out from a second person, and a shadow run on 1.0.13 (about US$0.06).
+3. **Before or during the beta:** a fresh hold-out from a second person, and a shadow run on the current version with reworded tickets (about US$0.06).
 4. **Case study (portfolio):** the two-page write-up, best written after the pilot so it has a real result.
 
 To restart: follow the README to run the app (`node server.js`), reset the demo as the README says, then follow `docs/DEMO-SCRIPT.md` and the beta plan on the stage 7 page.

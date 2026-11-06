@@ -44,7 +44,7 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 
 ## Project status
 
-Version **1.0.13** (31 Oct 2026) is the shipped and locked baseline: eval SHIP on 106 cases (fraud 13/13, security 18/18, grounded 33/34, intent 98.5%, record picker 4/4, investigator 9/9). Features: grounded answers for fees, disputes, cards and maintenance; the ROI model in the PM panel; the record picker; the transaction investigator. The stage 7 shadow run (on 1.0.11) says the copilot would have resolved 63% of 200 synthetic tickets with 0 fraud missed. Stopped before the internal beta. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
+Version **1.0.14** (6 Nov 2026): eval SHIP on 106 cases (fraud 13/13, security 18/18, grounded 32/34, intent 98.5%, record picker 4/4, investigator 9/9), with p95 6.3 s over the 6 s pilot gate. The locked baseline stays 1.0.13 until the owner locks 1.0.14. Features: grounded answers for fees, disputes, cards and maintenance; the ROI model in the PM panel; the record picker; the transaction investigator; chat memory and one clarifying question before a handoff. A fresh handoff test sends 1 of 27 questions to a person (target 20% or less). The stage 7 shadow run (on 1.0.11) answered 63% of 200 synthetic tickets with 0 fraud missed; that is an answer rate, not verified resolution. Stopped before the internal beta. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
 
 ## Built on top of the starter
 
@@ -54,11 +54,12 @@ Version **1.0.13** (31 Oct 2026) is the shipped and locked baseline: eval SHIP o
 | `public/` | Three screens: customer chat, agent inbox, and the **PM control panel** (Key Results, cost per model ID, bottlenecks, iterations, auto-updated recommendations). Nova Bank logo in `public/logo.svg`. |
 | `knowledge/nova-products.md` | Nova's product names in Arabic and English (صندوق سنابل، ودائع البركة…), names only, with how the copilot handles each. |
 | `tools/test-investigator.mjs` | Free unit checks of the investigator logic (no app, no model). |
+| `tools/handoff-test.mjs` · `knowledge/handoff-set.json` | The handoff test: does the copilot give up too easily? `node tools/handoff-test.mjs fresh` is the honest score; `dev` is the set that guided the fixes. It needs the app running with `ALLOW_TEST_NOW=true`. |
 | `tools/eval.mjs` · `tools/redteam.mjs` · `tools/holdout.mjs` · `tools/shadow.mjs` · `tools/build_linked_tickets.mjs` | Step 14 eval with SHIP/DO NOT SHIP (asked at a fixed date), red team, the one-time hold-out run, the stage 7 shadow run on 200 labelled tickets, and the script that links those tickets to the customer records. |
 | `docs/lifecycle/` | The lifecycle plan and the stage 1 to 4 pages, as published. |
 | `lib/investigate.js` · `knowledge/nova-transaction-rules.md` · `data/transaction-details.json` | The transaction investigator (1.0.13; on by default, `INVESTIGATE=off` turns it off): guided narrowing, one transaction explained, "I'm waiting for money", handoff with a summary. See `docs/INVESTIGATOR.md`. |
 | `lib/picker.js` | The record picker: the customer's own transactions, cards and disputes as cards to tap, key facts in bold (1.0.12). |
-| `docs/ROI-MODEL.md` · `lib/roi.js` · `lib/roi-config.js` | The ROI model in the PM panel: request-level cost attribution, ROI, size tiers, what to track, credits (synthetic assumptions). |
+| `docs/ROI-MODEL.md` · `lib/roi.js` · `lib/roi-config.js` | The ROI model in the PM panel: request-level cost attribution, low, base and high scenarios, break-even, size tiers, what to track, credits (assumptions until the bank replaces them). |
 | `docs/PROJECT-STATUS.md` | Where the project stopped, stage by stage, with the numbers, decisions and open items. |
 | `docs/stages/` | Visual stage reports 5 to 9 (open `docs/stages/index.html`). |
 | `docs/telos/critique-card.html` | The screens critiqued against Nova's Key Results with the Telos method. |

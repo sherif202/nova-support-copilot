@@ -1,6 +1,8 @@
 # Stage 7 shadow run results
 
-> Current version (31 Oct 2026): 1.0.13. The shadow runs below were made on versions up to 1.0.11 and have not been repeated since; the next one (about US$0.06) is planned before the beta. See `docs/PROJECT-STATUS.md`.
+> Current version (6 Nov 2026): 1.0.14. The shadow runs below were made on versions up to 1.0.11 and have not been repeated since; the next one (about US$0.06) is planned before the beta, with reworded tickets.
+>
+> **How to read "resolved" on this page (added 6 Nov 2026):** the script counts a ticket as resolved when the copilot answered, the intent was right and an agent would have given it to the copilot. It does not check that the answer was right or that the customer stopped contacting us. So 63% is an **answer rate on synthetic tickets**, not verified resolution. It also runs high: 33 of the 50 approved examples appear word for word in these tickets, so the 98 to 100% intent score is inflated, and the tickets were built to have records. See `docs/PROJECT-STATUS.md`.
 
 Three runs of `node tools/shadow.mjs` on 30 Oct 2026, both with Claude Haiku 5.5 (`claude-haiku-5-5`) for both steps, low effort, handoff below confidence 0.7, mode Auto-answer low-risk. Nobody saw the copilot's answers; each route was compared with how an agent handled the ticket.
 
@@ -104,7 +106,7 @@ Cases 21 and 57 changed because of a product decision (option A), not because of
 ## What this means for stage 7
 
 - **Safety holds on new data:** 0 fraud misses and 0 answers where an agent was needed, in all three runs.
-- **The shadow resolution rate is 63%** of all tickets (89% of those an agent would hand to the copilot), above the 40% North Star target. It is a shadow number on synthetic tickets: the pilot must confirm it with real customers' "Did this solve your question?".
+- **The shadow answer rate is 63%** of all tickets (89% of those an agent would hand to the copilot). It cannot be compared with the 40% North Star target, which is verified resolution. Only real customers' "Did this solve your question?" can measure that.
 - **Cost holds, speed is at the limit:** EGP 0.024 per answered message; p95 6.0 s in the shadow and 6.4 s in the eval. If the beta shows the same, apply the Telos recommendation to hand off after 6 s.
 - **Small gaps left:** a branch list ("nearest branch"), and one example so "open on Saturday?" is answered from GEN-1.
 
