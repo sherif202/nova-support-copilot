@@ -30,7 +30,7 @@
 | 6 · Integration & UX | Partly done | Chat, inbox, PM panel with the ROI model, record picker, transaction investigator, the 3 UX pillars. Usability test with 5 people not run | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | 7 · Staged Launch | Partly done | Shadow run done (3 runs, last on 1.0.11). **Stopped before the internal beta.** Pilot not started | [stage-7-staged-launch.html](stages/stage-7-staged-launch.html), [shadow-run-results.md](stages/shadow-run-results.md) |
 | 8 · Monitoring & Feedback | Built, no real data | PM control panel, automatic recommendations, ROI and investigator metrics, weekly report format | [stage-8-monitoring.html](stages/stage-8-monitoring.html) |
-| 9 · Iteration & Retraining | Running on the eval only | 14 versions, each with scores (1.0.10 rejected); weekly fix cycle and learning loop | [stage-9-iteration.html](stages/stage-9-iteration.html) |
+| 9 · Iteration & Retraining | Running on the eval only | 15 versions, each with scores (1.0.10 rejected); weekly fix cycle and learning loop | [stage-9-iteration.html](stages/stage-9-iteration.html) |
 
 All stage reports: [docs/stages/index.html](stages/index.html).
 
