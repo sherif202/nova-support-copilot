@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Delivery Playbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="playbook.css">
+</head>
+<body>
+<div class="wrap" id="mainapp">
+  <header style="display:grid;gap:8px">
+    <h1>Nova delivery playbook</h1>
+    <p class="lede">A proposal for taking the Nova Bank support copilot from a tested MVP to a real launch. Nova is fictional. All 3 stages are in: the main page, seven team views and the chatbot requirements.</p>
+    <p class="note"><span class="tag given">Given</span> came from you or the project. <span class="tag prop">Proposed</span> is my plan. <span class="tag ex">Example</span> is made up to show the shape: every person, date, capacity and target with this tag needs replacing.</p>
+    <nav class="jump" aria-label="Sections"><a href="#adjust">Adjustments</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#decisions">Technical decisions</a><a href="#sprints">Sprints</a><a href="#releases">Releases</a><a href="#quality">Quality bars</a><a href="#requirements">Requirements</a><a href="#teams">Team views</a><a href="#next">What's next</a></nav>
+  </header>
+
+  <section id="adjust" class="adjust">
+    <h2>Where I'd adjust your model</h2>
+    <div class="row"><blockquote>“% of conversations resolved without a human”</blockquote><p><b>Better rule:</b> count a chat only when the customer confirms it was solved and doesn't contact us again within 7 days. A customer who gives up also looks “resolved without a human”.</p></div>
+    <div class="row"><blockquote>“Retrieval (RAG) design: chunking, embeddings”</blockquote><p><b>Better rule:</b> choose retrieval by the content. Nova's 68 short rules fit in the prompt, and bank records need exact matches. Add a vector store only when long documents make that necessary.</p></div>
+    <div class="row"><blockquote>“hallucination rate”</blockquote><p><b>Better rule:</b> you can't count what nobody noticed. Measure groundedness on a test set, then sample live answers and track confirmed cases.</p></div>
+    <p class="note"><b>Still missing:</b> your roadmap book wasn't attached, so this page uses common practice. That is an assumption until you send it.</p>
+  </section>
+
+  <section id="goals">
+    <h2>Goals</h2>
+    <div class="cards">
+      <div class="metric north"><span><span class="tag given">Given</span> North star</span><b>40% verified resolution</b><span class="note">Solved in chat, confirmed by the customer, no repeat contact in 7 days. Not measured yet.</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>100%</b><span class="note">fraud recall on the test set</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>≥ 90%</b><span class="note"><abbr tabindex="0" title="The share of answers fully supported by a Nova rule or the customer's own records.">groundedness</abbr> on the test set</span></div>
+      <div class="metric"><span><span class="tag given">Given</span></span><b>&lt; 6 s</b><span class="note"><abbr tabindex="0" title="95 out of 100 replies are faster than this. It describes the slow end, not the average.">p95</abbr> reply time</span></div>
+      <div class="metric"><span><span class="tag ex">Example</span> From your template</span><b>≥ 4.2</b><span class="note"><abbr tabindex="0" title="Customer satisfaction score, usually a 1 to 5 rating after a chat.">CSAT</abbr>, no baseline yet</span></div>
+      <div class="metric"><span><span class="tag ex">Example</span></span><b>≤ EGP 45</b><span class="note">total cost per resolved contact, near the base case of EGP 43</span></div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <h2>Roadmap: click a theme</h2>
+    <p class="lede">Themes become initiatives, then epics, then stories. Status shows what the MVP already does.</p>
+    <div class="board" id="board"></div>
+    <div class="detail" id="detail" aria-live="polite"></div>
+  </section>
+
+  <section id="decisions">
+    <h2>Technical decision cards</h2>
+    <p class="lede">Each card says what was decided, why, and what breaks without it. Snippets show what a developer actually writes.</p>
+    <div class="dcards" id="dcards"></div>
+  </section>
+
+  <section id="sprints">
+    <h2>Sprints</h2>
+    <p class="lede">An example plan of 2-week sprints, Sunday to Thursday, with an example team of 7 and part-time legal. Capacity is an example of 30 points, reduced for holidays.</p>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Sprint</th><th>Dates <span class="tag ex">Example</span></th><th>Goal</th><th>Capacity</th><th>Stories</th><th>Demo</th></tr></thead><tbody id="sprintrows"></tbody></table></div>
+    <p class="note">Check holidays against the official calendar before committing. Expected in this window: Coptic Christmas on 7 January and Revolution Day on 25 January. Ramadan is expected from about 8 February 2027, so plan shorter hours, and the moon sets the exact dates. Sprints can start on a real date once the team is confirmed.</p>
+  </section>
+
+  <section id="releases">
+    <h2>Releases</h2>
+    <p class="lede">The first release stays small, with handoff to a person. Later releases add question types, channels, dialects and actions.</p>
+    <div class="tworow" id="rels"></div>
+  </section>
+
+  <section id="quality">
+    <h2>Quality bars</h2>
+    <div class="tworow">
+      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before the team can start it.">Definition of Ready</abbr></h3><ul><li>User, goal and value are clear</li><li>Passes <abbr tabindex="0" title="Independent, Negotiable, Valuable, Estimable, Small, Testable.">INVEST</abbr>, at 8 points or fewer</li><li>Acceptance criteria are written</li><li>AI behaviour names a test set and threshold</li><li>Data sources and owners are known</li><li>Compliance needs are flagged</li></ul></div>
+      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before anyone calls it finished.">Definition of Done</abbr></h3><ul><li>Code reviewed and merged</li><li>Unit tests and the release test pass</li><li>No gate has regressed</li><li>Arabic right-to-left checked</li><li>Logs stay masked</li><li>Documents and changelog updated</li><li>Demoed to the PM</li></ul></div>
+      <div class="box"><h3>Best practices</h3><ul><li>Change one thing, then run the tests</li><li>Never edit a test case to raise a score</li><li>Put what must never fail in code</li><li>Ship behind a <abbr tabindex="0" title="A switch that turns a feature on for chosen users without a new deployment.">feature flag</abbr></li><li>Keep a person one tap away</li><li>Pin versions, and retest before changing them</li></ul></div>
+    </div>
+  </section>
+
+  <section id="requirements">
+    <h2>Chatbot requirements</h2>
+    <p class="lede">These apply across every team view. Today's values come from the locked version, 1.0.15.</p>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Requirement</th><th>Target</th><th>Today</th><th>Measured on</th><th>Owners</th></tr></thead><tbody><tr><td><b>Reply speed (p95)</b></td><td>Under 6 s</td><td>5.5 s on the last eval</td><td>Release test</td><td>Developer, AI</td></tr><tr><td><b>Groundedness</b></td><td>≥ 90%</td><td>97.1% (33 of 34)</td><td>Grounded cases</td><td>AI, QA</td></tr><tr><td><b>Hallucination rate</b></td><td>No confirmed serious case <span class="tag ex">Example</span></td><td>Not measured live</td><td>Sampled live answers</td><td>AI, Support</td></tr><tr><td><b>Safe refusal</b></td><td>100% of attacks refused</td><td>18 of 18</td><td>Red-team set</td><td>QA, Compliance</td></tr><tr><td><b>Containment and deflection</b></td><td>40% verified resolution</td><td>Not measured. The shadow answered 63%, which is not this</td><td>Pilot</td><td>PM, Support</td></tr><tr><td><b>CSAT</b></td><td>≥ 4.2 <span class="tag ex">Example</span></td><td>No baseline</td><td>Pilot survey</td><td>PM, Support</td></tr><tr><td><b>Cost per resolved conversation</b></td><td>≤ EGP 45 <span class="tag ex">Example</span></td><td>About EGP 43, base-case assumption</td><td>ROI model</td><td>PM, AI</td></tr><tr><td><b>Uptime</b></td><td>99.5% <span class="tag ex">Example</span></td><td>Not measured</td><td>Production monitoring</td><td>Developer, Support</td></tr><tr><td><b>Arabic and dialect quality</b></td><td>No language 5 points under the rest <span class="tag ex">Example</span></td><td>Tested: English, Egyptian Arabic, Franco. Gulf Arabic and MSA are not</td><td>Language sets</td><td>AI, QA, Design</td></tr><tr><td><b>Accessibility</b></td><td>WCAG AA <span class="tag ex">Example</span></td><td>Not audited</td><td>Accessibility review</td><td>Design, QA</td></tr></tbody></table></div>
+    <h3>AI acceptance criteria use thresholds</h3>
+    <p class="lede">One example can pass by luck, so AI behaviour is judged over a named test set.</p>
+    <div class="scroll"><table style="min-width:640px"><thead><tr><th>Feature</th><th>Criterion</th></tr></thead><tbody><tr><td><b>Cite a source</b></td><td>Given the 65-case main set, at least 90% are grounded, and every cited ID exists.</td></tr><tr><td><b>Handoff summary</b></td><td>Given the 4 control cases and 9 investigator checks, every handoff reaches the right queue, and no sender account details appear.</td></tr><tr><td><b>Shadow report</b></td><td>Given 200 reworded tickets, the answer rate is reported, and it is never called resolution.</td></tr><tr><td><b>Disable a rule</b></td><td>Given 6 new rule-control cases, a disabled rule is never cited, and that topic goes to a person.</td></tr><tr><td><b>Dispute API</b></td><td>Given 7 dispute cases and 18 attack cases, the status is correct, and no other customer’s data is ever revealed.</td></tr><tr><td><b>Block a card</b></td><td>Given 13 fraud and 18 attack cases, fraud recall stays at 100%, and no card is blocked without confirmation.</td></tr></tbody></table></div>
+    <p class="note">Sets marked as new still need writing. Small sets give wide ranges: 13 of 13 could really be about 77%.</p>
+    <h3>Release slicing</h3>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Release</th><th>Intents</th><th>Channel</th><th>Languages</th><th>Actions</th><th>Who presses send</th></tr></thead><tbody><tr><td><b>R0 Staff trial</b></td><td>Fees, disputes, cards</td><td>Web chat</td><td>English, Egyptian Arabic, Franco</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R1 Pilot</b></td><td>The same, with payment status</td><td>Web chat</td><td>The same</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R2 Customer ramp</b></td><td>High-volume easy questions</td><td>App chat</td><td>The same</td><td>None</td><td>Auto on easy questions, with handoff</td></tr><tr><td><b>R3 Reach</b></td><td>More question types</td><td>WhatsApp</td><td>Add Gulf Arabic and MSA</td><td>None</td><td>Auto where the gates hold</td></tr><tr><td><b>R4 Actions</b></td><td>Card block</td><td>App chat</td><td>The same</td><td>Confirmed card block</td><td>Person reviews each action</td></tr></tbody></table></div>
+  </section>
+
+  <section id="teams">
+    <h2>Team views</h2>
+    <p class="lede">Sit at each team's desk and watch the same work from their side. Choose one of 6 features, one per theme. Every screen is an example mock.</p>
+    <div class="teams" id="teamcards"></div>
+  </section>
+
+  <section id="next" class="box">
+    <h2>What's next</h2>
+    <p>The playbook is a proposal. Replace each example with real people, dates and targets, and follow your roadmap book once it's added.</p>
+  </section>
+</div>
+<script src="playbook.js"></script>
+</body></html>

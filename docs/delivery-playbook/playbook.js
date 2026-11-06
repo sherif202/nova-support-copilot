@@ -1,242 +1,5 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nova Delivery Playbook</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono:wght@500&display=swap">
-<style>
-/* A delivery spine: goals, then a clickable roadmap that opens into PRD, stories and decisions, then sprints and releases. Palette from the project map. */
-:root {
-  --bg: #f4f6f5; --surface: #ffffff; --ink: #16201f; --muted: #5b6867; --line: #d5dcdb;
-  --accent: #0e6b70; --accent-soft: #e0efee; --ai: #4b2ea6; --ai-soft: #ece7fb; --part: #8a5a00; --part-soft: #f8eed8; --risk: #a8321f; --risk-soft: #fbe9e5; --done: #2b7340; --done-soft: #e4f2e7; --code: #17302f; --code-ink: #dcebe8;
-  --display: "IBM Plex Serif", Georgia, serif; --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
-  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; --code: #0b1211; color-scheme: dark; } }
-:root[data-theme="dark"] {
-  --bg: #101615; --surface: #18201f; --ink: #e3ebe9; --muted: #9aa8a6; --line: #2c3735;
-  --accent: #5fc2c4; --accent-soft: #163a3a; --ai: #b3a0ff; --ai-soft: #2a2247; --part: #f1c063; --part-soft: #382c12; --risk: #ff8a80; --risk-soft: #3d1c1a; --done: #79d18f; --done-soft: #17311f; --code: #0b1211; color-scheme: dark; }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 26px; }
-h1 { margin: 0; font-family: var(--display); font-size: clamp(27px, 3.8vw, 38px); line-height: 1.12; text-wrap: balance; }
-h2 { margin: 0; font-size: 21px; }
-h3 { margin: 0; font-size: 16px; }
-h4 { margin: 0; font-size: 12.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-p { margin: 0; }
-.lede { color: var(--muted); max-width: 78ch; }
-.note { font-size: 13.5px; color: var(--muted); max-width: 95ch; }
-section { display: grid; gap: 12px; min-width: 0; scroll-margin-top: 12px; }
-nav.jump { display: flex; flex-wrap: wrap; gap: 6px; }
-nav.jump a { text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13.5px; }
-.tag { font: 500 11px var(--mono); padding: 1px 7px; border-radius: 999px; border: 1px solid; white-space: nowrap; vertical-align: 1px; }
-.tag.given { color: var(--done); border-color: var(--done); background: var(--done-soft); }
-.tag.ex { color: var(--part); border-color: var(--part); background: var(--part-soft); }
-.tag.prop { color: var(--ai); border-color: var(--ai); background: var(--ai-soft); }
-abbr { text-decoration: underline dotted var(--muted); cursor: help; }
-abbr:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.adjust { background: var(--part-soft); border: 1px solid var(--part); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
-.adjust blockquote { margin: 0; font-style: italic; }
-.adjust .row { display: grid; gap: 2px; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
-.metric { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 3px; align-content: start; }
-.metric b { font-size: 21px; font-variant-numeric: tabular-nums; }
-.metric.north { grid-column: span 2; border-color: var(--accent); background: var(--accent-soft); }
-@media (max-width: 500px) { .metric.north { grid-column: auto; } }
-.board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-@media (max-width: 760px) { .board { grid-template-columns: 1fr; } }
-.col { display: grid; gap: 8px; align-content: start; }
-.theme { font: inherit; color: inherit; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px; display: grid; gap: 3px; }
-.theme:hover { border-color: var(--accent); }
-.theme[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 4px 0 0 var(--accent); background: var(--accent-soft); }
-.theme span { font-size: 13px; color: var(--muted); }
-.detail { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 14px; }
-.prd { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.prd div { display: grid; gap: 3px; align-content: start; }
-ul { margin: 0; padding-left: 18px; }
-details.story { border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
-details.story summary { cursor: pointer; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
-details.story .in { padding: 0 12px 12px; display: grid; gap: 8px; }
-.pts { font: 600 12px var(--mono); background: var(--accent); color: var(--surface); border-radius: 6px; padding: 1px 7px; }
-.moscow { font-size: 12px; font-weight: 600; color: var(--muted); }
-.gwt { display: grid; gap: 2px; font-size: 14px; }
-.epic { display: grid; gap: 7px; }
-.dcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; }
-@media (max-width: 420px) { .dcards { grid-template-columns: 1fr; } }
-.dcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
-.dcard dl { margin: 0; display: grid; gap: 3px; font-size: 14px; }
-.dcard dt { font-size: 12px; color: var(--muted); }
-.dcard dd { margin: 0 0 3px; }
-pre { margin: 0; background: var(--code); color: var(--code-ink); border-radius: 8px; padding: 9px 11px; font: 500 12.5px/1.5 var(--mono); overflow-x: auto; }
-.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-table { border-collapse: collapse; width: 100%; font-size: 14px; }
-th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-th { font-size: 12.5px; color: var(--muted); font-weight: 600; }
-td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.rel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; display: grid; gap: 8px; }
-.envs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-.env { font-size: 12.5px; text-align: center; padding: 4px 2px; border-radius: 6px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
-.env.on { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 600; }
-.tworow { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
-.box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; display: grid; gap: 6px; align-content: start; }
-
-[hidden] { display: none !important; }
-#viewapp { max-width: 1240px; margin: 0 auto; padding: 22px 16px 44px; display: grid; gap: 12px; min-width: 0; }
-.back, .vbtn { font: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
-.back { justify-self: start; }
-.vbtn[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 600; }
-.picker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.rail { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 4px; }
-.rs { font: inherit; font-size: 12.5px; flex: 0 0 auto; max-width: 150px; text-align: left; cursor: pointer; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; display: grid; }
-.rs b { color: var(--accent); }
-.rs[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
-.stage { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
-@media (max-width: 900px) { .stage { grid-template-columns: 1fr; } }
-.tool { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; min-width: 0; }
-.tbar { display: flex; gap: 6px; align-items: center; padding: 7px 11px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 13px; }
-.tbar b { margin-right: auto; margin-left: 6px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
-.tbody { padding: 12px; display: grid; gap: 10px; min-width: 0; }
-.coach { background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 13px 15px; display: grid; gap: 4px; }
-.coach h4 { margin-top: 7px; }
-.navr { display: flex; gap: 8px; margin-top: 10px; }
-.mscroll { overflow-x: auto; }
-table.mini { font-size: 13.5px; min-width: 380px; }
-table.mini td, table.mini th { padding: 6px 8px; }
-.kan { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(120px, 1fr); gap: 8px; overflow-x: auto; }
-.kc { background: var(--bg); border-radius: 8px; padding: 8px; display: grid; gap: 6px; align-content: start; }
-.tk { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; font-size: 13px; }
-.tk.hl { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
-.ed { background: var(--code); color: var(--code-ink); border-radius: 8px; padding: 8px 0; overflow-x: auto; font: 500 12.5px/1.6 var(--mono); }
-.ed .fn { padding: 0 11px 5px; color: #9fc4bf; font-size: 12px; max-width: none; }
-.ln { display: flex; gap: 10px; padding: 0 11px; align-items: center; white-space: pre; min-width: max-content; }
-.ln.hi { background: rgba(229, 185, 111, .16); }
-.ln .no { color: #7f9d99; width: 18px; text-align: right; flex: none; }
-.ln code { font: inherit; }
-.pin, .pinb { display: inline-grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; background: #e5b96f; color: #17302f; font: 700 11px var(--sans); flex: none; }
-.term { background: var(--code); color: var(--code-ink); }
-.docm { display: grid; gap: 5px; font-size: 14px; }
-.wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 8px; }
-.note2 { padding: 9px; border-radius: 6px; font-size: 13px; color: #17302f; min-height: 74px; }
-.s1 { background: #f7e3a1; } .s2 { background: #bfe3d6; } .s3 { background: #c8d8f5; } .s4 { background: #f4c9b8; } .s5 { background: #dcccf2; } .s6 { background: #f2d0e0; } .s7 { background: #d9d9c9; }
-.chipr { display: flex; flex-wrap: wrap; gap: 6px; }
-.chipv { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); }
-.ticks { display: grid; gap: 2px; font-size: 14px; }
-.ok { color: var(--done); font-weight: 600; } .no { color: var(--risk); font-weight: 600; }
-.wire { display: grid; gap: 7px; max-width: 340px; }
-.wf { display: flex; gap: 8px; align-items: center; border: 1px dashed var(--muted); border-radius: 7px; padding: 10px; font-size: 13.5px; }
-.phones { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 8px; }
-.ph { border: 1px solid var(--line); border-radius: 14px; padding: 8px; display: grid; gap: 5px; align-content: start; background: var(--bg); min-height: 148px; }
-.ph .st { font-size: 11.5px; color: var(--muted); }
-.bub { font-size: 12.5px; border-radius: 9px; padding: 5px 8px; }
-.bub:empty { display: none; }
-.bub bdi { white-space: nowrap; }
-.bub.u { background: var(--accent-soft); justify-self: end; }
-.bub.b { background: var(--surface); border: 1px solid var(--line); }
-svg.dg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
-svg.dg text { fill: var(--ink); font-size: 12px; }
-svg.dg text.sm { fill: var(--muted); font-size: 11px; }
-.bx { fill: var(--surface); stroke: var(--accent); }
-.bx.bad { stroke: var(--risk); fill: var(--risk-soft); }
-.wr { fill: none; stroke: var(--muted); stroke-width: 1.6; }
-.wr.red { stroke: var(--risk); }
-.wr.dash { stroke-dasharray: 6 4; }
-.af { fill: var(--muted); }
-.ax { stroke: var(--line); stroke-width: 1.4; }
-.pt { fill: var(--accent); }
-.reqs { background: var(--accent-soft); border-radius: 10px; padding: 9px 13px; display: grid; gap: 2px; font-size: 14px; }
-.teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
-</style></head><body>
-<div class="wrap" id="mainapp">
-  <header style="display:grid;gap:8px">
-    <h1>Nova delivery playbook</h1>
-    <p class="lede">A proposal for taking the Nova Bank support copilot from a tested MVP to a real launch. Nova is fictional. All 3 stages are in: the main page, seven team views and the chatbot requirements.</p>
-    <p class="note"><span class="tag given">Given</span> came from you or the project. <span class="tag prop">Proposed</span> is my plan. <span class="tag ex">Example</span> is made up to show the shape: every person, date, capacity and target with this tag needs replacing.</p>
-    <nav class="jump" aria-label="Sections"><a href="#adjust">Adjustments</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#decisions">Technical decisions</a><a href="#sprints">Sprints</a><a href="#releases">Releases</a><a href="#quality">Quality bars</a><a href="#requirements">Requirements</a><a href="#teams">Team views</a><a href="#next">What's next</a></nav>
-  </header>
-
-  <section id="adjust" class="adjust">
-    <h2>Where I'd adjust your model</h2>
-    <div class="row"><blockquote>“% of conversations resolved without a human”</blockquote><p><b>Better rule:</b> count a chat only when the customer confirms it was solved and doesn't contact us again within 7 days. A customer who gives up also looks “resolved without a human”.</p></div>
-    <div class="row"><blockquote>“Retrieval (RAG) design: chunking, embeddings”</blockquote><p><b>Better rule:</b> choose retrieval by the content. Nova's 68 short rules fit in the prompt, and bank records need exact matches. Add a vector store only when long documents make that necessary.</p></div>
-    <div class="row"><blockquote>“hallucination rate”</blockquote><p><b>Better rule:</b> you can't count what nobody noticed. Measure groundedness on a test set, then sample live answers and track confirmed cases.</p></div>
-    <p class="note"><b>Still missing:</b> your roadmap book wasn't attached, so this page uses common practice. That is an assumption until you send it.</p>
-  </section>
-
-  <section id="goals">
-    <h2>Goals</h2>
-    <div class="cards">
-      <div class="metric north"><span><span class="tag given">Given</span> North star</span><b>40% verified resolution</b><span class="note">Solved in chat, confirmed by the customer, no repeat contact in 7 days. Not measured yet.</span></div>
-      <div class="metric"><span><span class="tag given">Given</span></span><b>100%</b><span class="note">fraud recall on the test set</span></div>
-      <div class="metric"><span><span class="tag given">Given</span></span><b>≥ 90%</b><span class="note"><abbr tabindex="0" title="The share of answers fully supported by a Nova rule or the customer's own records.">groundedness</abbr> on the test set</span></div>
-      <div class="metric"><span><span class="tag given">Given</span></span><b>&lt; 6 s</b><span class="note"><abbr tabindex="0" title="95 out of 100 replies are faster than this. It describes the slow end, not the average.">p95</abbr> reply time</span></div>
-      <div class="metric"><span><span class="tag ex">Example</span> From your template</span><b>≥ 4.2</b><span class="note"><abbr tabindex="0" title="Customer satisfaction score, usually a 1 to 5 rating after a chat.">CSAT</abbr>, no baseline yet</span></div>
-      <div class="metric"><span><span class="tag ex">Example</span></span><b>≤ EGP 45</b><span class="note">total cost per resolved contact, near the base case of EGP 43</span></div>
-    </div>
-  </section>
-
-  <section id="roadmap">
-    <h2>Roadmap: click a theme</h2>
-    <p class="lede">Themes become initiatives, then epics, then stories. Status shows what the MVP already does.</p>
-    <div class="board" id="board"></div>
-    <div class="detail" id="detail" aria-live="polite"></div>
-  </section>
-
-  <section id="decisions">
-    <h2>Technical decision cards</h2>
-    <p class="lede">Each card says what was decided, why, and what breaks without it. Snippets show what a developer actually writes.</p>
-    <div class="dcards" id="dcards"></div>
-  </section>
-
-  <section id="sprints">
-    <h2>Sprints</h2>
-    <p class="lede">An example plan of 2-week sprints, Sunday to Thursday, with an example team of 7 and part-time legal. Capacity is an example of 30 points, reduced for holidays.</p>
-    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Sprint</th><th>Dates <span class="tag ex">Example</span></th><th>Goal</th><th>Capacity</th><th>Stories</th><th>Demo</th></tr></thead><tbody id="sprintrows"></tbody></table></div>
-    <p class="note">Check holidays against the official calendar before committing. Expected in this window: Coptic Christmas on 7 January and Revolution Day on 25 January. Ramadan is expected from about 8 February 2027, so plan shorter hours, and the moon sets the exact dates. Sprints can start on a real date once the team is confirmed.</p>
-  </section>
-
-  <section id="releases">
-    <h2>Releases</h2>
-    <p class="lede">The first release stays small, with handoff to a person. Later releases add question types, channels, dialects and actions.</p>
-    <div class="tworow" id="rels"></div>
-  </section>
-
-  <section id="quality">
-    <h2>Quality bars</h2>
-    <div class="tworow">
-      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before the team can start it.">Definition of Ready</abbr></h3><ul><li>User, goal and value are clear</li><li>Passes <abbr tabindex="0" title="Independent, Negotiable, Valuable, Estimable, Small, Testable.">INVEST</abbr>, at 8 points or fewer</li><li>Acceptance criteria are written</li><li>AI behaviour names a test set and threshold</li><li>Data sources and owners are known</li><li>Compliance needs are flagged</li></ul></div>
-      <div class="box"><h3><abbr tabindex="0" title="The checklist a story must pass before anyone calls it finished.">Definition of Done</abbr></h3><ul><li>Code reviewed and merged</li><li>Unit tests and the release test pass</li><li>No gate has regressed</li><li>Arabic right-to-left checked</li><li>Logs stay masked</li><li>Documents and changelog updated</li><li>Demoed to the PM</li></ul></div>
-      <div class="box"><h3>Best practices</h3><ul><li>Change one thing, then run the tests</li><li>Never edit a test case to raise a score</li><li>Put what must never fail in code</li><li>Ship behind a <abbr tabindex="0" title="A switch that turns a feature on for chosen users without a new deployment.">feature flag</abbr></li><li>Keep a person one tap away</li><li>Pin versions, and retest before changing them</li></ul></div>
-    </div>
-  </section>
-
-  <section id="requirements">
-    <h2>Chatbot requirements</h2>
-    <p class="lede">These apply across every team view. Today's values come from the locked version, 1.0.15.</p>
-    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Requirement</th><th>Target</th><th>Today</th><th>Measured on</th><th>Owners</th></tr></thead><tbody><tr><td><b>Reply speed (p95)</b></td><td>Under 6 s</td><td>5.5 s on the last eval</td><td>Release test</td><td>Developer, AI</td></tr><tr><td><b>Groundedness</b></td><td>≥ 90%</td><td>97.1% (33 of 34)</td><td>Grounded cases</td><td>AI, QA</td></tr><tr><td><b>Hallucination rate</b></td><td>No confirmed serious case <span class="tag ex">Example</span></td><td>Not measured live</td><td>Sampled live answers</td><td>AI, Support</td></tr><tr><td><b>Safe refusal</b></td><td>100% of attacks refused</td><td>18 of 18</td><td>Red-team set</td><td>QA, Compliance</td></tr><tr><td><b>Containment and deflection</b></td><td>40% verified resolution</td><td>Not measured. The shadow answered 63%, which is not this</td><td>Pilot</td><td>PM, Support</td></tr><tr><td><b>CSAT</b></td><td>≥ 4.2 <span class="tag ex">Example</span></td><td>No baseline</td><td>Pilot survey</td><td>PM, Support</td></tr><tr><td><b>Cost per resolved conversation</b></td><td>≤ EGP 45 <span class="tag ex">Example</span></td><td>About EGP 43, base-case assumption</td><td>ROI model</td><td>PM, AI</td></tr><tr><td><b>Uptime</b></td><td>99.5% <span class="tag ex">Example</span></td><td>Not measured</td><td>Production monitoring</td><td>Developer, Support</td></tr><tr><td><b>Arabic and dialect quality</b></td><td>No language 5 points under the rest <span class="tag ex">Example</span></td><td>Tested: English, Egyptian Arabic, Franco. Gulf Arabic and MSA are not</td><td>Language sets</td><td>AI, QA, Design</td></tr><tr><td><b>Accessibility</b></td><td>WCAG AA <span class="tag ex">Example</span></td><td>Not audited</td><td>Accessibility review</td><td>Design, QA</td></tr></tbody></table></div>
-    <h3>AI acceptance criteria use thresholds</h3>
-    <p class="lede">One example can pass by luck, so AI behaviour is judged over a named test set.</p>
-    <div class="scroll"><table style="min-width:640px"><thead><tr><th>Feature</th><th>Criterion</th></tr></thead><tbody><tr><td><b>Cite a source</b></td><td>Given the 65-case main set, at least 90% are grounded, and every cited ID exists.</td></tr><tr><td><b>Handoff summary</b></td><td>Given the 4 control cases and 9 investigator checks, every handoff reaches the right queue, and no sender account details appear.</td></tr><tr><td><b>Shadow report</b></td><td>Given 200 reworded tickets, the answer rate is reported, and it is never called resolution.</td></tr><tr><td><b>Disable a rule</b></td><td>Given 6 new rule-control cases, a disabled rule is never cited, and that topic goes to a person.</td></tr><tr><td><b>Dispute API</b></td><td>Given 7 dispute cases and 18 attack cases, the status is correct, and no other customer’s data is ever revealed.</td></tr><tr><td><b>Block a card</b></td><td>Given 13 fraud and 18 attack cases, fraud recall stays at 100%, and no card is blocked without confirmation.</td></tr></tbody></table></div>
-    <p class="note">Sets marked as new still need writing. Small sets give wide ranges: 13 of 13 could really be about 77%.</p>
-    <h3>Release slicing</h3>
-    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Release</th><th>Intents</th><th>Channel</th><th>Languages</th><th>Actions</th><th>Who presses send</th></tr></thead><tbody><tr><td><b>R0 Staff trial</b></td><td>Fees, disputes, cards</td><td>Web chat</td><td>English, Egyptian Arabic, Franco</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R1 Pilot</b></td><td>The same, with payment status</td><td>Web chat</td><td>The same</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R2 Customer ramp</b></td><td>High-volume easy questions</td><td>App chat</td><td>The same</td><td>None</td><td>Auto on easy questions, with handoff</td></tr><tr><td><b>R3 Reach</b></td><td>More question types</td><td>WhatsApp</td><td>Add Gulf Arabic and MSA</td><td>None</td><td>Auto where the gates hold</td></tr><tr><td><b>R4 Actions</b></td><td>Card block</td><td>App chat</td><td>The same</td><td>Confirmed card block</td><td>Person reviews each action</td></tr></tbody></table></div>
-  </section>
-
-  <section id="teams">
-    <h2>Team views</h2>
-    <p class="lede">Sit at each team's desk and watch the same work from their side. Choose one of 6 features, one per theme. Every screen is an example mock.</p>
-    <div class="teams" id="teamcards"></div>
-  </section>
-
-  <section id="next" class="box">
-    <h2>What's next</h2>
-    <p>The playbook is a proposal. Replace each example with real people, dates and targets, and follow your roadmap book once it's added.</p>
-  </section>
-</div>
-<div id="viewapp" hidden></div>
-<script>
 (function () {
+  if (!document.getElementById("dcards")) return;
   var T = [
    { id: "t1", h: "Now", n: "Trusted answers", i: "Answer fees, disputes and cards from sources", p: "Customers wait for simple answers, and a wrong answer harms trust.", u: "Customer, agent, compliance officer", inn: ["Fees, disputes, cards and payment status", "Agent approves answers first"], out: ["Decisions on disputes", "Refunds and waivers"], nfr: ["Groundedness ≥ 90% on the 34-case grounded set", "p95 under 6 s", "Arabic, English and Franco quality on the eval set"],
      e: [{ n: "Grounded answers", s: [{ t: "Cite a source on every answer", p: 5, m: "Must", st: "Built", g: "Given the 65-case main set", w: "the copilot answers", th: "at least 90% are grounded, and every cited ID exists" }, { t: "Block promises in code", p: 3, m: "Must", st: "Built", g: "Given a draft that says “approved” or “refunded”", w: "the output checks run", th: "it is blocked, with one retry, then a person" }] },
@@ -301,8 +64,6 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
   document.addEventListener("click", function (ev) { var b = ev.target.closest ? ev.target.closest("[data-t]") : null; if (b) { cur = +b.dataset.t; board(); } });
   board();
 })();
-</script>
-<script>
 (function () {
   var FX = [
    { k: "answer", n: "Cite a source", th: "Trusted answers", story: "Cite a source on every answer", pts: 5, rel: "R1", int: "fee.explain", q: "Why was I charged EGP 25 on 14/9?", a: "That is the EGP 25 fee for using another bank’s ATM (FEE-2.3).", qa: "ليه اتخصم مني 25 جنيه يوم 14/9؟", aa: "دي رسوم 25 جنيه لسحب من ماكينة بنك تاني (FEE-2.3).", set: "65-case main set", thr: "at least 90% are grounded, and every cited ID exists", metric: "Groundedness", flag: "source_check", br: "feat/source-check", id: "NOVA-112", down: "No source means a handoff",
@@ -340,7 +101,7 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
   var F = FX[0], V = "pm", S = 0;
   var ex = '<span class="tag ex">Example</span>';
   function tool(name, body) { return '<div class="tool"><div class="tbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><b>' + name + "</b>" + ex + '</div><div class="tbody">' + body + "</div></div>"; }
-  function tbl(h, rows) { return '<div class="mscroll"><table class="mini"><thead><tr>' + h.map(function (x) { return "<th>" + x + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.map(function (r) { return "<tr>" + r.map(function (c) { return '<td dir="auto">' + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>"; }
+  function tbl(h, rows) { return '<div class="mscroll"><table class="mini"><thead><tr>' + h.map(function (x) { return "<th>" + x + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.map(function (r) { return "<tr>" + r.map(function (c, i) { return '<td dir="auto" data-label="' + String(h[i]).replace(/"/g, "&quot;") + '">' + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>"; }
   function kan(cols) { return '<div class="kan">' + cols.map(function (c) { return '<div class="kc"><h4>' + c[0] + "</h4>" + c[1].map(function (t) { return '<div class="tk' + (t.indexOf("*") === 0 ? " hl" : "") + '">' + t.replace(/^\*/, "") + "</div>"; }).join("") + "</div>"; }).join("") + "</div>"; }
   function code(lines, name) { return '<div class="ed">' + (name ? '<p class="fn">' + name + "</p>" : "") + lines.map(function (l, i) { var t = typeof l === "string" ? l : l[0], n = typeof l === "string" ? 0 : l[1]; return '<div class="ln' + (n ? " hi" : "") + '"><span class="no">' + (i + 1) + "</span><code>" + t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</code>" + (n ? '<span class="pin">' + n + "</span>" : "") + "</div>"; }).join("") + "</div>"; }
   function term(l) { return '<pre class="term">' + l.join("\n").replace(/</g, "&lt;") + "</pre>"; }
@@ -354,7 +115,9 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
     var m = { Default: ar ? "اكتب سؤالك" : "Ask about fees, disputes or cards", Loading: ar ? "بيكتب…" : "Typing…", Empty: ar ? "مفيش محادثات لسه" : "No messages yet", Error: ar ? "حصلت مشكلة. جرّب تاني أو كلّم موظف." : "Something went wrong. Try again or talk to a person.", Success: a, Handoff: ar ? "هوصلك بزميل. رقم طلبك TCK-0010." : "Connecting you to a colleague. Reference TCK-0010." };
     return '<div class="ph"' + dir + '><p class="st">' + state + '</p><div class="bub u" dir="auto">' + (state === "Empty" || state === "Default" ? "" : q) + '</div><div class="bub b" dir="auto">' + String(m[state]).replace(/\(?[A-Z]{2,}-[0-9.]*[0-9]\)?/g, "<bdi>$&</bdi>") + "</div></div>";
   }
-  function svgWrap(h, inner, label) { return '<div class="mscroll"><svg class="dg" viewBox="0 0 640 ' + h + '" role="img" aria-label="' + label + '"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="af"/></marker></defs>' + inner + "</svg></div>"; }
+  var dgN = 0;
+  function svgOne(w, h, inner, label, cl) { var id = "ar" + (++dgN); return '<svg class="dg ' + cl + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="' + label + '"><defs><marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="af"/></marker></defs>' + inner.replace(/url\(#ar\)/g, "url(#" + id + ")") + "</svg>"; }
+  function svgWrap(h, inner, label, nh, ninner) { return '<div class="dgw">' + svgOne(640, h, inner, label, "dg-w") + svgOne(320, nh, ninner, label, "dg-n") + "</div>"; }
   function bx(x, y, w, h, t, c) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="7" class="bx ' + (c || "") + '"/><text x="' + (x + w / 2) + '" y="' + (y + h / 2 + 4) + '" text-anchor="middle">' + t + "</text>"; }
   function ln(d, c) { return '<path d="' + d + '" class="wr ' + (c || "") + '" marker-end="url(#ar)"/>'; }
   function tx(x, y, t, a) { return '<text x="' + x + '" y="' + y + '" class="sm" text-anchor="' + (a || "middle") + '">' + t + "</text>"; }
@@ -363,13 +126,13 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
   var VIEWS = {
    pm: { n: "Product manager", d: "Top-down, from vision to traceability. Your book wasn’t attached, so this follows common practice.", s: [
     ["Vision to initiatives", function () { return tool("Strategy doc", doc("Nova vision", ["<b>Vision:</b> customers get a correct answer in their language without waiting.", "<b>Goal:</b> 40% verified resolution.", "<b>Initiatives:</b> Trusted answers · Safe handoff · Real evidence · Document control · Bank connection · On-premise and actions", "<b>This feature:</b> " + F.story + " supports " + F.th + "."])); }, "We connect one vision to goals, then to initiatives.", "Teams can then say why a story matters.", "If a story links to no goal, question it.", [["Initiative", "A large piece of work that moves a goal."]], ["Goal linked"]],
-    ["Prioritise", function () { return tool("Scoring sheet", tbl(["Initiative", "Value ×3", "Reach ×2", "Risk cut ×2", "Effort ÷", "Score"], [["Trusted answers", 5, 5, 5, 3, 12], ["Safe handoff", 4, 4, 5, 2, 15], ["Real evidence", 5, 2, 5, 1, 29], ["Document control", 4, 3, 5, 3, 9], ["Bank connection", 5, 4, 3, 5, 6], ["On-premise and actions", 3, 2, 4, 5, 4]]) + svgWrap(180, '<line x1="40" y1="160" x2="620" y2="160" class="ax"/><line x1="40" y1="160" x2="40" y2="10" class="ax"/>' + tx(330, 176, "Complexity") + tx(14, 90, "Value") + [[110, 30, "Evidence"], [230, 55, "Handoff"], [320, 40, "Answers"], [400, 80, "Documents"], [510, 45, "Bank"], [560, 105, "On-premise"]].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7" class="pt"/>' + tx(p[0], p[1] - 11, p[2]); }).join(""), "Value against complexity chart")); }, "We score each initiative, then plot value against complexity.", "The score makes the debate visible, but it does not decide alone.", "Evidence scores first because it is cheap and reduces the biggest risk.", [["Weighted scoring", "Rating options on criteria that carry different weights."]], ["Priorities agreed"]],
+    ["Prioritise", function () { return tool("Scoring sheet", tbl(["Initiative", "Value ×3", "Reach ×2", "Risk cut ×2", "Effort ÷", "Score"], [["Trusted answers", 5, 5, 5, 3, 12], ["Safe handoff", 4, 4, 5, 2, 15], ["Real evidence", 5, 2, 5, 1, 29], ["Document control", 4, 3, 5, 3, 9], ["Bank connection", 5, 4, 3, 5, 6], ["On-premise and actions", 3, 2, 4, 5, 4]]) + svgWrap(180, '<line x1="40" y1="160" x2="620" y2="160" class="ax"/><line x1="40" y1="160" x2="40" y2="10" class="ax"/>' + tx(330, 176, "Complexity") + tx(14, 90, "Value") + [[110, 30, "Evidence"], [230, 55, "Handoff"], [320, 40, "Answers"], [400, 80, "Documents"], [510, 45, "Bank"], [560, 105, "On-premise"]].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7" class="pt"/>' + tx(p[0], p[1] - 11, p[2]); }).join(""), "Value against complexity chart", 245, '<line x1="30" y1="225" x2="312" y2="225" class="ax"/><line x1="30" y1="225" x2="30" y2="14" class="ax"/>' + tx(170, 241, "Complexity") + tx(14, 120, "Value") + [[63, 57, "Evidence"], [118, 105, "Handoff"], [160, 76, "Answers"], [197, 152, "Documents"], [249, 85, "Bank"], [272, 200, "On-premise"]].map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7" class="pt"/>' + tx(p[0], p[1] - 11, p[2]); }).join(""))); }, "We score each initiative, then plot value against complexity.", "The score makes the debate visible, but it does not decide alone.", "Evidence scores first because it is cheap and reduces the biggest risk.", [["Weighted scoring", "Rating options on criteria that carry different weights."]], ["Priorities agreed"]],
     ["PRD by release", function () { return tool("Living PRD", tbl(["Section", "Content", "Ships in"], [["Problem", "Customers wait for simple answers", "R0"], ["Happy path", F.story, F.rel], ["Unhappy paths", F.down, F.rel], ["Non-functional", F.metric + ": " + F.thr, F.rel], ["Later", "New channels and dialects", "R3"]])); }, "One living PRD per initiative. Each section is tagged with its release.", "The team sees what ships when, in one document.", "Don’t write a new PRD for each release.", [["PRD", "Product requirements document: what to build and why."]], ["PRD section tagged"]],
     ["Roadmap, three styles", function () { return tool("Roadmap tool", tbl(["Timeline", "Nov", "Dec", "Jan", "Feb"], [["Real evidence", "■■", "", "", ""], ["Trusted answers", "■", "■", "■", ""], ["Document control", "", "■■", "■", ""], ["Bank connection", "", "", "■■", "■"]]) + tbl(["Now", "Next", "Later"], [["Answers, handoff, evidence", "Documents, bank connection", "On-premise, actions"]]) + kan([["To do", ["Bank connection"]], ["Doing", ["*" + F.th]], ["Done", ["MVP"]]])); }, "The same plan shown as a timeline, Now/Next/Later, and Kanban.", "Executives like dates. Teams like focus. Delivery likes flow.", "Dates beyond Next are guesses, so say so.", [["Now/Next/Later", "A roadmap by priority, without promising exact dates."]], ["Roadmap shared"]],
-    ["Use case", function () { return tool("UML editor", svgWrap(170, bx(10, 60, 90, 36, "Customer") + bx(540, 60, 90, 36, "Agent") + '<ellipse cx="320" cy="50" rx="120" ry="26" class="bx"/><text x="320" y="54" text-anchor="middle">' + F.n + '</text><ellipse cx="320" cy="125" rx="120" ry="26" class="bx"/><text x="320" y="129" text-anchor="middle">Hand off to a person</text>' + ln("M100 72L198 52") + ln("M100 84L198 120") + ln("M442 122L538 84"), "Use case diagram") + doc("Use case", ["<b>Main flow:</b> " + F.q + " → " + F.a, "<b>Alternate:</b> the customer is unsure, so the bot asks one clear question.", "<b>Exception:</b> " + F.down + "."])); }, "We draw who does what, then write the flows.", "Exceptions cause most bugs, and they are cheap to find here.", "Read the exception aloud with QA and support.", [["Use case", "A description of how someone uses the system to reach a goal."]], ["Flows written"]],
+    ["Use case", function () { return tool("UML editor", svgWrap(170, bx(10, 60, 90, 36, "Customer") + bx(540, 60, 90, 36, "Agent") + '<ellipse cx="320" cy="50" rx="120" ry="26" class="bx"/><text x="320" y="54" text-anchor="middle">' + F.n + '</text><ellipse cx="320" cy="125" rx="120" ry="26" class="bx"/><text x="320" y="129" text-anchor="middle">Hand off to a person</text>' + ln("M100 72L198 52") + ln("M100 84L198 120") + ln("M442 122L538 84"), "Use case diagram", 245, bx(115, 6, 90, 32, "Customer") + '<ellipse cx="160" cy="85" rx="130" ry="26" class="bx"/><text x="160" y="89" text-anchor="middle">' + F.n + '</text><ellipse cx="160" cy="155" rx="130" ry="26" class="bx"/><text x="160" y="159" text-anchor="middle">Hand off to a person</text>' + bx(115, 207, 90, 32, "Agent") + ln("M160 38V57") + ln("M115 22H10V155H28") + ln("M160 181V205")) + doc("Use case", ["<b>Main flow:</b> " + F.q + " → " + F.a, "<b>Alternate:</b> the customer is unsure, so the bot asks one clear question.", "<b>Exception:</b> " + F.down + "."])); }, "We draw who does what, then write the flows.", "Exceptions cause most bugs, and they are cheap to find here.", "Read the exception aloud with QA and support.", [["Use case", "A description of how someone uses the system to reach a goal."]], ["Flows written"]],
     ["Split the story", function () { return tool("Backlog", tbl(["Story", "Points", "Ready?"], [["<s>" + F.th + " (epic)</s>", "21", "Too big"], [F.story, F.pts, "Yes"], ["Show the error message", "3", "Yes"], ["Log the outcome", "2", "Yes"]])); }, "We split until each story passes the Definition of Ready.", "Small stories finish, and they reveal problems early.", "Split by behaviour, not by front end and back end.", [["INVEST", "Independent, Negotiable, Valuable, Estimable, Small, Testable."]], ["8 points or fewer"]],
     ["Grooming", function () { return tool("Meeting notes", doc("Backlog refinement · 45 minutes", ["<b>Attendees:</b> PM, developer, AI engineer, QA and designer (example roles)", "<b>Agenda:</b> review stories, questions, estimate", "<b>Outcome:</b> " + F.story + " is estimated at " + F.pts + " points", "<b>Open:</b> confirm the test set with QA"]) + kan([["Needs detail", ["Log the outcome"]], ["Ready", ["*" + F.story]], ["Sprint", []]])); }, "The team questions stories before committing.", "Most surprises can be found here for free.", "If nobody asks questions, the story hasn’t really been read.", [["Grooming", "A regular session to clarify and estimate upcoming stories."]], ["Team estimated"]],
-    ["UML negotiation", function () { return tool("Design review", svgWrap(190, [[80, "Customer"], [240, "Code"], [400, "AI"], [560, "Bank API"]].map(function (a) { return bx(a[0] - 45, 4, 90, 26, a[1]) + '<line x1="' + a[0] + '" y1="30" x2="' + a[0] + '" y2="185" class="ax"/>'; }).join("") + ln("M80 55H238") + tx(160, 50, "question") + ln("M240 85H398") + tx(320, 80, "masked text") + ln("M400 110H242") + tx(320, 105, "draft") + ln("M240 140H558", "dash") + tx(480, 135, "deferred: live status") + ln("M240 170H82") + tx(160, 165, "checked reply"), "Sequence diagram with a deferred dashed part") + svgWrap(90, bx(10, 28, 95, 34, "Received") + bx(170, 28, 95, 34, "Answered") + bx(330, 28, 95, 34, "Handed off") + bx(490, 28, 120, 34, "Auto-resolved", "bad") + ln("M105 45H168") + ln("M265 45H328") + ln("M425 45H488", "dash") + tx(550, 80, "deferred"), "State diagram with a deferred dashed state") + tbl(["Option", "Choice", "Cost of deferring"], [["Live API now", "Deferred", "Status is less fresh in the pilot"], ["Daily extract", "Chosen for now", "A nightly job to remove later"]])); }, "PM and engineers agree what ships now and what waits. Dashed lines show deferred parts.", "Deferring is fine when the cost is written down.", "Each deferral needs an owner and a date.", [["Decision record", "A short note of the options, the choice and why."]], ["Decision recorded"]],
+    ["UML negotiation", function () { return tool("Design review", svgWrap(190, [[80, "Customer"], [240, "Code"], [400, "AI"], [560, "Bank API"]].map(function (a) { return bx(a[0] - 45, 4, 90, 26, a[1]) + '<line x1="' + a[0] + '" y1="30" x2="' + a[0] + '" y2="185" class="ax"/>'; }).join("") + ln("M80 55H238") + tx(160, 50, "question") + ln("M240 85H398") + tx(320, 80, "masked text") + ln("M400 110H242") + tx(320, 105, "draft") + ln("M240 140H558", "dash") + tx(480, 135, "deferred: live status") + ln("M240 170H82") + tx(160, 165, "checked reply"), "Sequence diagram with a deferred dashed part", 190, [[40, "Customer"], [120, "Code"], [200, "AI"], [280, "Bank API"]].map(function (a) { return bx(a[0] - 35, 4, 70, 26, a[1]) + '<line x1="' + a[0] + '" y1="30" x2="' + a[0] + '" y2="185" class="ax"/>'; }).join("") + ln("M40 55H118") + tx(80, 50, "question") + ln("M120 85H198") + tx(160, 80, "masked text") + ln("M200 110H122") + tx(160, 105, "draft") + ln("M120 140H278", "dash") + tx(240, 122, "deferred:") + tx(240, 135, "live status") + ln("M120 170H42") + tx(80, 165, "checked reply")) + svgWrap(90, bx(10, 28, 95, 34, "Received") + bx(170, 28, 95, 34, "Answered") + bx(330, 28, 95, 34, "Handed off") + bx(490, 28, 120, 34, "Auto-resolved", "bad") + ln("M105 45H168") + ln("M265 45H328") + ln("M425 45H488", "dash") + tx(550, 80, "deferred"), "State diagram with a deferred dashed state", 218, bx(90, 6, 140, 34, "Received") + bx(90, 62, 140, 34, "Answered") + bx(90, 118, 140, 34, "Handed off") + bx(90, 174, 140, 34, "Auto-resolved", "bad") + ln("M160 40V60") + ln("M160 96V116") + ln("M160 152V172", "dash") + tx(172, 167, "deferred", "start")) + tbl(["Option", "Choice", "Cost of deferring"], [["Live API now", "Deferred", "Status is less fresh in the pilot"], ["Daily extract", "Chosen for now", "A nightly job to remove later"]])); }, "PM and engineers agree what ships now and what waits. Dashed lines show deferred parts.", "Deferring is fine when the cost is written down.", "Each deferral needs an owner and a date.", [["Decision record", "A short note of the options, the choice and why."]], ["Decision recorded"]],
     ["Criteria by release", function () { return tool("Ticket", tbl(["Criterion", "Release"], [["Given the " + F.set + ", " + F.thr, F.rel], ["Temporary: a daily extract may be 24 hours old, and the reply says so", "R1, workaround"], ["The workaround is removed when the live API ships", "R2"]])); }, "AI behaviour is written as a threshold over a named test set.", "One example can pass by luck. A set shows behaviour.", "Every workaround needs a removal criterion.", [["Acceptance criteria", "Conditions a story must meet to be accepted."]], ["Criteria tagged"]],
     ["Story map", function () { return tool("Story map", tbl(["Release", "Answers", "Handoff", "Documents", "Bank"], [["R0", "Staff trial", "Queues", "", ""], ["R1", "Agents approve", "Summaries", "Disable a rule", "Daily extract"], ["R2", "Easy questions live", "Surge alerts", "Two gates", "Signed login"]]) + tbl(["One initiative per release"], [["R0 Answers only"], ["R1 Handoff only"], ["R2 Documents only"]]) + '<p class="note"><b>Compare:</b> the top map ships a complete slice each time. The bottom one delays value and leaves gaps.</p>'); }, "Each release takes parts of several initiatives, and epics split across releases.", "Customers need a working slice, not a finished department.", "Check each line: could this actually ship alone?", [["Story map", "Stories arranged by user journey, with lines marking releases."]], ["Release slices agreed"]],
     ["Traceability", function () { return tool("Trace matrix", chips(["Goal: 40% resolution", "Initiative: " + F.th, "PRD: " + F.rel, "Epic", "Use case flow", "Story: " + F.id, "Criterion: " + F.metric, "Release: " + F.rel, "Metric: " + F.metric])); }, "Each criterion traces back to a goal and forward to a metric.", "Compliance asks “why was this built?”, and this answers.", "A broken link usually means wasted work.", [["Traceability", "Being able to follow a requirement from goal to result."]], ["Trace complete"]],
@@ -379,7 +142,7 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
     ["Research wall", function () { return tool("Whiteboard", stick([["I", "“I don’t know what this fee is.”"], ["T", "Tickets: fees, disputes and cards lead"], ["A", "Chat is rarely opened (example)"], ["L", "Banking secrecy rules apply"], ["C", "Rival bots hand off late (example)"], ["P", "Frustrated customers leave"], ["X", "No live dispute API yet"]]) + '<p class="note">Interview · tickets · analytics · law · competitors · lessons · tech</p>'); }, "Evidence is grouped by source.", "Colour shows how much rests on one source.", "Nova has no real interviews yet, so these notes are examples.", [["Research wall", "A shared board of findings."]], ["Sources labelled"]],
     ["Insight and HMW", function () { return tool("Whiteboard", doc("Insight", ["Customers don’t know which record caused the issue.", "<b>How might we</b> help them point at the right record without typing details?"])); }, "We turn findings into one insight and one question.", "A good question opens options. A feature request closes them.", "This insight led to the record picker.", [["How might we", "A question that turns a problem into a design prompt."]], ["Insight agreed"]],
     ["Requirements", function () { return tool("Requirements", tbl(["", "Under 6 s", "Accessible", "Arabic RTL"], [[F.story, "✓", "✓", "✓"], ["Show sources", "✓", "✓", "✓"], ["Talk to a person", "", "✓", "✓"]])); }, "A matrix links functional and non-functional requirements.", "NFRs get lost unless they’re tied to features.", "Check every row has at least one NFR.", [["NFR", "A quality requirement, such as speed or accessibility."]], ["Matrix complete"]],
-    ["Flows", function () { return tool("FigJam", svgWrap(170, bx(10, 60, 100, 40, "Question") + bx(160, 60, 100, 40, "Understand") + bx(310, 60, 100, 40, "Answer") + bx(460, 60, 110, 40, "Solved?") + bx(310, 125, 140, 34, "Person", "bad") + ln("M110 80H158") + ln("M260 80H308") + ln("M410 80H458") + ln("M515 100V142H452", "red") + ln("M210 100V142H308", "red") + tx(235, 125, "unsure") + tx(530, 125, "no"), "Flow with red unhappy paths")); }, "We map the happy path, then red unhappy paths.", "Banking chats fail in the red paths.", "A flow with no red is unfinished.", [["Conversation flow", "The planned turns between customer and bot."]], ["Unhappy paths drawn"]],
+    ["Flows", function () { return tool("FigJam", svgWrap(170, bx(10, 60, 100, 40, "Question") + bx(160, 60, 100, 40, "Understand") + bx(310, 60, 100, 40, "Answer") + bx(460, 60, 110, 40, "Solved?") + bx(310, 125, 140, 34, "Person", "bad") + ln("M110 80H158") + ln("M260 80H308") + ln("M410 80H458") + ln("M515 100V142H452", "red") + ln("M210 100V142H308", "red") + tx(235, 125, "unsure") + tx(530, 125, "no"), "Flow with red unhappy paths", 216, bx(20, 6, 120, 34, "Question") + bx(20, 62, 120, 34, "Understand") + bx(20, 118, 120, 34, "Answer") + bx(20, 174, 120, 34, "Solved?") + bx(200, 118, 100, 34, "Person", "bad") + ln("M80 40V60") + ln("M80 96V116") + ln("M80 152V172") + ln("M140 79H250V116", "red") + ln("M140 191H250V154", "red") + tx(195, 73, "unsure") + tx(195, 185, "no"))); }, "We map the happy path, then red unhappy paths.", "Banking chats fail in the red paths.", "A flow with no red is unfinished.", [["Conversation flow", "The planned turns between customer and bot."]], ["Unhappy paths drawn"]],
     ["Wireframe", function () { return tool("Figma", '<div class="wire"><div class="wf"><span class="pinb">1</span>Status under the reply</div><div class="wf"><span class="pinb">2</span>Answer</div><div class="wf"><span class="pinb">3</span>Why this answer?</div><div class="wf"><span class="pinb">4</span>Talk to a person</div></div>' + doc("Annotations", ["1 Shows if checked or passed on", "2 Short, in the customer’s language", "3 Closed until asked", "4 Always visible"])); }, "Numbered pins explain each part.", "Annotations stop guessing during the build.", "Check that pin 4 never disappears.", [["Wireframe", "A simple layout with no final styling."]], ["Annotated"]],
     ["High fidelity", function () { return tool("Figma", '<div class="phones">' + ["Default", "Loading", "Empty", "Error", "Success", "Handoff"].map(function (s) { return phone(s, false) + phone(s, true); }).join("") + "</div>"); }, "Every state appears in both languages, with right-to-left Arabic.", "Most UI bugs live in the states nobody drew.", "Check the Arabic version, not just the English one.", [["RTL", "Right-to-left layout, used for Arabic."]], ["All states drawn"]],
     ["Usability test", function () { return tool("Test notes", tbl(["Finding (example)", "Change"], [["3 of 5 missed “Why this answer?”", "Moved it under the reply"], ["Franco users expected Arabic replies", "Kept the Arabic reply"], ["“Agent” was unclear", "Changed to “Talk to a person”"]]) + '<p class="note">This test hasn’t run. These findings show the format.</p>'); }, "Findings lead to specific changes.", "A finding with no change is only trivia.", "Five people find most big problems, but they don’t prove a rate.", [["Usability test", "Watching people use a design."]], ["Changes made"]],
@@ -455,31 +218,35 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
   function $(i) { return document.getElementById(i); }
   function render() {
     var v = VIEWS[V], st = v.s[S];
-    $("viewapp").innerHTML = '<button type="button" class="back" data-go="main">Back to the playbook</button><h1>' + v.n + ' view</h1><p class="lede">' + v.d + ' <span class="tag prop">Proposed</span></p>' +
-      '<div class="picker"><span class="note">Teams:</span>' + ORDER.map(function (k) { return '<button type="button" class="vbtn" aria-pressed="' + (k === V) + '" data-v="' + k + '">' + VIEWS[k].n + "</button>"; }).join("") + "</div>" +
+    $("viewapp").innerHTML = '<a class="back" href="index.html">Back to the playbook</a><h1>' + v.n + ' view</h1><p class="lede">' + v.d + ' <span class="tag prop">Proposed</span></p>' +
+      '<div class="picker"><span class="note">Teams:</span>' + ORDER.map(function (k) { return '<a class="vbtn"' + (k === V ? ' aria-current="page"' : "") + ' href="team-' + k + ".html#f=" + FX.indexOf(F) + '">' + VIEWS[k].n + "</a>"; }).join("") + "</div>" +
       '<div class="picker"><span class="note">Feature:</span>' + FX.map(function (f, i) { return '<button type="button" class="vbtn" aria-pressed="' + (f === F) + '" data-f="' + i + '">' + f.n + "</button>"; }).join("") + "</div>" +
       '<div class="reqs"><p><b>Requirements this team owns:</b> ' + NFR[V].join(" · ") + '</p><p><b>Acceptance for ' + F.n + ':</b> Given the ' + F.set + ", " + F.thr + '.</p></div>' +
       '<div class="rail">' + v.s.map(function (x, i) { return '<button type="button" class="rs" aria-pressed="' + (i === S) + '" data-s="' + i + '"><b>' + (i + 1) + "</b>" + x[0] + "</button>"; }).join("") + "</div>" +
       '<div class="stage"><div>' + st[1]() + '</div><aside class="coach"><h3>' + (S + 1) + ". " + st[0] + "</h3><h4>What’s happening</h4><p>" + st[2] + "</p><h4>Why this way</h4><p>" + st[3] + "</p><h4>What the PM should notice</h4><p>" + st[4] + "</p><h4>Terms</h4><p>" + st[5].map(function (t) { return '<abbr tabindex="0" title="' + t[1].replace(/"/g, "&quot;") + '">' + t[0] + "</abbr>"; }).join(" · ") + "</p><h4>Checklist this ticks</h4>" + list2(st[6]) + '<div class="navr"><button type="button" class="vbtn" data-m="-1">Previous</button><button type="button" class="vbtn" data-m="1">Next</button></div></aside></div>';
   }
-  function route() {
-    var h = location.hash.replace("#", ""), m = h.match(/^team-(\w+)$/);
-    if (m && VIEWS[m[1]]) { V = m[1]; S = 0; $("mainapp").hidden = true; $("viewapp").hidden = false; render(); window.scrollTo(0, 0); }
-    else { $("mainapp").hidden = false; $("viewapp").hidden = true; }
+  function labelTables() {
+    Array.prototype.forEach.call(document.querySelectorAll("table"), function (t) {
+      var h = Array.prototype.map.call(t.querySelectorAll("thead th"), function (x) { return x.textContent.trim(); });
+      Array.prototype.forEach.call(t.querySelectorAll("tbody tr"), function (tr) { Array.prototype.forEach.call(tr.children, function (c, i) { if (!c.hasAttribute("data-label")) c.setAttribute("data-label", h[i] || ""); }); });
+    });
   }
-  $("teamcards").innerHTML = ORDER.map(function (k) { var v = VIEWS[k]; return '<button type="button" class="theme" data-open="' + k + '"><b>' + v.n + "</b><span>" + v.s.length + " steps. " + v.d + "</span></button>"; }).join("");
+  var page = document.body.getAttribute("data-view"), old = location.hash.match(/^#team-(\w+)$/);
+  if (old && VIEWS[old[1]]) { location.replace("team-" + old[1] + ".html"); return; }
+  if (!page) {
+    $("teamcards").innerHTML = ORDER.map(function (k) { var v = VIEWS[k]; return '<a class="theme" href="team-' + k + '.html"><b>' + v.n + "</b><span>" + v.s.length + " steps. " + v.d + "</span></a>"; }).join("");
+    labelTables();
+    document.addEventListener("click", function () { setTimeout(labelTables, 0); });
+    return;
+  }
+  V = page;
+  var fm = location.hash.match(/^#f=(\d+)$/); if (fm && FX[+fm[1]]) F = FX[+fm[1]];
   document.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button") : null; if (!b) return;
     var d = b.dataset;
-    if (d.open) { try { location.hash = "team-" + d.open; } catch (x) {} V = d.open; S = 0; $("mainapp").hidden = true; $("viewapp").hidden = false; render(); window.scrollTo(0, 0); return; }
-    if (d.go) { try { location.hash = ""; } catch (x) {} $("mainapp").hidden = false; $("viewapp").hidden = true; return; }
-    if (d.v) { V = d.v; S = 0; try { location.hash = "team-" + V; } catch (x) {} render(); return; }
-    if (d.f !== undefined && b.classList.contains("vbtn")) { F = FX[+d.f]; render(); return; }
+    if (d.f !== undefined && b.classList.contains("vbtn")) { F = FX[+d.f]; try { location.hash = "f=" + d.f; } catch (x) {} render(); return; }
     if (d.s !== undefined && b.classList.contains("rs")) { S = +d.s; render(); return; }
     if (d.m) { S = Math.max(0, Math.min(VIEWS[V].s.length - 1, S + +d.m)); render(); }
   });
-  window.addEventListener("hashchange", route);
-  route();
+  render();
 })();
-</script>
-</body></html>
