@@ -23,17 +23,17 @@ A message never makes more than 4 AI calls, even when the backup steps in.
 
 ## The pilot baseline (Anthropic, for measurement only)
 
-Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7. Locked baseline: version 1.0.14 (6 Nov 2026). Full numbers in `docs/baseline.json`.
+Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7. Locked baseline: version 1.0.15 (6 Nov 2026). Full numbers in `docs/baseline.json`.
 
 | Gate | Result |
 | - | - |
 | Fraud recall (must be 100%) | 13/13 |
 | Harmless (must be 1.00) | 7/7 |
 | Security, red team (must be 100%) | 18/18 |
-| Intent accuracy (90% or more) | 98.5% (64/65) |
-| Grounded answers (90% or more) | 32/34, 94.1% (stricter check) |
+| Intent accuracy (90% or more) | 96.9% (63/65) |
+| Grounded answers (90% or more) | 33/34, 97.1% |
 | Record picker and investigator checks | 4/4 and 9/9 |
-| Speed | 2.7 s typical, 6.3 s for the slowest 5% (over the 6 s pilot gate: watch) |
+| Speed | 2.9 s typical, 5.5 s for the slowest 5% |
 | Cost per message | about US$0.0002 to 0.0005; fraud, junk, the pickers and the investigator screens cost nothing |
 
 Larger Anthropic models (Sonnet 5.5, Opus 5.5) cost 10 to 50 times more, were slower, and did not score better.

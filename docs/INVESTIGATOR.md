@@ -95,7 +95,7 @@ The PM control panel has a "Transaction investigator" section, from `logs/invest
 - % resolved without an agent
 - top decline and pending reasons
 
-## Tests (1.0.14)
+## Tests (1.0.15)
 
 - Eval V1 to V9 (`knowledge/evalset.md`): narrowing finds the right record; declined shows the right reason and rule; a pending hold shows its expected date; "waiting for money" finds the pending InstaPay; with nothing found it explains the normal timing and hands off only after it; "I didn't make this" goes to Fraud; privacy; the handoff summary with no sender account details. All pass.
 - Eval cases 61 to 65: typed questions about a declined payment, a hotel hold, an InstaPay under review, an ATM daily limit and a transfer after the cut-off. All answered and grounded.

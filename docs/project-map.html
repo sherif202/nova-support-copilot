@@ -101,11 +101,11 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
   <h1>Everything built, tested and written, on one page</h1>
   <p class="lede">An AI copilot that answers three repeat banking questions (fees, disputes, cards) in Arabic, English and Franco-Arabic, from the customer's own records, and hands everything else to a person. Built along a 9-stage lifecycle. Nova Bank is fictional and all data is synthetic.</p>
   <div class="pills">
-    <span class="pill ok">Version 1.0.14 · locked baseline</span>
+    <span class="pill ok">Version 1.0.15 · locked baseline</span>
     <span class="pill ok">Release test: SHIP, 106 cases</span>
     <span class="pill warn">Synthetic data only</span>
     <span class="pill warn">Stopped before the staff trial</span>
-    <span class="pill">AI spend to date ≈ US$2.28</span>
+    <span class="pill">AI spend to date ≈ US$2.46</span>
   </div>
 </header>
 
@@ -116,7 +116,7 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
     <a class="stage done" href="https://claude.ai/artifact/FBBRS3vAxXKeoyuHYAvfmV"><span class="dot">2</span><b>Data prep</b><small>50 customers, 520 transactions</small></a>
     <a class="stage done" href="https://claude.ai/artifact/4FM2y9GX6SNPWAsczpxaqP"><span class="dot">3</span><b>Model choice</b><small>Claude Haiku 5.5, vendor-neutral</small></a>
     <a class="stage done" href="https://claude.ai/artifact/NhdfWzDawYvz2Lmz5kWJpe"><span class="dot">4</span><b>Prompt design</b><small>15 scored versions</small></a>
-    <a class="stage done" href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM"><span class="dot">5</span><b>Evaluation</b><small>SHIP on 1.0.14</small></a>
+    <a class="stage done" href="https://claude.ai/artifact/MkEgDZmAWviz964ej8aVKM"><span class="dot">5</span><b>Evaluation</b><small>SHIP on 1.0.15</small></a>
     <a class="stage done" href="https://claude.ai/artifact/Awz9kYQoouNCUxLtV9Vt8J"><span class="dot">6</span><b>Integration &amp; UX</b><small>Chat, inbox, pickers</small></a>
     <a class="stage part" href="https://claude.ai/artifact/W9iVJro6RubTC5YLv3q5p9"><span class="dot">7</span><b>Staged launch</b><small>Shadow run done; trial needs people</small></a>
     <a class="stage wait" href="https://claude.ai/artifact/7kcLoCA3NiVNtwt7TARBXD"><span class="dot">8</span><b>Monitoring</b><small>Panel built; no live traffic</small></a>
@@ -151,7 +151,7 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
         <li>Chat in Arabic, English and Franco, with "Why this answer?"</li>
         <li>Pickers: tap the exact transaction, card or dispute</li>
         <li>Transaction investigator: why pending or declined, "waiting for money"</li>
-        <li>Chat memory and one clarifying question (1.0.14)</li>
+        <li>Chat memory and one clarifying question (1.0.14 and 1.0.15)</li>
         <li>Agent inbox with a handoff summary; modes Off / Suggest / Auto</li>
       </ul>
       <div class="from"><span>Stage 6</span><span>Stage 4</span></div>
@@ -172,11 +172,11 @@ footer { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--lin
     <div class="card qual" data-wire>
       <h3><span class="ic">✓</span>Proof so far</h3>
       <ul>
-        <li>Release test <span class="num">106</span> cases: fraud <span class="num">13/13</span>, security <span class="num">18/18</span>, intent <span class="num">98.5%</span>, grounded <span class="num">94.1%</span></li>
-        <li>Fresh handoff test: <span class="num">1 of 27</span> to a person</li>
+        <li>Release test <span class="num">106</span> cases: fraud <span class="num">13/13</span>, security <span class="num">18/18</span>, intent <span class="num">96.9%</span>, grounded <span class="num">97.1%</span></li>
+        <li>Fresh handoff test: <span class="num">2 of 24</span> to a person</li>
         <li>Shadow run: <span class="num">63%</span> answered (an answer rate, not resolution), <span class="num">0 of 16</span> fraud missed</li>
       </ul>
-      <p class="warnline">Today's harder mix handed off more, and replies at the slow end take 6.3 s (limit 6 s).</p>
+      <p class="warnline">Results vary between runs. Replies at the slow end take 5.5 s (limit 6 s).</p>
       <div class="from"><span>Stage 5</span><span>Stage 7</span></div>
     </div>
 

@@ -1,6 +1,6 @@
 # Stage 7 shadow run results
 
-> Current version (6 Nov 2026): 1.0.14. The shadow runs below were made on versions up to 1.0.11 and have not been repeated since; the next one (about US$0.06) is planned before the beta, with reworded tickets.
+> Current version (6 Nov 2026): 1.0.15. The shadow runs below were made on versions up to 1.0.11 and have not been repeated since; the next one (about US$0.06) is planned before the beta, with reworded tickets.
 >
 > **How to read "resolved" on this page (added 6 Nov 2026):** the script counts a ticket as resolved when the copilot answered, the intent was right and an agent would have given it to the copilot. It does not check that the answer was right or that the customer stopped contacting us. So 63% is an **answer rate on synthetic tickets**, not verified resolution. It also runs high: 33 of the 50 approved examples appear word for word in these tickets, so the 98 to 100% intent score is inflated, and the tickets were built to have records. See `docs/PROJECT-STATUS.md`.
 

@@ -2,7 +2,7 @@
 
 The PM control panel has an **ROI model** section (PM control panel tab, below the recommendations). It answers four questions from the same log: what the copilot is worth, what it costs, where the cost goes, and when a flat budget stops holding. No model call; everything is a rollup.
 
-**All money figures beyond the token costs are assumptions** (`lib/roi-config.js`) until the bank or the pilot replaces them. Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets (the last shadow run). Live data uses the current version (1.0.14); the turn log also counts the record picker, and the investigator has its own metrics in the panel.
+**All money figures beyond the token costs are assumptions** (`lib/roi-config.js`) until the bank or the pilot replaces them. Nova Bank is fictional and the sample is the 1.0.11 shadow run on 200 synthetic tickets (the last shadow run). Live data uses the current version (1.0.15); the turn log also counts the record picker, and the investigator has its own metrics in the panel.
 
 **Correction, 6 Nov 2026.** The first version of this model showed an ROI of 9,485%. That number was wrong, and the mistake was mine. It multiplied the shadow's 63% by all 45,000 contacts, as if every contact came to the chat, was in scope and was resolved. It set the running cost at EGP 5,000 a month and left out building and connecting to the bank. This page replaces it.
 
@@ -131,7 +131,7 @@ The ROI model above is one average month. The simulator (`public/roi-simulator.h
 
 You change who presses send, the confidence level, the clear question and a bigger model. It reports net value, bad answers, agents needed by shift and the wait for a person, and it compares 48 setting combinations to find the sweet spot. It charges each bad answer at 15 good ones, and a setting must keep AI-sent answers at 24 in 25 or better and stay within the reply time you accept. A normal month with today's settings matches the base case: 2,160 resolved, +18% before bad answers.
 
-Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 6.3 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic, and it does not charge for customers left waiting, so read the money with the wait.
+Every rate is listed on the page. The day pattern, events and most confidence rates are estimates, to be replaced with the bank's contact log. The only measured inputs are the costs, the 5.5 s speed, the handling minutes and 13 of 32 right at confidence 0.6 to 0.69, all on synthetic data. It is deterministic, and it does not charge for customers left waiting, so read the money with the wait.
 
 ## Files
 

@@ -19,9 +19,9 @@
 
   <header class="stage">
     <div class="stage-head"><span class="num c">9</span><div><p class="eyebrow">Phase 4 · Run &amp; Improve · continuous</p><h1>Iteration &amp; Retraining</h1></div></div>
-    <div class="tags"><span class="tag cont">Weekly, after Demo Day too</span><span class="tag">Owner: PM</span><span class="tag">15 versions · 1.0.14 locked</span></div>
+    <div class="tags"><span class="tag cont">Weekly, after Demo Day too</span><span class="tag">Owner: PM</span><span class="tag">16 versions · 1.0.15 locked</span></div>
     <p class="lede"><strong>Goal:</strong> a safe weekly improvement cycle, and the evidence to get phase 2 funded. For Nova, "retraining" means updating the prompt, knowledge base, taxonomy and golden record, never the model's weights.</p>
-    <p class="note"><b>Project status:</b> version 1.0.14 is shipped and locked (eval SHIP, 6 Nov 2026), with p95 6.3 s over the 6 s pilot gate. Stopped before the internal beta. See <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
+    <p class="note"><b>Project status:</b> version 1.0.15 is shipped and locked (eval SHIP, 6 Nov 2026), with p95 5.5 s. Stopped before the internal beta. See <a href="../PROJECT-STATUS.md">PROJECT-STATUS.md</a>.</p>
   </header>
 
   <section class="panel">
@@ -42,11 +42,12 @@
       <li><span class="ver">1.0.11</span><span>Owner decision: branch hours and cheque book price as synthetic facts; honesty cases 21 and 57 moved to facts Nova still lacks. Intent 98.3%, grounded 96.6%. <span class="st done">SHIP</span></span></li>
       <li><span class="ver">1.0.12</span><span>Record picker: the customer taps the exact transaction, card or dispute; a vague question gets "Which one do you mean?". Grounded 28/29. <span class="st done">SHIP</span></span></li>
       <li><span class="ver">1.0.13</span><span>Transaction investigator, tested, and its rules in the AI's knowledge; two new intents. Intent 98.5%, grounded 97.1%, investigator 9/9. Run 1 failed on two bugs, fixed. <span class="st done">SHIP</span> Locked until 1.0.14.</span></li>
-      <li><span class="ver">1.0.14</span><span>Chat memory, one clarifying question before a handoff, a better answer step, and a stricter sources check. Handoff test 16/34 to 3/34, then 1/27 on a fresh set. The ROI model was rebuilt on a realistic funnel. Grounded 94.1%, p95 6.3 s (over the 6 s pilot gate). <span class="st done">SHIP</span> Locked baseline.</span></li>
+      <li><span class="ver">1.0.14</span><span>Chat memory, one clarifying question before a handoff, a better answer step, and a stricter sources check. Handoff test 16/34 to 3/34, then 1/27 on a fresh set. The ROI model was rebuilt on a realistic funnel. Grounded 94.1%, p95 6.3 s (over the 6 s pilot gate). <span class="st done">SHIP</span> Locked until 1.0.15.</span></li>
+      <li><span class="ver">1.0.15</span><span>Fixes from hand testing: a nearly sure question matching a record is answered, plain English keeps English replies, disputes carry a decision target date. 2 of 24 new questions went to a person. Intent 96.9%, grounded 97.1%, p95 5.5 s. Run 1 failed on case 59, fixed. <span class="st done">SHIP</span> Locked baseline.</span></li>
     </ol>
     <div class="bars">
-      <div class="bar-row"><span>Intent 1.0.0 → 1.0.14</span><span class="bar-track"><span class="bar-fill lin" style="width:98.5%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+6.8 pts</span></div>
-      <div class="bar-row"><span>Grounded 1.0.0 → 1.0.14</span><span class="bar-track"><span class="bar-fill" style="width:94.1%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+18.2 pts</span></div>
+      <div class="bar-row"><span>Intent 1.0.0 → 1.0.15</span><span class="bar-track"><span class="bar-fill lin" style="width:96.9%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+5.2 pts</span></div>
+      <div class="bar-row"><span>Grounded 1.0.0 → 1.0.15</span><span class="bar-track"><span class="bar-fill" style="width:97.1%"></span><span class="bar-target" style="left:90%"></span></span><span class="val">+21.2 pts</span></div>
     </div>
     <p class="note">Total cost of all eval, bake-off and shadow runs: about US$2.21. The PM control panel lists every version and run with its cost.</p>
   </section>
@@ -114,7 +115,7 @@
       <div>
         <h3>Page 2</h3>
         <ul class="clean">
-          <li><b>Metric and result:</b> North Star = verified resolution rate; the eval went from DO NOT SHIP to SHIP in 15 versions with fraud recall at 100% throughout; a fresh handoff test sends 1 of 27 questions to a person; the shadow run answered 63% of 200 synthetic tickets, which is an answer rate and not verified resolution; cost about EGP 0.02 per answer. The pilot result is still to come.</li>
+          <li><b>Metric and result:</b> North Star = verified resolution rate; the eval went from DO NOT SHIP to SHIP in 16 versions with fraud recall at 100% throughout; a fresh handoff test sends 2 of 24 questions to a person; the shadow run answered 63% of 200 synthetic tickets, which is an answer rate and not verified resolution; cost about EGP 0.02 per answer. The pilot result is still to come.</li>
           <li><b>One failure caught and fixed:</b> a rate-limited customer reporting fraud got "please wait"; now fraud always goes first (1.0.8).</li>
           <li><b>What I'd do differently:</b> write the hold-out with a second person from day one; add the LLM judge earlier; test with real phrasing before tuning.</li>
         </ul>

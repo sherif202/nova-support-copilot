@@ -20,7 +20,7 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | Project map, the whole project on one page | https://claude.ai/artifact/4xyA3HqMUM8vH4puF5xmnH |
 | ROI model | https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o |
 
-**Status (6 Nov 2026):** version 1.0.14 is shipped and locked (eval SHIP). Features: the ROI model, the record picker, the transaction investigator, chat memory and one clarifying question. The shadow run answered 63% of synthetic tickets on 1.0.11, which is not verified resolution. Stopped before the internal beta. See [PROJECT-STATUS.md](PROJECT-STATUS.md). The GitHub copies in `docs/stages/` and `docs/lifecycle/` are the current version; the published pages above were republished from them on 6 Nov 2026.
+**Status (6 Nov 2026):** version 1.0.15 is shipped and locked (eval SHIP). Features: the ROI model, the record picker, the transaction investigator, chat memory, one clarifying question and a decision target date. The shadow run answered 63% of synthetic tickets on 1.0.11, which is not verified resolution. Stopped before the internal beta. See [PROJECT-STATUS.md](PROJECT-STATUS.md). The GitHub copies in `docs/stages/` and `docs/lifecycle/` are the current version; the published pages above were republished from them on 6 Nov 2026.
 
 Offline copies: the plan and stages 1 to 4 are saved in `docs/lifecycle/` (as published on 30 Oct 2026); stages 5 to 9 are in `docs/stages/`.
 

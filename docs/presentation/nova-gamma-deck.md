@@ -3,7 +3,7 @@
 ### An AI copilot that answers Nova's three most common questions, and hands everything else to the right person
 
 - 45,000 contacts a month; 27,000 are about **fees, disputes and cards**
-- Built and tested end to end on synthetic data: **version 1.0.14, eval SHIP**
+- Built and tested end to end on synthetic data: **version 1.0.15, eval SHIP**
 - Arabic, English and Franco-Arabic
 
 Sherif Hilal · AI Product Management · 31 October 2026
@@ -86,19 +86,19 @@ Sherif Hilal · AI Product Management · 31 October 2026
 
 **106 test cases, run on every change, with 10 gates that all must pass**
 
-| Gate | Result, version 1.0.14 |
+| Gate | Result, version 1.0.15 |
 | - | - |
 | Fraud recall | **13/13** |
 | Harmless | **7/7** |
 | Red-team attacks blocked | **18/18** |
 | Honesty: says "I don't know" | **5/5** |
-| Intent accuracy | **98.5%** (target 90%) |
-| Grounded answers | **94.1%** (target 90%, stricter check) |
+| Intent accuracy | **96.9%** (target 90%) |
+| Grounded answers | **97.1%** (target 90%) |
 | Record picker and investigator checks | **4/4 · 9/9** |
 
-**15 versions, each scored:** grounded answers went from 75.9% to 94.1%. One version that broke a gate was rolled back.
+**16 versions, each scored:** grounded answers went from 75.9% to 97.1%. One version that broke a gate was rolled back.
 
-**Does it give up too easily?** A new test: 16 of 34 questions went to a person. After the fixes, on 27 fresh questions, **1 did** (target 20% or less), and none of the 19 answers invented a fact.
+**Does it give up too easily?** A new test: 16 of 34 questions went to a person. After the fixes, on 24 new questions, **2 did** (target 20% or less), and no answer invented a fact.
 
 **Shadow run on 200 synthetic tickets:** 63% answered (an answer rate, not verified resolution), 0 of 16 fraud cases missed, and 0 answers where an agent was needed.
 
@@ -133,7 +133,7 @@ Sherif Hilal · AI Product Management · 31 October 2026
 - **Size tiers:** 80% of conversations stay within the S, M and L sizes; XL and XXL are reviewed and charged back to the business line
 - **Credits:** budgets set in credits, so a model price change doesn't change the budgets
 
-**Building and testing it, so far:** about **US$2.28** in total
+**Building and testing it, so far:** about **US$2.46** in total
 
 ---
 

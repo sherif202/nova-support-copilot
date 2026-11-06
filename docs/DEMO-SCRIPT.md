@@ -1,4 +1,4 @@
-# Demo script, Nova Bank support copilot (5 to 6 minutes, version 1.0.14)
+# Demo script, Nova Bank support copilot (5 to 6 minutes, version 1.0.15)
 
 Typed live in the browser, logged in as **C-0012 Karim Samir**. All data is synthetic.
 

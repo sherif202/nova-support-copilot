@@ -2,7 +2,7 @@
   /*SIM-CORE-START*/
   var A = { contacts: 45000, inScope: 0.6, minutes: 9.594, egpMin: 2, hireValue: 51.2, fixed: 93333.33, aiChat: 0.015, aiBig: 0.1,
     askRecover: 0.6, catchAuto: 0.8, catchHuman: 0.9, checkMin: 1.5, concurrency: 1.5, capacityPerMin: 370, msgsPerChat: 1.6,
-    p95Base: 6.3, p95Big: 2.2, bar: 0.96, rescuedAcc: 0.93 };
+    p95Base: 5.5, p95Big: 2.2, bar: 0.96, rescuedAcc: 0.93 };
   var HOUR = [.25,.15,.1,.08,.08,.12,.25,.5,.9,1.3,1.5,1.5,1.4,1.3,1.3,1.2,1.2,1.3,1.4,1.4,1.2,.9,.6,.4];
   var DOW = [1.15, 1, 1, 1, 1.05, .6, .75]; // Sunday first
   var LOWER = [.9, .8, .7, .6, 0];
@@ -108,7 +108,7 @@
     r.hrs.forEach(function (x) { rows[x.h < 8 ? 0 : x.h < 16 ? 1 : 2].push(x.load); });
     return rows.map(function (a) { a.sort(function (p, q) { return p - q; }); return Math.max(1, Math.ceil(a[Math.floor(a.length * .95)] / (60 * A.concurrency))); });
   }
-  var DEFAULTS = { thr: .7, big: false, ask: true, mode: 0, adopt: .2, lift: .1, badEq: 15, speed: 6.3, lens: "hire", S: 1 };
+  var DEFAULTS = { thr: .7, big: false, ask: true, mode: 0, adopt: .2, lift: .1, badEq: 15, speed: 6, lens: "hire", S: 1 };
   (function calibrate() { var r = run(DEFAULTS, {}, null); S_AT_DEFAULT = (A.contacts * A.inScope * DEFAULTS.adopt * .4) / r.resolved; DEFAULTS.S = S_AT_DEFAULT; })();
   function search(c, on) {
     var out = [];

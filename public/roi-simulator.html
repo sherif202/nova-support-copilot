@@ -29,7 +29,7 @@
         <label class="sim-range"><span>Contacts that use chat: <b id="sim-adoptv"></b></span><input type="range" id="sim-adopt" min="5" max="50" step="5"></label>
         <label class="sim-range"><span>Bigger model rescues: <b id="sim-liftv"></b> of unsure chats</span><input type="range" id="sim-lift" min="0" max="40" step="5"></label>
         <label class="sim-range"><span>One bad answer cancels: <b id="sim-badv"></b> good ones</span><input type="range" id="sim-bad" min="5" max="25" step="5"></label>
-        <label class="sim-range"><span>Slowest reply we accept: <b id="sim-speedv"></b></span><input type="range" id="sim-speed" min="6.3" max="10" step="0.1"></label>
+        <label class="sim-range"><span>Slowest reply we accept: <b id="sim-speedv"></b></span><input type="range" id="sim-speed" min="5.5" max="10" step="0.1"></label>
       </div>
       <div class="sim-group"><h3>Count the value as</h3><div class="sim-seg" id="sim-lens"></div></div>
     </div>
@@ -84,7 +84,7 @@
         <tr><td>Contacts, in scope, agents, agent cost</td><td>45,000 · 60% · 120 · EGP 2 a minute</td><td>Nova brief and the ROI model</td></tr>
         <tr><td>Running and build cost</td><td>EGP 93,333 a month</td><td>ROI model assumption</td></tr>
         <tr><td>AI cost</td><td>EGP 0.015 a chat; bigger model EGP 0.10</td><td>Shadow run and bake-off on synthetic data</td></tr>
-        <tr><td>Slowest 5% of replies</td><td>6.3 s, up to 2.2 s more with a bigger model</td><td>6.3 s measured in the eval; the extra is an estimate</td></tr>
+        <tr><td>Slowest 5% of replies</td><td>5.5 s, up to 2.2 s more with a bigger model</td><td>5.5 s measured in the eval; the extra is an estimate</td></tr>
         <tr><td>Bigger model rescues</td><td>10% of unsure chats</td><td>Estimate. In our tests bigger models scored no better, so this could be 0</td></tr>
         <tr><td>Answers right, confidence 0.6 to 0.69</td><td>41%</td><td>Measured: 13 of 32 labels right. Other bands are estimates</td></tr>
         <tr><td>Safety checks catch a wrong answer</td><td>80%; a person catches 90% of the rest</td><td>Estimate</td></tr>

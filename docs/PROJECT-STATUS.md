@@ -1,6 +1,6 @@
 # Project status
 
-**Current version: 1.0.15** (6 November 2026), eval **SHIP** on 2 runs in a row. The locked baseline stays **1.0.14** (`docs/baseline.json`) until the owner locks 1.0.15; the numbers below are 1.0.14 unless marked, and the deck and stage pages stay on 1.0.14 until then. 1.0.13 is kept as the previous baseline.
+**Current version: 1.0.15** (6 November 2026), eval **SHIP** on 2 runs in a row, locked as the baseline in `docs/baseline.json`. 1.0.14 is kept there as the previous baseline.
 
 **Where the project stands:** built and tested end to end on synthetic data, **stopped before the internal beta**. Everything left needs real people.
 
@@ -26,12 +26,12 @@
 | 1 · Problem Framing | Done | Scope, North Star (verified resolution rate, target 40%), fraud gate | Planning pages (`docs/LIFECYCLE-PAGES.md`), `docs/01-PRD.md` |
 | 2 · Data Collection & Prep | Done | 50 synthetic customers, 520 transactions (16 added for the investigator), 15 disputes, policies and transaction rules by rule ID, 200 labelled tickets linked to the records, eval set, a 15-case hold-out | `docs/04-DATA-GUIDE.md`, `docs/lifecycle/` |
 | 3 · Model Selection | Done for Anthropic | Bake-off runs A to D, T, U. OpenAI and Gemini runs are scripted but not run (no keys) | `docs/MODEL-STRATEGY.md` |
-| 4 · Prompt & System Design | Done | 8-section prompts (answer prompt 1.0.5, understand prompt 1.0.1), fixed replies, retry note, 50 approved examples, CHANGELOG 1.0.0 to 1.0.14 | `prompts/CHANGELOG.md` |
-| 5 · Evaluation | Done, with open items | 1.0.14 says SHIP on 106 cases and 10 gates; handoff test added; hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
+| 4 · Prompt & System Design | Done | 8-section prompts (answer prompt 1.0.6, understand prompt 1.0.1), fixed replies, retry note, 50 approved examples, CHANGELOG 1.0.0 to 1.0.15 | `prompts/CHANGELOG.md` |
+| 5 · Evaluation | Done, with open items | 1.0.15 says SHIP on 106 cases and 10 gates; handoff test added; hold-out used once; LLM judge not built | [stage-5-evaluation.html](stages/stage-5-evaluation.html) |
 | 6 · Integration & UX | Partly done | Chat, inbox, PM panel with the ROI model, record picker, transaction investigator, the 3 UX pillars. Usability test with 5 people not run | [stage-6-integration-ux.html](stages/stage-6-integration-ux.html) |
 | 7 · Staged Launch | Partly done | Shadow run done (3 runs, last on 1.0.11). **Stopped before the internal beta.** Pilot not started | [stage-7-staged-launch.html](stages/stage-7-staged-launch.html), [shadow-run-results.md](stages/shadow-run-results.md) |
 | 8 · Monitoring & Feedback | Built, no real data | PM control panel, automatic recommendations, ROI and investigator metrics, weekly report format | [stage-8-monitoring.html](stages/stage-8-monitoring.html) |
-| 9 · Iteration & Retraining | Running on the eval only | 15 versions, each with scores (1.0.10 rejected); weekly fix cycle and learning loop | [stage-9-iteration.html](stages/stage-9-iteration.html) |
+| 9 · Iteration & Retraining | Running on the eval only | 16 versions, each with scores (1.0.10 rejected); weekly fix cycle and learning loop | [stage-9-iteration.html](stages/stage-9-iteration.html) |
 
 All stage reports: [docs/stages/index.html](stages/index.html).
 
@@ -50,7 +50,7 @@ Found by testing messy questions by hand on 6 Nov. Fixed: a nearly sure question
 
 Still missing: "is my uber money back yet?" and "where is my new card?" sometimes go to a person, and the eval's non-gate misses change between runs (20, 45 and S4 fail every time). A pending salary past its expected date goes to a person, which is correct, but the reply says "I don't have that information". Results vary between runs because the AI's confidence varies, so read them as a range.
 
-### Eval, version 1.0.14 (fixed eval date): SHIP
+### Eval, version 1.0.15, last run (fixed eval date): SHIP
 
 106 cases: 65 main questions (5 new typed transaction questions), 6 service status, 4 junk, 18 red-team, 4 record-picker and 9 investigator checks.
 
@@ -60,16 +60,16 @@ Still missing: "is my uber money back yet?" and "where is my new card?" sometime
 | Harmless | 7/7 | must be 1.00 |
 | Security (red team) | 18/18 | all must pass |
 | Honesty | 5/5 (cases 21, 57, 59, S3, S6) | 21, 57, 59 must pass |
-| Intent accuracy | 98.5% (64/65) | 90% |
-| Grounded answers | 94.1% (32/34), on a stricter check: an answer with no sources now fails | 90% |
+| Intent accuracy | 96.9% (63/65) | 90% |
+| Grounded answers | 97.1% (33/34); an answer with no sources fails | 90% |
 | Recall@3, notice match | 100%, 100% | 95%, 100% |
 | Record picker | 4/4 | all must pass |
 | Investigator checks | 9/9 | all must pass |
-| Citation recall, precision | 96.3%, 64.2% | 90%, 90% (precision not a gate, below target) |
-| Speed | p50 2.7 s, p95 **6.3 s, over the gate** | 6 s in the pilot |
-| Cost | US$0.030 for the run, US$0.00045 per answered message (about EGP 0.02) | |
+| Citation recall, precision | 100%, 66.1% | 90%, 90% (precision not a gate, below target) |
+| Speed | p50 2.9 s, p95 5.5 s | 6 s in the pilot |
+| Cost | US$0.031 for the run, US$0.00044 per answered message (about EGP 0.02) | |
 
-Still failing, none of them a gate: case 7 (asks a question instead of answering), 31 (citations), 45 (account takeover read as phishing, still sent to Fraud) and S4 (card declined abroad read as a payment question, handed to a person). Case 20 now passes. Junk cases J2 and J4 now pass, after I changed the grader to accept the clarifying question, which is what the eval set asks for. The free unit checks of the investigator (`node tools/test-investigator.mjs`) pass 15/15.
+Still failing, none of them a gate: case 20 (an attack gets a question, nothing approved), 26 (a Booking.com fee read as a payment status), 45 (account takeover read as phishing, still sent to Fraud) and S4 (card declined abroad read as a payment question, handed to a person). Other non-gate misses change between runs. The free unit checks of the investigator (`node tools/test-investigator.mjs`) pass 15/15.
 
 1.0.13 took 2 eval runs. Run 1: DO NOT SHIP, grounded 30/34. A bug in my retry link connected cards to every transaction (case 37), and the scope rule DIG-4 still listed only fees, disputes and cards (case 61). Both were fixed. Run 2: SHIP.
 
@@ -98,7 +98,7 @@ The sets are small, self-written and synthetic, so this is evidence and not proo
 
 63% of all tickets is 89% of the 142 tickets an agent would have given the copilot. **This is an answer rate, not verified resolution:** "would have resolved" means it answered, the intent was right and an agent would have sent it to the copilot, and nothing checks the customer stopped contacting us. It also runs high: 33 of the 50 approved examples appear word for word in these tickets, and the tickets were built to have records. The shadow run has not been repeated since 1.0.11, and the next one needs reworded tickets. Details: [shadow-run-results.md](stages/shadow-run-results.md).
 
-**Speed:** p95 was 6.3 s in the 1.0.14 eval (4.8 s on 1.0.13), over the 6 s pilot gate, because the answer step now reads more records and the chat. It is not an eval gate, but it needs watching. If the beta shows over 6 s, the planned fix is the Telos recommendation: hand off after 6 s.
+**Speed:** p95 was 5.5 s on the last 1.0.15 run and 5.2 s on the run before, under the 6 s pilot gate (6.3 s on 1.0.14, 4.8 s on 1.0.13). It varies between runs, so it still needs watching. If the beta shows over 6 s, the planned fix is the Telos recommendation: hand off after 6 s.
 
 ### ROI, corrected
 
@@ -141,7 +141,8 @@ The ROI model and the investigator screens make no model calls.
 | Test the investigator, put the TXS rules into the AI, keep every document consistent, lock 1.0.13 (31 Oct) | Owner, via the project assistant | 1.0.13: SHIP on run 2; locked as the baseline (1.0.12 skipped) |
 
 | Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt |
-| Fix the weak chat results (6 Nov) | Owner said continue | 1.0.15: SHIP on 2 runs; not locked until the owner says so |
+| Fix the weak chat results (6 Nov) | Owner said continue | 1.0.15: SHIP on 2 runs |
+| Lock 1.0.15 and update everything (6 Nov) | Owner said ok | 1.0.15 is the baseline |
 | Lock 1.0.14 and republish the claude.ai pages (6 Nov) | Owner said ok | 1.0.14 is the baseline, accepting p95 6.3 s as an item to watch |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.
