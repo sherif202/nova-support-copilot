@@ -26,7 +26,7 @@ loadEnv();
 // Nova's prompts and fixed replies, filled from knowledge/ once at start.
 const { prompts, reply, answerUserTurn, retryNote } = require("./lib/prompts");
 const { runChecks, SECURITY_CHECKS } = require("./lib/checks");
-const { lookup, liveNotices, ambiguity, ownsRecord } = require("./lib/lookup");
+const { lookup, liveNotices, ambiguity, ownsRecord, specificMatch } = require("./lib/lookup");
 const { listRecords, itemsFor } = require("./lib/picker");
 const investigate = require("./lib/investigate");
 
@@ -85,6 +85,7 @@ const { callStep, newBudget } = require("./lib/model");
 
 // Below this understand confidence, a person takes over (R-UNSURE). Step 11 sets 0.7.
 const HANDOFF_CONFIDENCE = Number(process.env.HANDOFF_CONFIDENCE || 0.7);
+const NEAR_SURE = 0.6; // with a matching record, a label this sure is answered, not questioned (1.0.15)
 const ASKS_FOR_PERSON = /\b(person|human|agent|representative|someone|somebody|customer service|staff|employee|colleague)\b|موظف|بني ?آدم|بني ?ادم|أكلم|اكلم|كلمني|كلّمني|وصلني|حد يفهم|kalem|akalem|7ad|bany adam|mow?azaf/i;
 
 // The JSON shape the understand prompt asks for (prompts/understand.md, section 8).
@@ -173,6 +174,7 @@ async function understand(message, budget, session) {
   }, budget);
   const label = parseJson(result.text, UNDERSTAND_SCHEMA);
   if (!label) throw new Error("understand returned broken JSON");
+  label.input_language = correctedLanguage(label.input_language, message);
   console.log(`[understand] ${label.intent} ${label.priority} conf=${label.confidence}`);
   return { ...result, label };
 }
@@ -293,6 +295,14 @@ function undeliveredCard(customerId, message, intent, today) {
 
 const fixedLanguage = (language) => (language === "english" ? "english" : "arabic");
 
+// Plain English in Latin letters is sometimes labelled Franco (1.0.15). Franco has digit-letters or Arabic words.
+const ENGLISH_WORDS = /\b(the|my|did|does|is|are|was|why|what|when|where|how|can|will|give|back|have|has|not|from|for|about|please)\b/i;
+const FRANCO_MARKS = /[a-z][2357689]|[2357689][a-z]|\b(el|ana|leh|fen|fein|eh|ya|msh|mesh|lessa|ba2a|bta3|3ayez|3ayza|kam|ezay|dol|da|di)\b/i;
+function correctedLanguage(language, message) {
+  if (language !== "franco" || /[\u0600-\u06FF]/.test(message) || FRANCO_MARKS.test(message)) return language;
+  return ENGLISH_WORDS.test(message) ? "english" : language;
+}
+
 const SUPERVISOR_NOTE = "Sensitive: routed to the Supervisor queue (head of agents). Queue per bank policy, to be confirmed by Compliance.";
 
 // A fixed reply from prompts/replies.md, with a ticket so a person picks it up.
@@ -393,7 +403,9 @@ async function copilot(customerId, message, testNow, trace, chosenIntent, record
     return handOff(customerId, message, { ...base, priority: "P1" }, "R-PERSON", "Supervisor", SUPERVISOR_NOTE);
   }
   if (label.priority === "P1") return handOff(customerId, message, base, "R-COMPLAINT", "Complaints");
-  if (label.priority === "P3") return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
+  // "my transfer" alone could be money coming in, which is in scope: ask before calling it out of scope (1.0.15).
+  const unclearTransfer = label.intent === "transfer.any" && !(label.confidence >= HANDOFF_CONFIDENCE);
+  if (label.priority === "P3" && !unclearTransfer) return handOff(customerId, message, base, "R-OUT-OF-SCOPE", "Agent");
   // Only an explicit request counts: frustration is not asking for a person (1.0.14).
   if (label.wants_person && ASKS_FOR_PERSON.test(message)) return handOff(customerId, message, base, "R-PERSON", "Agent");
 
@@ -404,6 +416,9 @@ async function copilot(customerId, message, testNow, trace, chosenIntent, record
     label = { ...label, intent: choice, priority: "P2" };
     base.intent = choice;
     base.priority = "P2";
+  } else if (label.confidence >= NEAR_SURE && label.priority === "P2" && !label.injection_suspected && specificMatch(customerId, message, label.intent)) {
+    // Nearly sure, and the message points at one of their records (1.0.15): answer it. The output checks still run.
+    trace.near_sure_record_match = true;
   } else if (!(label.confidence >= HANDOFF_CONFIDENCE)) {
     // Not sure about a low-risk question (1.0.14): show the records it could be about, or ask one clarifying question
     // before any handoff. A second unsure message in the same chat goes to a person.
@@ -414,7 +429,10 @@ async function copilot(customerId, message, testNow, trace, chosenIntent, record
       trace.picker_shown = true;
       return { ...base, reply_language: language, answer_text: reply("R-PICK", language), sources: [], action: "pick", reply_id: "R-PICK", ticket_status: "awaiting_customer", picker: { kind: vague.kind, items: itemsFor(customerId, vague.ids) } };
     }
-    if (["P2", "P4"].includes(label.priority) && !followUp && !(session && session.asks >= 1)) {
+    // A clear general question we have no facts for ("how much is X?") gets a person: a question about which record
+    // wouldn't help. Junk and vague messages come in far less sure.
+    const clearGeneral = label.intent.startsWith("general.") && label.confidence >= 0.5;
+    if ((["P2", "P4"].includes(label.priority) || unclearTransfer) && !clearGeneral && !followUp && !(session && session.asks >= 1)) {
       if (session) session.asks += 1;
       return { ...base, reply_language: language, answer_text: reply("R-ASK", language), sources: [], action: "ask", reply_id: "R-ASK", ticket_status: "awaiting_customer", choices: label.priority === "P2" ? choicesFor(label.intent) : [] };
     }

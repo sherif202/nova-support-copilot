@@ -1,7 +1,7 @@
 // Unnecessary-handoff test (1.0.14): does the copilot answer or clarify what it can, on phrasing it has never seen?
 // "fresh" is the honest score; "dev" guided the fixes. Each follow-up pair shares one chat. Controls must reach a person.
 //
-//   Start the app with ALLOW_TEST_NOW=true, then: node tools/handoff-test.mjs dev|fresh     (about US$0.02)
+//   Start the app with ALLOW_TEST_NOW=true, then: node tools/handoff-test.mjs dev|fresh|fresh2     (about US$0.02)
 
 import fs from "node:fs";
 import path from "node:path";

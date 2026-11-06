@@ -1,6 +1,6 @@
 # Project status
 
-**Current version: 1.0.14** (6 November 2026), eval **SHIP**, locked as the baseline in `docs/baseline.json`. 1.0.13 is kept there as the previous baseline.
+**Current version: 1.0.15** (6 November 2026), eval **SHIP** on 2 runs in a row. The locked baseline stays **1.0.14** (`docs/baseline.json`) until the owner locks 1.0.15; the numbers below are 1.0.14 unless marked, and the deck and stage pages stay on 1.0.14 until then. 1.0.13 is kept as the previous baseline.
 
 **Where the project stands:** built and tested end to end on synthetic data, **stopped before the internal beta**. Everything left needs real people.
 
@@ -36,6 +36,19 @@
 All stage reports: [docs/stages/index.html](stages/index.html).
 
 ## Key numbers
+
+### Version 1.0.15: the weak chat results
+
+Found by testing messy questions by hand on 6 Nov. Fixed: a nearly sure question that matches one of the customer's records is answered instead of questioned; "my transfer" gets a question first; a clear general question with no facts goes to a person; plain English is no longer answered in Arabic; and disputes now carry a decision target date (45 days, 90 for card-network cases).
+
+| Test | Result |
+| - | - |
+| Eval, last 2 runs | SHIP both. Last run: fraud 13/13, security 18/18, intent 96.9%, grounded 97.1% (33/34), citation recall 100%, precision 66.1%, p50 2.9 s, **p95 5.5 s**, US$0.031 |
+| Eval, earlier runs | Run 1: DO NOT SHIP, case 59 got a question instead of a person; fixed. Run 2: DO NOT SHIP, my mistake, I switched off the wait and hit the app's rate limit |
+| New handoff set (24 questions, plus 4 controls) | 2 of 24 went to a person (0 of 24 on the run before); controls 4/4; I read the answers: no invented facts or promises |
+| Earlier fresh set (27) | 0 of 27, but my fixes saw some of these messages, so it is no longer an honest set |
+
+Still missing: "is my uber money back yet?" and "where is my new card?" sometimes go to a person, and the eval's non-gate misses change between runs (20, 45 and S4 fail every time). A pending salary past its expected date goes to a person, which is correct, but the reply says "I don't have that information". Results vary between runs because the AI's confidence varies, so read them as a range.
 
 ### Eval, version 1.0.14 (fixed eval date): SHIP
 
@@ -101,11 +114,12 @@ Break-even: 1,824 resolved contacts a month if hiring falls, 4,869 on minutes al
 
 ### Spend
 
-About **US$2.28** in eval, bake-off, handoff and shadow runs for the whole project:
+About **US$2.46** in eval, bake-off, handoff and shadow runs for the whole project:
 - US$2.05 to the 1.0.11 baseline
 - US$0.10 for the four 1.0.12 runs
 - US$0.06 for the two 1.0.13 runs
 - about US$0.07 for the 1.0.14 runs
+- about US$0.18 for the 1.0.15 runs
 - under US$0.01 for demo messages
 
 The ROI model and the investigator screens make no model calls.
@@ -127,6 +141,7 @@ The ROI model and the investigator screens make no model calls.
 | Test the investigator, put the TXS rules into the AI, keep every document consistent, lock 1.0.13 (31 Oct) | Owner, via the project assistant | 1.0.13: SHIP on run 2; locked as the baseline (1.0.12 skipped) |
 
 | Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt |
+| Fix the weak chat results (6 Nov) | Owner said continue | 1.0.15: SHIP on 2 runs; not locked until the owner says so |
 | Lock 1.0.14 and republish the claude.ai pages (6 Nov) | Owner said ok | 1.0.14 is the baseline, accepting p95 6.3 s as an item to watch |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.

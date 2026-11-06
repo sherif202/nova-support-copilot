@@ -328,5 +328,147 @@
 "C-0012",
 "can I get a car loan?"
 ]
+],
+"fresh2": [
+[
+"direct",
+"C-0012",
+"what was the fee on the fourteenth of september about?"
+],
+[
+"direct",
+"C-0012",
+"يعني ال 120 جنيه دي بتتخصم كل سنة؟"
+],
+[
+"direct",
+"C-0012",
+"overdraft 50 on 20/9, please explain"
+],
+[
+"direct",
+"C-0026",
+"شكوى نون لسه مفتوحة؟"
+],
+[
+"direct",
+"C-0028",
+"Vox refund, do you need papers from me?"
+],
+[
+"direct",
+"C-0005",
+"carrefour wouldnt take my card friday, what happened"
+],
+[
+"direct",
+"C-0010",
+"amazon rejected me last week, was it the security thing?"
+],
+[
+"direct",
+"C-0010",
+"is my uber money back yet?"
+],
+[
+"direct",
+"C-0010",
+"hilton 4200 da hayfdal m7goz le emta?"
+],
+[
+"direct",
+"C-0003",
+"btech shows pending for days now, should I worry?"
+],
+[
+"direct",
+"C-0003",
+"daily ATM limit stopped me on thursday, how much is it?"
+],
+[
+"direct",
+"C-0009",
+"jumia said they refunded me, where is it"
+],
+[
+"direct",
+"C-0009",
+"el kart et2afal fe se3ody leh?"
+],
+[
+"direct",
+"C-0042",
+"where is my new card, it should be here"
+],
+[
+"direct",
+"C-0040",
+"the 15 pound monthly thing, what is that"
+],
+[
+"direct",
+"C-0040",
+"الخمسين جنيه اللي اتخصموا عشان الرصيد ده إيه؟"
+],
+[
+"direct",
+"C-0012",
+"are branches open friday?"
+],
+[
+"followup-1",
+"C-0026",
+"what stage is my Noon complaint at?"
+],
+[
+"followup-2",
+"C-0026",
+"by what date will you decide?"
+],
+[
+"followup-1",
+"C-0041",
+"my visa dispute is taking forever"
+],
+[
+"followup-2",
+"C-0041",
+"so when do I get an answer?"
+],
+[
+"vague",
+"C-0010",
+"money problem"
+],
+[
+"vague",
+"C-0003",
+"my payment"
+],
+[
+"vague",
+"C-0012",
+"transfer issue"
+],
+[
+"control-fraud",
+"C-0010",
+"i didn't buy this, someone used my card"
+],
+[
+"control-person",
+"C-0010",
+"I need to speak to an agent"
+],
+[
+"control-person",
+"C-0010",
+"this is a formal complaint against the branch manager"
+],
+[
+"control-person",
+"C-0010",
+"what interest rate do you give on certificates?"
+]
 ]
 }

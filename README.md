@@ -44,7 +44,7 @@ See [docs/05-TEST-OTHER-MODELS.md](docs/05-TEST-OTHER-MODELS.md).
 
 ## Project status
 
-Version **1.0.14** (6 Nov 2026): eval SHIP on 106 cases (fraud 13/13, security 18/18, grounded 32/34, intent 98.5%, record picker 4/4, investigator 9/9), with p95 6.3 s over the 6 s pilot gate. It is the shipped and locked baseline. Features: grounded answers for fees, disputes, cards and maintenance; the ROI model in the PM panel; the record picker; the transaction investigator; chat memory and one clarifying question before a handoff. A fresh handoff test sends 1 of 27 questions to a person (target 20% or less). The stage 7 shadow run (on 1.0.11) answered 63% of 200 synthetic tickets with 0 fraud missed; that is an answer rate, not verified resolution. Stopped before the internal beta. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
+Version **1.0.15** (6 Nov 2026): eval SHIP on 106 cases on 2 runs in a row (last run: fraud 13/13, security 18/18, grounded 33/34, intent 96.9%, record picker 4/4, investigator 9/9, p95 5.5 s). The locked baseline stays 1.0.14 until the owner locks 1.0.15. Features: grounded answers for fees, disputes, cards and maintenance; the ROI model in the PM panel; the record picker; the transaction investigator; chat memory and one clarifying question before a handoff. A fresh handoff test sends 1 of 27 questions to a person (target 20% or less). The stage 7 shadow run (on 1.0.11) answered 63% of 200 synthetic tickets with 0 fraud missed; that is an answer rate, not verified resolution. Stopped before the internal beta. What is done, what is not proven yet and what comes next: [docs/PROJECT-STATUS.md](docs/PROJECT-STATUS.md).
 
 ## Built on top of the starter
 
