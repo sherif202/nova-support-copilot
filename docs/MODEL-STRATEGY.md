@@ -23,7 +23,7 @@ A message never makes more than 4 AI calls, even when the backup steps in.
 
 ## The pilot baseline (Anthropic, for measurement only)
 
-Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7. Results below: version 1.0.14 (6 Nov 2026). The locked baseline stays 1.0.13 (`docs/baseline.json`) until the owner locks 1.0.14.
+Settings: Claude Haiku 5.5 for both steps, low effort, handoff below confidence 0.7. Locked baseline: version 1.0.14 (6 Nov 2026). Full numbers in `docs/baseline.json`.
 
 | Gate | Result |
 | - | - |

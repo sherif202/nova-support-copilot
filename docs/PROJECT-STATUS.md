@@ -1,6 +1,6 @@
 # Project status
 
-**Current version: 1.0.14** (6 November 2026), eval **SHIP**. The baseline locked in `docs/baseline.json` stays **1.0.13** until the owner locks 1.0.14. 1.0.12 was never locked, because 1.0.13 contains it. 1.0.11 is kept there as the previous baseline.
+**Current version: 1.0.14** (6 November 2026), eval **SHIP**, locked as the baseline in `docs/baseline.json`. 1.0.13 is kept there as the previous baseline.
 
 **Where the project stands:** built and tested end to end on synthetic data, **stopped before the internal beta**. Everything left needs real people.
 
@@ -125,7 +125,8 @@ The ROI model and the investigator screens make no model calls.
 | Build the transaction investigator (31 Oct) | Owner | First as a draft without an eval, at the owner's request |
 | Test the investigator, put the TXS rules into the AI, keep every document consistent, lock 1.0.13 (31 Oct) | Owner, via the project assistant | 1.0.13: SHIP on run 2; locked as the baseline (1.0.12 skipped) |
 
-| Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt; not locked until the owner says so |
+| Investigate the ROI and the handoffs; fix them, test, correct everything (6 Nov) | Owner said ok | 1.0.14: SHIP; ROI model rebuilt |
+| Lock 1.0.14 and republish the claude.ai pages (6 Nov) | Owner said ok | 1.0.14 is the baseline, accepting p95 6.3 s as an item to watch |
 
 Earlier decisions (Round 0, model choice, threshold, automation modes, product names) are in [docs/stages/index.html](stages/index.html) and `prompts/CHANGELOG.md`.
 
@@ -144,7 +145,6 @@ Earlier decisions (Round 0, model choice, threshold, automation modes, product n
   - The investigator's expected times use the date, not the hour, to decide "late".
 - **Case 21 got easier:** the safe deposit box is also the "bad answer" example inside the answer prompt. Case 59 (certificate of balance) is the clean honesty check.
 - **OpenAI and Gemini were not tested** (no keys). Anthropic is for the pilot only.
-- **The published lifecycle pages** need republishing from this version (`docs/LIFECYCLE-PAGES.md`).
 
 ## What's next, and what it needs
 
