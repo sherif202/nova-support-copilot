@@ -19,8 +19,8 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | MVP architecture | https://claude.ai/artifact/8EA49wAu5T4PHsKQZiQw5R |
 | Project map, the whole project on one page | https://claude.ai/artifact/4xyA3HqMUM8vH4puF5xmnH |
 | Demo Day slides | https://claude.ai/artifact/F1hLyH87E8sr3tjxhxsghW |
-| How we built it, companion slides | https://claude.ai/artifact/4jfqBLxNvH3goVUb8W22CN |
-| Technical view, slides | https://claude.ai/artifact/YLY7gR86udsgNxHgVsfZ59 |
+| How we built it, with the technical view (28 slides) | https://claude.ai/artifact/4jfqBLxNvH3goVUb8W22CN |
+| Technical view, earlier separate slides (now merged above) | https://claude.ai/artifact/YLY7gR86udsgNxHgVsfZ59 |
 | Technical view, document | https://claude.ai/artifact/CfNZVYCKDDBzfPAGnWuEaw |
 | AI architecture in one view | https://claude.ai/artifact/TYD2KXddHWin8NPLFcvcj9 |
 | ROI model and load simulator | https://claude.ai/artifact/Ddv51tFjZaFdxyymZC5y1o |
