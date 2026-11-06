@@ -144,14 +144,15 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
 .af { fill: var(--muted); }
 .ax { stroke: var(--line); stroke-width: 1.4; }
 .pt { fill: var(--accent); }
+.reqs { background: var(--accent-soft); border-radius: 10px; padding: 9px 13px; display: grid; gap: 2px; font-size: 14px; }
 .teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 </style></head><body>
 <div class="wrap" id="mainapp">
   <header style="display:grid;gap:8px">
     <h1>Nova delivery playbook</h1>
-    <p class="lede">A proposal for taking the Nova Bank support copilot from a tested MVP to a real launch. Nova is fictional. Stage 2 of 3: the main page plus seven team views.</p>
+    <p class="lede">A proposal for taking the Nova Bank support copilot from a tested MVP to a real launch. Nova is fictional. All 3 stages are in: the main page, seven team views and the chatbot requirements.</p>
     <p class="note"><span class="tag given">Given</span> came from you or the project. <span class="tag prop">Proposed</span> is my plan. <span class="tag ex">Example</span> is made up to show the shape: every person, date, capacity and target with this tag needs replacing.</p>
-    <nav class="jump" aria-label="Sections"><a href="#adjust">Adjustments</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#decisions">Technical decisions</a><a href="#sprints">Sprints</a><a href="#releases">Releases</a><a href="#quality">Quality bars</a><a href="#teams">Team views</a><a href="#next">What's next</a></nav>
+    <nav class="jump" aria-label="Sections"><a href="#adjust">Adjustments</a><a href="#goals">Goals</a><a href="#roadmap">Roadmap</a><a href="#decisions">Technical decisions</a><a href="#sprints">Sprints</a><a href="#releases">Releases</a><a href="#quality">Quality bars</a><a href="#requirements">Requirements</a><a href="#teams">Team views</a><a href="#next">What's next</a></nav>
   </header>
 
   <section id="adjust" class="adjust">
@@ -209,6 +210,18 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
     </div>
   </section>
 
+  <section id="requirements">
+    <h2>Chatbot requirements</h2>
+    <p class="lede">These apply across every team view. Today's values come from the locked version, 1.0.15.</p>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Requirement</th><th>Target</th><th>Today</th><th>Measured on</th><th>Owners</th></tr></thead><tbody><tr><td><b>Reply speed (p95)</b></td><td>Under 6 s</td><td>5.5 s on the last eval</td><td>Release test</td><td>Developer, AI</td></tr><tr><td><b>Groundedness</b></td><td>≥ 90%</td><td>97.1% (33 of 34)</td><td>Grounded cases</td><td>AI, QA</td></tr><tr><td><b>Hallucination rate</b></td><td>No confirmed serious case <span class="tag ex">Example</span></td><td>Not measured live</td><td>Sampled live answers</td><td>AI, Support</td></tr><tr><td><b>Safe refusal</b></td><td>100% of attacks refused</td><td>18 of 18</td><td>Red-team set</td><td>QA, Compliance</td></tr><tr><td><b>Containment and deflection</b></td><td>40% verified resolution</td><td>Not measured. The shadow answered 63%, which is not this</td><td>Pilot</td><td>PM, Support</td></tr><tr><td><b>CSAT</b></td><td>≥ 4.2 <span class="tag ex">Example</span></td><td>No baseline</td><td>Pilot survey</td><td>PM, Support</td></tr><tr><td><b>Cost per resolved conversation</b></td><td>≤ EGP 45 <span class="tag ex">Example</span></td><td>About EGP 43, base-case assumption</td><td>ROI model</td><td>PM, AI</td></tr><tr><td><b>Uptime</b></td><td>99.5% <span class="tag ex">Example</span></td><td>Not measured</td><td>Production monitoring</td><td>Developer, Support</td></tr><tr><td><b>Arabic and dialect quality</b></td><td>No language 5 points under the rest <span class="tag ex">Example</span></td><td>Tested: English, Egyptian Arabic, Franco. Gulf Arabic and MSA are not</td><td>Language sets</td><td>AI, QA, Design</td></tr><tr><td><b>Accessibility</b></td><td>WCAG AA <span class="tag ex">Example</span></td><td>Not audited</td><td>Accessibility review</td><td>Design, QA</td></tr></tbody></table></div>
+    <h3>AI acceptance criteria use thresholds</h3>
+    <p class="lede">One example can pass by luck, so AI behaviour is judged over a named test set.</p>
+    <div class="scroll"><table style="min-width:640px"><thead><tr><th>Feature</th><th>Criterion</th></tr></thead><tbody><tr><td><b>Cite a source</b></td><td>Given the 65-case main set, at least 90% are grounded, and every cited ID exists.</td></tr><tr><td><b>Handoff summary</b></td><td>Given the 4 control cases and 9 investigator checks, every handoff reaches the right queue, and no sender account details appear.</td></tr><tr><td><b>Shadow report</b></td><td>Given 200 reworded tickets, the answer rate is reported, and it is never called resolution.</td></tr><tr><td><b>Disable a rule</b></td><td>Given 6 new rule-control cases, a disabled rule is never cited, and that topic goes to a person.</td></tr><tr><td><b>Dispute API</b></td><td>Given 7 dispute cases and 18 attack cases, the status is correct, and no other customer’s data is ever revealed.</td></tr><tr><td><b>Block a card</b></td><td>Given 13 fraud and 18 attack cases, fraud recall stays at 100%, and no card is blocked without confirmation.</td></tr></tbody></table></div>
+    <p class="note">Sets marked as new still need writing. Small sets give wide ranges: 13 of 13 could really be about 77%.</p>
+    <h3>Release slicing</h3>
+    <div class="scroll"><table style="min-width:820px"><thead><tr><th>Release</th><th>Intents</th><th>Channel</th><th>Languages</th><th>Actions</th><th>Who presses send</th></tr></thead><tbody><tr><td><b>R0 Staff trial</b></td><td>Fees, disputes, cards</td><td>Web chat</td><td>English, Egyptian Arabic, Franco</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R1 Pilot</b></td><td>The same, with payment status</td><td>Web chat</td><td>The same</td><td>None</td><td>Agent approves all</td></tr><tr><td><b>R2 Customer ramp</b></td><td>High-volume easy questions</td><td>App chat</td><td>The same</td><td>None</td><td>Auto on easy questions, with handoff</td></tr><tr><td><b>R3 Reach</b></td><td>More question types</td><td>WhatsApp</td><td>Add Gulf Arabic and MSA</td><td>None</td><td>Auto where the gates hold</td></tr><tr><td><b>R4 Actions</b></td><td>Card block</td><td>App chat</td><td>The same</td><td>Confirmed card block</td><td>Person reviews each action</td></tr></tbody></table></div>
+  </section>
+
   <section id="teams">
     <h2>Team views</h2>
     <p class="lede">Sit at each team's desk and watch the same work from their side. Choose one of 6 features, one per theme. Every screen is an example mock.</p>
@@ -217,8 +230,7 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
 
   <section id="next" class="box">
     <h2>What's next</h2>
-    <p><b>Stage 3</b> carries the chatbot requirements through every view: latency, groundedness, safe refusals, containment, CSAT, cost, uptime, Arabic quality and accessibility.</p>
-    <p class="note">Please review the views first, and send your roadmap book so the Product view can follow it.</p>
+    <p>The playbook is a proposal. Replace each example with real people, dates and targets, and follow your roadmap book once it's added.</p>
   </section>
 </div>
 <div id="viewapp" hidden></div>
@@ -323,6 +335,7 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
      calls: [["A person must confirm any action.", "A tricked model could block a card."], ["The card must belong to this customer.", "One customer could block another’s card."], ["Each action is logged for review.", "Nobody can prove what happened."]],
      test: ['test("no block without confirmation", async () => {', "  await blockCard(session, card, false);", "  expect(cards.block).not.toHaveBeenCalled();", "});"] }
   ];
+  var NFR = { pm: ["Containment", "CSAT", "Cost per resolved conversation"], design: ["Accessibility", "Arabic and dialect quality", "CSAT"], dev: ["Reply speed", "Uptime", "Cost per resolved conversation"], ai: ["Groundedness", "Hallucination rate", "Safe refusal", "Arabic and dialect quality"], qa: ["Groundedness", "Safe refusal", "Reply speed", "Arabic and dialect quality"], support: ["Containment", "CSAT", "Uptime"], legal: ["Safe refusal", "Hallucination rate", "Accessibility"] };
   var F = FX[0], V = "pm", S = 0;
   var ex = '<span class="tag ex">Example</span>';
   function tool(name, body) { return '<div class="tool"><div class="tbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><b>' + name + "</b>" + ex + '</div><div class="tbody">' + body + "</div></div>"; }
@@ -434,6 +447,7 @@ svg.dg text.sm { fill: var(--muted); font-size: 11px; }
     $("viewapp").innerHTML = '<button type="button" class="back" data-go="main">Back to the playbook</button><h1>' + v.n + ' view</h1><p class="lede">' + v.d + ' <span class="tag prop">Proposed</span></p>' +
       '<div class="picker"><span class="note">Teams:</span>' + ORDER.map(function (k) { return '<button type="button" class="vbtn" aria-pressed="' + (k === V) + '" data-v="' + k + '">' + VIEWS[k].n + "</button>"; }).join("") + "</div>" +
       '<div class="picker"><span class="note">Feature:</span>' + FX.map(function (f, i) { return '<button type="button" class="vbtn" aria-pressed="' + (f === F) + '" data-f="' + i + '">' + f.n + "</button>"; }).join("") + "</div>" +
+      '<div class="reqs"><p><b>Requirements this team owns:</b> ' + NFR[V].join(" · ") + '</p><p><b>Acceptance for ' + F.n + ':</b> Given the ' + F.set + ", " + F.thr + '.</p></div>' +
       '<div class="rail">' + v.s.map(function (x, i) { return '<button type="button" class="rs" aria-pressed="' + (i === S) + '" data-s="' + i + '"><b>' + (i + 1) + "</b>" + x[0] + "</button>"; }).join("") + "</div>" +
       '<div class="stage"><div>' + st[1]() + '</div><aside class="coach"><h3>' + (S + 1) + ". " + st[0] + "</h3><h4>What’s happening</h4><p>" + st[2] + "</p><h4>Why this way</h4><p>" + st[3] + "</p><h4>What the PM should notice</h4><p>" + st[4] + "</p><h4>Terms</h4><p>" + st[5].map(function (t) { return '<abbr tabindex="0" title="' + t[1].replace(/"/g, "&quot;") + '">' + t[0] + "</abbr>"; }).join(" · ") + "</p><h4>Checklist this ticks</h4>" + list2(st[6]) + '<div class="navr"><button type="button" class="vbtn" data-m="-1">Previous</button><button type="button" class="vbtn" data-m="1">Next</button></div></aside></div>';
   }
