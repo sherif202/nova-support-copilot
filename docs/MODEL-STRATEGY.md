@@ -77,3 +77,22 @@ These protections are in code, not in the model, so they hold for any vendor:
 - **Least data:** the AI sees only the logged-in customer's own records.
 - **Answer checks:** every answer is checked for sources, amounts, promise words, requests for secrets, links and language.
 - **Rate limit and kill switch:** 20 messages a minute per customer, and one setting sends every message to a person.
+
+## Cost proxy for other vendors (6 Nov 2026)
+
+A proxy, not a test: no GPT or Gemini model has run on Nova. It takes the tokens measured in the last 1.0.15 eval run (1,272,516 cached, 34,654 new input, 29,235 output) and prices them at each vendor's official list price, scaled to the base case of 5,400 chats a month (EGP 81 on Haiku, EGP 50 per US$).
+
+| Model | Input · cached · output, US$ per million tokens | Cost against Haiku | AI cost a month, EGP | If caching fails, EGP | ROI if hiring falls |
+| - | - | - | - | - | - |
+| OpenAI GPT-6 Luna | 0.1 · 0.01 · 0.5 | 1.0× | 81 | 382 | +18% |
+| Google Gemini 2.5 Flash-Lite | 0.1 · 0.01 · 0.4 | 0.9× | 73 | 374 | +18% |
+| Anthropic Claude Haiku 5.5 (today) | 0.1 · 0.01 · 0.5 | 1.0× | 81 | 382 | +18% |
+| Google Gemini 3.1 Flash-Lite | 0.25 · 0.025 · 1.5 | 2.7× | 222 | 974 | +18% |
+| Google Gemini 3.8 Flash, until 31 Dec 2026 | 0.75 · 0.075 · 3.75 | 7.5× | 608 | 2,866 | +18% |
+| OpenAI GPT-6.1 Terra | 1 · 0.05 · 5 | 7.9× | 643 | 3,821 | +18% |
+| Google Gemini 3.8 Flash, from 1 Jan 2027 | 1.5 · 0.15 · 7.5 | 15.0× | 1,215 | 5,732 | +17% |
+| Anthropic Claude Sonnet 5.5 | 2 · 0.2 · 10 | 20.0× | 1,620 | 7,642 | +16% |
+| Anthropic Claude Opus 5.5 | 4 · 0.2 · 20 | 31.7× | 2,571 | 15,284 | +15% |
+| OpenAI GPT-6 Astra | 10 · 1 · 50 | 100.0× | 8,100 | 38,211 | +9% |
+
+Cost does not decide the vendor: even the dearest model is under 9% of the EGP 93,333 running and build cost. Accuracy on Arabic and Franco, speed, data residency and contracts decide it, and those can only come from a real test. Token counts, retries and cache use will differ by vendor. Quiet night hours may let a cache expire, which pushes cost toward the "caching fails" column. Google's context cache can also add a storage charge. Prices: developers.openai.com/api/docs/pricing, aistudio.google.com/docs/pricing, `lib/prices.js`.
