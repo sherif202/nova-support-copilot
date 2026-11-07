@@ -20,7 +20,7 @@ The visual page for each of the 9 lifecycle stages. Stages 5 to 9 are the same r
 | Project map, the whole project on one page | https://claude.ai/artifact/4xyA3HqMUM8vH4puF5xmnH |
 | Demo Day slides | https://claude.ai/artifact/F1hLyH87E8sr3tjxhxsghW |
 | How we built it, with the technical view (32 slides) | https://claude.ai/artifact/4jfqBLxNvH3goVUb8W22CN |
-| All slides in one deck, Demo Day plus How we built (47 slides) | https://claude.ai/artifact/Sw9zWa8TLm6KU7kc2wtKbj |
+| All slides in one deck, Demo Day, How we built and the sweet spot (48 slides) | https://claude.ai/artifact/Sw9zWa8TLm6KU7kc2wtKbj |
 | Technical view, earlier separate slides (now merged above) | https://claude.ai/artifact/YLY7gR86udsgNxHgVsfZ59 |
 | Technical view, document | https://claude.ai/artifact/CfNZVYCKDDBzfPAGnWuEaw |
 | Document control map, departments and approvals | https://claude.ai/artifact/VfFS8zUxmeTmhEoYGjrYa4 |
